@@ -1,20 +1,15 @@
-"use client";
 import { Header } from "@/components/homepage/header";
-import { Layout } from "@/components/homepage/layout-home";
 import { SizeSelector } from "@/components/homepage/size-selector";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import React from "react";
 
 import MalePic from "@/public/images/male.png";
 import FemalePic from "@/public/images/female.png";
 
-import React from "react";
-import Image from "next/image";
-
-export const Dynamic = "static";
-
 const HomePage = () => {
   return (
-    <Layout>
+    <main>
       <Header />
       <main className="container mx-auto px-12  grid grid-cols-8 grid-rows-2 ">
         <div className="col-span-3  flex flex-col justify-start gap-2  col-start-1 row-start-2  pl-32 h-72 ">
@@ -45,7 +40,7 @@ const HomePage = () => {
           </div>
         </div>
       </main>
-    </Layout>
+    </main>
   );
 };
 
