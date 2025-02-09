@@ -9,16 +9,15 @@ interface InputProps extends React.ComponentProps<"input"> {
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, leftIcon, rightIcon, label, ...props }, ref) => {
     return (
       <div className="gap-2">
-        {props.label && (
+        {label && (
           <label
             htmlFor={props.id}
             className="text-sm font-medium text-muted-foreground"
           >
-            {props.label}{" "}
-            {props.required && <span className="text-red-500">*</span>}
+            {label} {props.required && <span className="text-red-500">*</span>}
           </label>
         )}
         <div
@@ -27,19 +26,18 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className
           )}
         >
-          {props.leftIcon && (
-            <div className="flex items-center">{props.leftIcon}</div>
-          )}
+          {leftIcon && <div className="flex items-center">{leftIcon}</div>}
           <input
             type={type}
-            className="focus:outline-none focus:border-transparent w-full"
+            className={cn(
+              "focus:outline-none focus:border-transparent w-full focus:bg-transparent focus:text-foreground bg-transparent",
+              className
+            )}
             ref={ref}
             {...props}
           />
 
-          {props.rightIcon && (
-            <div className="flex items-center">{props.rightIcon}</div>
-          )}
+          {rightIcon && <div className="flex items-center">{rightIcon}</div>}
         </div>
       </div>
     );

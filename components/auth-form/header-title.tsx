@@ -1,10 +1,11 @@
+import TAndD from "@/public/t&d.svg";
+import Image from "next/image";
+
 export function HeaderTitle() {
   return (
     <div className="flex items-center space-x-2">
-      <div className="rounded-md bg-black px-2 py-1 text-sm font-semibold text-white">
-        T&D
-      </div>
-      <span className="text-lg font-medium">T-Shirt& Design</span>
+      <Image src={TAndD} alt="T-Shirt and Design" />
+      <span className="text-3xl font-semibold">T-Shirt& Design</span>
     </div>
   );
 }
