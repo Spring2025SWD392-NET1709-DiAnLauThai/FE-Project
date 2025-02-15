@@ -26,14 +26,10 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ReactQueryProvider>
+    <div>
+      
           <Layout>{children}</Layout>
-        </ReactQueryProvider>
-      </body>
-    </html>
+     
+    </div>
   );
 }
