@@ -5,7 +5,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
+
 import { Bell, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { ThemeToggle } from "../theme-provide/theme-toggle";
