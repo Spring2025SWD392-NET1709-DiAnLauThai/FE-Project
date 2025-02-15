@@ -1,16 +1,18 @@
-import { Layout } from "@/components/homepage/layout-home";
+"use client";
+import { Header } from "@/components/homepage/header";
+import { usePathname } from "next/navigation";
 
 export default function MainLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const path = usePathname();
+
   return (
     <div>
-      <Layout>{children}</Layout>
-      
-          <Layout>{children}</Layout>
-     
+      {path !== "/" && <Header />}
+      <main className="container mx-auto p-4">{children}</main>
     </div>
   );
 }
