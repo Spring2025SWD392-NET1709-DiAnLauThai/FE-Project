@@ -71,7 +71,7 @@ export default function TopNav() {
             sideOffset={8}
             className="w-[280px] sm:w-80 bg-background border-border rounded-lg shadow-lg"
           >
-            {/* <Profile01 avatar="https://ferf1mheo22r9ira.public.blob.vercel-storage.com/avatar-01-n0x8HFv8EUetf9z6ht0wScJKoTHqf8.png" /> */}
+            <Profile01 avatar="https://github.com/shadcn.png" />
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

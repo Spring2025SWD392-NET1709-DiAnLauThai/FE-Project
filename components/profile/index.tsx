@@ -26,8 +26,7 @@ interface Profile01Props {
 const defaultProfile = {
   name: "Eugene An",
   role: "Prompt Engineer",
-  avatar:
-    "https://ferf1mheo22r9ira.public.blob.vercel-storage.com/avatar-02-albo9B0tWOSLXCVZh9rX9KFxXIVWMr.png",
+  avatar: "https://github.com/shadcn.png",
   subscription: "Free Trial",
 } satisfies Required<Profile01Props>;
 
@@ -64,7 +63,7 @@ export default function Profile01({
         <div className="relative px-6 pt-12 pb-6">
           <div className="flex items-center gap-4 mb-8">
             <div className="relative shrink-0">
-              <Image
+              <img
                 src={avatar}
                 alt={name}
                 width={72}
