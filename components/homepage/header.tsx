@@ -11,8 +11,6 @@ export function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
-  console.log("pathname", pathname);
-
   return (
     <header className=" w-full ">
       <div className="container flex items-center justify-between h-16 px-4">

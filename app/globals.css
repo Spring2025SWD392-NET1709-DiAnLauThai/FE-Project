@@ -24,6 +24,23 @@ body {
   opacity: 1;
 }
 
+.swiper:hover .swiper-button-next,
+.swiper:hover .swiper-button-prev {
+  opacity: 1;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 16px !important;
+  color: #000;
+}
+
+.swiper-button-disabled {
+  opacity: 0 !important;
+}
+
+
+
 
 @layer base {
   :root {

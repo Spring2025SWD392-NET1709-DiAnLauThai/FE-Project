@@ -4,7 +4,7 @@ import React from "react";
 
 const TShirtPage = () => {
   return (
-    <main className="flex ">
+    <main className="flex gap-20">
       <Sidebar />
       <TShirtGrid />
     </main>

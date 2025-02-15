@@ -1,0 +1,58 @@
+.product-swiper {
+  overflow: visible !important;
+}
+
+.product-swiper .swiper-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.product-swiper .swiper-slide {
+  width: 280px !important;
+  flex-shrink: 0;
+}
+
+.product-swiper .swiper-button-next,
+.product-swiper .swiper-button-prev {
+  width: 46px !important;
+  height: 46px !important;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.product-swiper .swiper-button-next:hover,
+.product-swiper .swiper-button-prev:hover {
+  background: #f8f8f8;
+  transform: scale(1.05);
+}
+
+.product-swiper .swiper-button-next:after,
+.product-swiper .swiper-button-prev:after {
+  font-size: 18px !important;
+  font-weight: bold;
+  color: #333;
+}
+
+.product-swiper .swiper-button-disabled {
+  opacity: 0 !important;
+  cursor: not-allowed;
+}
+
+/* Position the navigation buttons outside */
+.product-swiper .swiper-button-prev {
+  left: 0px;
+}
+
+.product-swiper .swiper-button-next {
+  right: 0px;
+}
+
+@media (max-width: 640px) {
+  .product-swiper .swiper-button-next,
+  .product-swiper .swiper-button-prev {
+    display: none;
+  }
+}
+

@@ -3,6 +3,7 @@ import { TShirttDetails } from "@/components/t-shirt/t-shirt-detail";
 import { TShirtImageGallery } from "@/components/t-shirt/t-shirt-gallery";
 import { TShirtInfo } from "@/components/t-shirt/t-shirt-info";
 import { TShirtSizeSelector } from "@/components/t-shirt/t-shirt-size-selector";
+import TShirtSlider from "@/components/t-shirt/t-shirt-slider";
 import { TShirtSpecs } from "@/components/t-shirt/t-shirt-specs";
 import Female from "@/public/images/male.png";
 
@@ -64,12 +65,13 @@ export default function TShirtDetailPage() {
         </div>
       </section>
 
-      {/*  */}
-
       <section>
         <h1 className="text-3xl font-semibold text-muted-foreground">
-          Recommend Product
+          Recommend for you
         </h1>
+        <div className="px-4">
+          <TShirtSlider />
+        </div>
       </section>
     </div>
   );

@@ -52,6 +52,32 @@ const TShirts = [
     reviews: 2156,
     imageUrl: Female,
   },
+
+  {
+    id: 5,
+    title: "Unisex Heavy Cotton Tee",
+    brand: "By Gildan *500",
+    price: 8.61,
+    sizes: 8,
+    colors: 70,
+    printProviders: 22,
+    rating: 4.8,
+    reviews: 2156,
+    imageUrl: Female,
+  },
+
+  {
+    id: 6,
+    title: "Unisex Heavy Cotton Tee",
+    brand: "By Gildan *500",
+    price: 8.61,
+    sizes: 8,
+    colors: 70,
+    printProviders: 22,
+    rating: 4.8,
+    reviews: 2156,
+    imageUrl: Female,
+  },
 ];
 
 export default function ProductGrid() {
