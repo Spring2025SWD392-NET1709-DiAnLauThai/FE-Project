@@ -8,6 +8,9 @@ export default function MainLayout({
   return (
     <div>
       <Layout>{children}</Layout>
+      
+          <Layout>{children}</Layout>
+     
     </div>
   );
 }
