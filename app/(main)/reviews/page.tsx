@@ -1,7 +1,7 @@
 import React from "react";
 
 const ReviewsPage = () => {
-  return <div>ReviewsPage</div>;
+  return <div>ReviewsPages</div>;
 };
 
 export default ReviewsPage;
