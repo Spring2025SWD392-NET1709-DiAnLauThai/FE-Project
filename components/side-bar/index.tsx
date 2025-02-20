@@ -100,7 +100,7 @@ export default function Sidebar() {
                   Overview
                 </div>
                 <div className="space-y-1">
-                  <NavItem href="#" icon={Home}>
+                  <NavItem href="/dashboard" icon={Home}>
                     Dashboard
                   </NavItem>
                   <NavItem href="#" icon={BarChart2}>
@@ -111,6 +111,9 @@ export default function Sidebar() {
                   </NavItem>
                   <NavItem href="#" icon={Folder}>
                     Projects
+                  </NavItem>
+                  <NavItem href="/dashboard/users" icon={Users2}>
+                    User Account
                   </NavItem>
                 </div>
               </div>
