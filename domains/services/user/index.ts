@@ -1,5 +1,10 @@
 import axiosInstance from "@/configs/axios.config";
-import { UserParams, UserResponse } from "@/domains/models/user";
+import {
+  PaginationParams,
+  UserParams,
+  UserResponse,
+  ApiResponse,
+} from "@/domains/models/user";
 
 export const userService = {
   get: {
@@ -14,15 +19,14 @@ export const userService = {
       return response;
     },
   },
-  getAllAccount: async (): Promise<UserResponse[]> => {
-    const response = await axiosInstance
-      .get("/accounts")
-      .then((res) => res.data.data)
-      .catch((err) => {
-        throw new Error(err);
-      });
-
-    return response;
+  getAllAccount: async (params?: PaginationParams): Promise<ApiResponse> => {
+    const response = await axiosInstance.get("/accounts", {
+      params: {
+        page: params?.page ?? 1,
+        size: params?.size ?? 10,
+      },
+    });
+    return response.data;
   },
   create: {},
   update: {},
