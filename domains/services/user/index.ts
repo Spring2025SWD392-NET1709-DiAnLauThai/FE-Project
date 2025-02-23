@@ -4,6 +4,7 @@ import {
   UserParams,
   UserResponse,
   ApiResponse,
+  UserPayload,
 } from "@/domains/models/user";
 
 export const userService = {
@@ -28,7 +29,11 @@ export const userService = {
     });
     return response.data;
   },
-  create: {},
+  createAccount: async (data: UserPayload) => {
+      const response = await axiosInstance.post("/accounts", data);
+      return response.data;
+    },
+  
   update: {},
   delete: {},
   patch: {},
