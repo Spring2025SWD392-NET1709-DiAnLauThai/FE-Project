@@ -1,26 +1,33 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { ChevronRight, Bell } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { Bell, ChevronRight } from "lucide-react";
-import Link from "next/link";
 import { ThemeToggle } from "../theme-provide/theme-toggle";
 import Profile01 from "../profile";
 
-interface BreadcrumbItem {
-  label: string;
-  href?: string;
-}
-
 export default function TopNav() {
-  const breadcrumbs: BreadcrumbItem[] = [
-    { label: "T&D", href: "#" },
-    { label: "dashboard", href: "#" },
-  ];
+  const pathname = usePathname();
+  // Tách đường dẫn thành các segment, bỏ các chuỗi rỗng
+  const segments = pathname.split("/").filter((seg) => seg.length > 0);
+
+  // Breadcrumb tĩnh đầu tiên là "T&D"
+  const staticBreadcrumb = { label: "T&D", href: "/" };
+
+  // Tạo breadcrumb động dựa theo URL (nếu có)
+  const dynamicBreadcrumbs = segments.map((segment, index) => {
+    const href = "/" + segments.slice(0, index + 1).join("/");
+    const label = segment.charAt(0).toUpperCase() + segment.slice(1);
+    return { label, href };
+  });
+
+  // Ghép mảng breadcrumb: cũ + dynamic
+  const breadcrumbs = [staticBreadcrumb, ...dynamicBreadcrumbs];
 
   return (
     <nav className="px-3 sm:px-6 flex items-center justify-between bg-white dark:bg-[#0F0F12] border-b border-gray-200 dark:border-[#1F1F23] h-full">
