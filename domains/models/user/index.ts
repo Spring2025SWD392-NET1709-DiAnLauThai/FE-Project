@@ -1,9 +1,11 @@
+import { EnumValues } from "zod";
+
 // create or update user model here
-export interface UserPayload {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
+export enum UserRole {
+  ADMIN = "ADMIN",
+  CUSTOMER = "CUSTOMER",
+  DESIGNER = "DESIGNER",
+  MANAGER = "MANAGER",
 }
 
 // get all
@@ -29,12 +31,21 @@ export interface UserResponse {
   id: string;
   name: string;
   email: string;
-  phone: string;
+  phone: number;
   address: string;
   dateOfBirth: Date;
-  role: string;
+  role: UserRole;
   createdAt: Date;
   status: string;
+}
+
+export interface UserPayload {
+  email: string;
+  name: string;
+  phone: number;
+  address: string;
+  role: UserRole;
+  dateOfBirth: Date;
 }
 
 export interface ApiResponse {
