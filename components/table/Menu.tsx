@@ -136,7 +136,7 @@ export function MenuActions({ user }: MenuActionsProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="ADMIN">Admin</SelectItem>
-                      <SelectItem value="USER">User</SelectItem>
+                      <SelectItem value="CUSTOMER">Customer</SelectItem>
                       <SelectItem value="DESIGNER">Designer</SelectItem>
                       <SelectItem value="MANAGER">Manager</SelectItem>
                     </SelectContent>

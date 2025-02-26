@@ -40,9 +40,13 @@ export const columns: ColumnDef<UserResponse>[] = [
     },
   },
   {
+    accessorKey: "status",
+    header: "Status",
+  },
+  {
     id: "actions",
     cell: ({ row }) => {
-      return <MenuActions user={row.original} />
+      return <MenuActions user={row.original} />;
     },
   },
 ];
