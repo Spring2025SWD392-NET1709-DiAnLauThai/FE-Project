@@ -1,33 +1,30 @@
 import axiosInstance from "@/configs/axios.config";
-import {
-  PaginationParams,
-  UserParams,
-  UserResponse,
-  ApiResponse,
-} from "@/domains/models/user";
+import { UserParams, UserResponse } from "@/domains/models/user";
 
 export const userService = {
   get: {
-    list: async (params?: UserParams): Promise<UserResponse[]> => {
-      const response = await axiosInstance
-        .get("/users", { params })
-        .then((res) => res.data)
-        .catch((err) => {
-          throw new Error(err);
-        });
+    list: async (
+      params?: UserParams
+    ): Promise<RootResponse<Pagination<UserResponse>>> => {
+      try {
+        const response = await axiosInstance.get("/accounts", { params });
 
-      return response;
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+
+    detail: async (id: string): Promise<UserResponse> => {
+      try {
+        const response = await axiosInstance.get(`/accounts/${id}`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
     },
   },
-  getAllAccount: async (params?: PaginationParams): Promise<ApiResponse> => {
-    const response = await axiosInstance.get("/accounts", {
-      params: {
-        page: params?.page ?? 1,
-        size: params?.size ?? 10,
-      },
-    });
-    return response.data;
-  },
+
   create: {},
   update: {},
   delete: {},

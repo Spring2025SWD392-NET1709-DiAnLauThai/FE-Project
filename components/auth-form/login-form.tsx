@@ -24,7 +24,7 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const { openDialog } = useDialogStore();
 
-  const { form, onSubmit, isLoading } = useAuthForm();
+  const { form, onSubmit, isLoading } = useAuthForm({ type: "login" });
   return (
     <>
       <div className="space-y-6">

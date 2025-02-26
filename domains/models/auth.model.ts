@@ -1,8 +1,17 @@
-export type AuthPayload = {
-    email: string;
-    password: string;
-}
+export type LoginPayload = {
+  email: string;
+  password: string;
+};
 
-export type AuthResponse = {
-    token: string;
+export type LoginResponse = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export interface RegisterPayload {
+  email: string;
+  name: string;
+  password: string;
+  phone: string;
+  role: string;
 }

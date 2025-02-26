@@ -2,17 +2,24 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, Phone, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Separator } from "../ui/separator";
-import { useRouter } from "next/navigation";
+import { useAuthForm } from "@/hooks/auth/use-auth-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "../ui/form";
 
 export function RegisterForm() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const { form, onSubmit, isLoading } = useAuthForm({ type: "register" });
 
   return (
     <div className="space-y-6">
@@ -22,67 +29,126 @@ export function RegisterForm() {
         </h1>
       </div>
       <div className="space-y-4">
-        <Input
-          label="Full name"
-          leftIcon={<User className="h-5 w-5 text-muted-foreground" />}
-          id="email"
-          placeholder="Enter your full name"
-          type="text"
-          autoCapitalize="none"
-          autoCorrect="off"
-          required
-        />
-        <Input
-          label="Email"
-          leftIcon={<Mail className="h-5 w-5 text-muted-foreground" />}
-          id="email"
-          placeholder="Enter your email"
-          type="text"
-          autoCapitalize="none"
-          autoCorrect="off"
-          required
-        />
-        <Input
-          label="Phone number"
-          leftIcon={<Mail className="h-5 w-5 text-muted-foreground" />}
-          id="email"
-          placeholder="Enter your phone number"
-          type="text"
-          autoCapitalize="none"
-          autoCorrect="off"
-          required
-        />
-        <div className="relative space-y-2">
-          <Input
-            label="Password"
-            leftIcon={<Lock className="h-5 w-5 text-muted-foreground" />}
-            rightIcon={
-              showPassword ? (
-                <EyeOff
-                  className="h-5 w-5 text-muted-foreground"
-                  onClick={() => setShowPassword(!showPassword)}
-                />
-              ) : (
-                <Eye
-                  className="h-5 w-5 text-muted-foreground"
-                  onClick={() => setShowPassword(!showPassword)}
-                />
-              )
-            }
-            id="password"
-            placeholder="Enter password"
-            type={showPassword ? "text" : "password"}
-            autoComplete="current-password"
-          />
-        </div>
-        <Button
-          type="submit"
-          className="w-full"
-          variant="primary"
-          onClick={() => router.push("/")}
-        >
-          Sign up
-        </Button>
+        <Form {...form}>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      label="Full name"
+                      leftIcon={
+                        <User className="h-5 w-5 text-muted-foreground" />
+                      }
+                      id="name"
+                      placeholder="Enter your full name"
+                      type="text"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      required
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      label="Email"
+                      leftIcon={
+                        <Mail className="h-5 w-5 text-muted-foreground" />
+                      }
+                      id="email"
+                      placeholder="Enter your email"
+                      type="text"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      required
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      label="Phone number"
+                      leftIcon={
+                        <Phone className="h-5 w-5 text-muted-foreground" />
+                      }
+                      id="email"
+                      placeholder="Enter your phone number"
+                      type="text"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      required
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      label="Password"
+                      leftIcon={
+                        <Lock className="h-5 w-5 text-muted-foreground" />
+                      }
+                      rightIcon={
+                        showPassword ? (
+                          <EyeOff
+                            className="h-5 w-5 text-muted-foreground"
+                            onClick={() => setShowPassword(!showPassword)}
+                          />
+                        ) : (
+                          <Eye
+                            className="h-5 w-5 text-muted-foreground"
+                            onClick={() => setShowPassword(!showPassword)}
+                          />
+                        )
+                      }
+                      id="password"
+                      placeholder="Enter password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      required
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              className="w-full"
+              variant="primary"
+              disabled={isLoading}
+            >
+              {isLoading ? "Loading..." : "Register"}
+            </Button>
+          </form>
+        </Form>
 
         <div className="flex items-center justify-center space-x-2 ">
           <Separator className="text-muted-foreground w-1/2" />

@@ -7,22 +7,7 @@ export interface UserPayload {
 }
 
 // get all
-export interface UserParams {
-  id: string;
-}
-
-export interface PaginationParams {
-  page: number;
-  size: number;
-}
-
-export interface PaginatedResponse {
-  content: UserResponse[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-}
+export type UserParams = RootRequest;
 
 // response
 export interface UserResponse {
@@ -35,10 +20,4 @@ export interface UserResponse {
   role: string;
   createdAt: Date;
   status: string;
-}
-
-export interface ApiResponse {
-  code: number;
-  data: PaginatedResponse;
-  message: string;
 }
