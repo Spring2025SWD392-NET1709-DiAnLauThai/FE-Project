@@ -7,7 +7,10 @@ import { columns } from "./columns";
 import { useState, useMemo } from "react";
 import { DataTablePagination } from "@/components/table/Pagination";
 import { CreateUserDialog } from "@/components/user-form/create-user-dialog";
-import { TableFilter, FilterOptions } from "@/components/table/TableFilter";
+import {
+  TableFilter,
+  FilterOptions,
+} from "@/components/table-filter/TableFilter";
 import { UserResponse } from "@/domains/models/user";
 
 const ITEMS_PER_PAGE = 10;

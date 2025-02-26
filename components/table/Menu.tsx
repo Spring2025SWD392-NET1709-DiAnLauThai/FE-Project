@@ -1,13 +1,10 @@
 // components/table/Menu.tsx
 "use client";
 
-import { User, UserPayload } from "@/domains/models/user";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -20,51 +17,38 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { useState } from "react"; // Removed useEffect
-import { UserDetailCard } from "@/components/user-card/user-detail-card";
-import { useUserForm } from "@/hooks/user/use-user-form";
-import { UserForm } from "@/components/user-form/user-form";
+import { useState, ReactNode } from "react";
 
-interface MenuActionsProps {
-  user: User;
+interface BaseEntity {
+  id: string;
 }
 
-export function MenuActions({ user }: MenuActionsProps) {
-  const [openEdit, setOpenEdit] = useState(false);
-  const [openView, setOpenView] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
+export interface MenuAction<T extends BaseEntity> {
+  label: string;
+  onClick?: (entity: T) => void;
+  renderContent?: (entity: T, close: () => void) => ReactNode;
+  dialogTitle?: string;
+  danger?: boolean;
+}
 
-  // Transform the user to match UserPayload format
-  const userAsPayload = {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    phone: Number(user.phone),
-    address: user.address || "",
-    dateOfBirth: user.dateOfBirth,
-    role: user.role,
-    status: user.status,
-  } as UserPayload;
+interface MenuActionsProps<T extends BaseEntity> {
+  entity: T;
+  entityType: string;
+  actions: MenuAction<T>[];
+}
 
-  const { form, onSubmit, isLoading, reset } = useUserForm({
-    type: "update",
-    defaultData: userAsPayload,
-  });
+export function MenuActions<T extends BaseEntity>({
+  entity,
+  entityType,
+  actions,
+}: MenuActionsProps<T>) {
+  const [openDialogIndex, setOpenDialogIndex] = useState<number | null>(null);
 
-
-  const handleEditOpen = (isOpen: boolean) => {
-    setOpenEdit(isOpen);
-    // Only reset form when opening the dialog
-    if (isOpen) {
-      reset(userAsPayload);
-    }
-  };
-
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const success = await onSubmit(e);
-    if (success) {
-      setOpenEdit(false);
+  const handleOpenChange = (open: boolean, index: number) => {
+    if (!open) {
+      setOpenDialogIndex(null);
+    } else {
+      setOpenDialogIndex(index);
     }
   };
 
@@ -79,70 +63,38 @@ export function MenuActions({ user }: MenuActionsProps) {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-        {/* View Details Dialog */}
-        <Dialog open={openView} onOpenChange={setOpenView}>
-          <DialogTrigger asChild>
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-              View Details
-            </DropdownMenuItem>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[700px]">
-            <UserDetailCard user={user} />
-          </DialogContent>
-        </Dialog>
-
-        {/* Edit Dialog */}
-        <Dialog open={openEdit} onOpenChange={handleEditOpen}>
-          <DialogTrigger asChild>
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-              Edit
-            </DropdownMenuItem>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Edit User Profile</DialogTitle>
-              <DialogDescription>
-                Make changes to user profile here. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
-
-            <UserForm
-              form={form}
-              onSubmit={handleFormSubmit}
-              isLoading={isLoading}
-              type="update"
-            />
-          </DialogContent>
-        </Dialog>
-
-        {/* Delete Dialog */}
-        <Dialog open={openDelete} onOpenChange={setOpenDelete}>
-          <DialogTrigger asChild>
-            <DropdownMenuItem
-              onSelect={(e) => e.preventDefault()}
-              className="text-red-600"
-            >
-              Delete
-            </DropdownMenuItem>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Confirm Deletion</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to delete this user? This action cannot be
-                undone.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                variant="destructive"
-                onClick={() => console.log("Deleting user:", user.id)}
+        {actions.map((action, index) => (
+          <Dialog
+            key={`${entityType}-action-${index}`}
+            open={openDialogIndex === index}
+            onOpenChange={(open) => handleOpenChange(open, index)}
+          >
+            <DialogTrigger asChild>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  if (action.onClick && !action.renderContent) {
+                    action.onClick(entity);
+                  }
+                }}
+                className={action.danger ? "text-red-600" : ""}
               >
-                Delete
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+                {action.label}
+              </DropdownMenuItem>
+            </DialogTrigger>
+
+            {action.renderContent && (
+              <DialogContent className="sm:max-w-[700px]">
+                <DialogHeader>
+                  <DialogTitle>
+                    {action.dialogTitle || action.label}
+                  </DialogTitle>
+                </DialogHeader>
+                {action.renderContent(entity, () => setOpenDialogIndex(null))}
+              </DialogContent>
+            )}
+          </Dialog>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

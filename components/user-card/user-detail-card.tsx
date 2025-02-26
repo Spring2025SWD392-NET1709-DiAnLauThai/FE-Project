@@ -2,7 +2,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { User } from "@/domains/models/user";
+import { User, UserStatus } from "@/domains/models/user";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -35,6 +35,17 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
     return format(new Date(date), "dd MMM yyyy");
   };
 
+  const getStatusBadgeClass = (status?: string) => {
+    switch (status) {
+      case UserStatus.ACTIVE:
+        return "bg-green-500 hover:bg-green-600 text-white";
+      case UserStatus.INACTIVE:
+        return "bg-red-500 hover:bg-red-600 text-white";
+      default:
+        return "bg-gray-500 hover:bg-gray-600 text-white";
+    }
+  };
+
   return (
     <div className="flex flex-col space-y-6">
       {/* Header with name and status */}
@@ -47,10 +58,8 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
             <h1 className="text-2xl font-bold tracking-tight">{user.name}</h1>
             <div className="flex items-center space-x-2 mt-1">
               <Badge variant="outline">{user.role}</Badge>
-              <Badge
-                variant={user.status === "ACTIVE" ? "default" : "destructive"}
-              >
-                {user.status}
+              <Badge className={getStatusBadgeClass(user.status)}>
+                {user.status || UserStatus.ACTIVE}
               </Badge>
             </div>
           </div>
