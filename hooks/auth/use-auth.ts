@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "../use-toast";
 import { QueryKey } from "@/domains/stores/query-key";
 import { useAuthStore } from "@/domains/stores/use-auth-store";
+import { jwtDecode } from "jwt-decode";
 
 export const useAuth = () => {
   const { toast } = useToast();
@@ -22,8 +23,14 @@ export const useAuth = () => {
         title: "Login success",
         description: "Welcome back",
       });
-      push("/t-shirt");
+      const decoded: TokenResponse = jwtDecode(data.data.accessToken);
+
       login(data.data.accessToken, data.data.refreshToken);
+      if (decoded.role === "ADMIN") {
+        push("/dashboard");
+        return;
+      }
+      push("/t-shirt");
     },
     onError: (error) => {
       toast({

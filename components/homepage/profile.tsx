@@ -39,7 +39,7 @@ export default function Profile({ user }: Profile01Props) {
           <div className="flex items-center gap-4 mb-8">
             <div className="relative shrink-0">
               <Avatar>
-                <AvatarFallback>{user.role[0]}</AvatarFallback>
+                <AvatarFallback>{user.name?.[0]}</AvatarFallback>
               </Avatar>
               <div className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-zinc-900" />
             </div>

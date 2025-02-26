@@ -9,9 +9,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "../theme-provide/theme-toggle";
-import Profile01 from "../profile";
+import { useAuthStore } from "@/domains/stores/use-auth-store";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import Profile from "../homepage/profile";
+
+// import Profile01 from "../profile";
 
 export default function TopNav() {
+  const { user } = useAuthStore();
   const pathname = usePathname();
   // Tách đường dẫn thành các segment, bỏ các chuỗi rỗng
   const segments = pathname.split("/").filter((seg) => seg.length > 0);
@@ -63,24 +68,24 @@ export default function TopNav() {
 
         <ThemeToggle />
 
-        <DropdownMenu>
-          <DropdownMenuTrigger className="focus:outline-none">
-            <img
-              src="https://github.com/shadcn.png"
-              alt="User avatar"
-              width={28}
-              height={28}
-              className="rounded-full ring-2 ring-gray-200 dark:ring-[#2B2B30] sm:w-8 sm:h-8 cursor-pointer"
-            />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            sideOffset={8}
-            className="w-[280px] sm:w-80 bg-background border-border rounded-lg shadow-lg"
-          >
-            <Profile01 avatar="https://github.com/shadcn.png" />
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="focus:outline-none">
+              <Avatar>
+                <AvatarFallback>
+                  {user?.name?.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              sideOffset={8}
+              className="w-[280px] sm:w-80 bg-background border-border rounded-lg shadow-lg"
+            >
+              <Profile user={user} />
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     </nav>
   );

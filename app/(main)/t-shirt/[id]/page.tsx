@@ -51,12 +51,12 @@ export default function TShirtDetailPage() {
             reviews={TShirt.reviews}
             price={TShirt.price}
           />
-          <TShirtSpecs
+          {/* <TShirtSpecs
             sizes={TShirt.sizes}
             colors={TShirt.colors}
             printProviders={TShirt.printProviders}
-          />
-          <TShirtSizeSelector sizes={TShirt.sizes} />
+          /> */}
+          {/* <TShirtSizeSelector sizes={TShirt.sizes} /> */}
           {/* <TShirtActions /> */}
           <TShirttDetails
             description={TShirt.description}
