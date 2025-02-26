@@ -28,7 +28,7 @@ export const columns: ColumnDef<UserResponse>[] = [
     header: "DOB",
     cell: ({ row }) => {
       const date = new Date(row.getValue("dateOfBirth"));
-      return <div>{date.toLocaleDateString()}</div>;
+      return format(date, "dd/MM/yyyy");
     },
   },
   {

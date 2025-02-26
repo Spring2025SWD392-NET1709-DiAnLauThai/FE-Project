@@ -33,7 +33,11 @@ export const userService = {
       const response = await axiosInstance.post("/accounts", data);
       return response.data;
     },
-  
+  updateAccount: async (id: string, data: UserPayload) => {
+    console.log("API call - Update Account:", id, data); // Debug log
+    const response = await axiosInstance.put(`/accounts/${id}`, data);
+    return response.data;
+  },
   update: {},
   delete: {},
   patch: {},

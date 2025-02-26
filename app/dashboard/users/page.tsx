@@ -6,7 +6,7 @@ import { DataTable } from "@/components/table/Table";
 import { columns } from "./columns";
 import { useState, useMemo } from "react";
 import { DataTablePagination } from "@/components/table/Pagination";
-import { CreateUserDialog } from "@/components/create-user-form/create-user-dialog";
+import { CreateUserDialog } from "@/components/user-form/create-user-dialog";
 import { TableFilter, FilterOptions } from "@/components/table/TableFilter";
 import { UserResponse } from "@/domains/models/user";
 

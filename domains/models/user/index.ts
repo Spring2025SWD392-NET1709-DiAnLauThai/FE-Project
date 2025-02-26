@@ -8,6 +8,11 @@ export enum UserRole {
   MANAGER = "MANAGER",
 }
 
+export enum UserStatus{
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE"
+}
+
 // get all
 export interface UserParams {
   id: string;
@@ -40,12 +45,14 @@ export interface UserResponse {
 }
 
 export interface UserPayload {
+  id: string;
   email: string;
   name: string;
   phone: number;
   address: string;
   role: UserRole;
   dateOfBirth: Date;
+  status: UserStatus;
 }
 
 export interface ApiResponse {
