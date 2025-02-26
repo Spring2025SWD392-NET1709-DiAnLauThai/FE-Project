@@ -1,5 +1,5 @@
 import axiosInstance from "@/configs/axios.config";
-import { UserParams, UserResponse } from "@/domains/models/user";
+import { UserParams, UserPayload, UserResponse } from "@/domains/models/user";
 
 export const userService = {
   get: {
@@ -24,16 +24,47 @@ export const userService = {
       }
     },
   },
-  createAccount: async (data: UserPayload) => {
-      const response = await axiosInstance.post("/accounts", data);
-      return response.data;
+  // createAccount: async (data: UserPayload) => {
+  //     const response = await axiosInstance.post("/accounts", data);
+  //     return response.data;
+  //   },
+  // updateAccount: async (id: string, data: UserPayload) => {
+  //   console.log("API call - Update Account:", id, data); // Debug log
+  //   const response = await axiosInstance.put(`/accounts/${id}`, data);
+  //   return response.data;
+  // },
+  post: {
+    account: async (data: UserPayload): Promise<RootResponse<UserResponse>> => {
+      try {
+        const response = await axiosInstance.post("/accounts", data);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
     },
-  updateAccount: async (id: string, data: UserPayload) => {
-    console.log("API call - Update Account:", id, data); // Debug log
-    const response = await axiosInstance.put(`/accounts/${id}`, data);
-    return response.data;
   },
-  update: {},
-  delete: {},
+  put: {
+    account: async (
+      id: string,
+      data: UserPayload
+    ): Promise<RootResponse<UserResponse>> => {
+      try {
+        const response = await axiosInstance.put(`/accounts/${id}`, data);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+  },
+  delete: {
+    account: async (id: string): Promise<RootResponse<UserResponse>> => {
+      try {
+        const response = await axiosInstance.delete(`/accounts/${id}`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+  },
   patch: {},
 };

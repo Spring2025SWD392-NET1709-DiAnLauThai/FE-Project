@@ -1,5 +1,3 @@
-import { EnumValues } from "zod";
-
 // create or update user model here
 export enum UserRole {
   ADMIN = "ADMIN",
@@ -8,9 +6,9 @@ export enum UserRole {
   MANAGER = "MANAGER",
 }
 
-export enum UserStatus{
+export enum UserStatus {
   ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE"
+  INACTIVE = "INACTIVE",
 }
 
 // get all

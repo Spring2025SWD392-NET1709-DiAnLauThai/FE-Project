@@ -6,7 +6,7 @@ import { UserPayload } from "@/domains/models/user";
 export const useUser = (page: number, size: number) => {
   return useQuery({
     queryKey: ["users", page, size],
-    queryFn: () => userService.getAllAccount({ page, size }),
+    queryFn: () => userService.get.list({ page, size }),
   });
 };
 
@@ -15,7 +15,7 @@ export const useCreateUser = () => {
   const createUserMutation = useMutation({
     mutationKey: ["create-user"],
     mutationFn: async (payload: UserPayload) =>
-      await userService.createAccount(payload),
+      await userService.post.account(payload),
     onSuccess: (data) => {
       toast.toast({
         title: "Create user success",
@@ -44,7 +44,7 @@ export const useUpdateUser = () => {
       }
 
       // Use the ID for the URL path but also keep it in the payload
-      return await userService.updateAccount(payload.id, payload);
+      return await userService.put.account(payload.id, payload);
     },
     onSuccess: (data) => {
       toast.toast({
@@ -65,4 +65,3 @@ export const useUpdateUser = () => {
 
   return { updateUserMutation };
 };
-
