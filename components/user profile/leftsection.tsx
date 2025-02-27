@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import UserPro from "@/public/images/profile-picture.jpg";
 
 interface UserProfileData {
     id: string;
@@ -39,11 +40,9 @@ const LeftSection: React.FC = () => {
         <div className="w-1/2 bg-white p-6 flex flex-col items-center">
             <h1 className="text-3xl font-bold mb-6">User Profile</h1>
             <Image
-                src={userProfile.profile_picture}
-                alt="User Profile Picture"
-                width={128}
-                height={128}
-                className="rounded-full mb-6"
+                src={UserPro}
+                alt="user-profile"
+                className="w-1/2 relative rounded-full"
             />
             <div className="w-full max-w-md">
                 <label className="block font-medium mb-2">Name:</label>

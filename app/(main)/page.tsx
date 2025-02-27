@@ -6,6 +6,7 @@ import React from "react";
 
 import MalePic from "@/public/images/male.png";
 import FemalePic from "@/public/images/female.png";
+
 import { Layout } from "@/components/layout/layout-home";
 
 const HomePage = () => {
@@ -29,16 +30,26 @@ const HomePage = () => {
           </div>
           <div className="col-span-5 relative row-span-2 col-start-5 row-start-1 ">
             <div className="flex justify-center ">
+
               <Image
                 src={MalePic}
                 alt="male-clothing"
                 className="w-80 absolute right-20 rounded-lg shadow-2xl"
               />
+
               <Image
                 src={FemalePic}
                 alt="female-clothing"
                 className="w-80 absolute left-10 bottom-0 rounded-lg shadow-2xl"
               />
+
+              <Image
+                src={FemalePic}
+                alt="female-clothing"
+                className="w-80 absolute left-10 bottom-0 rounded-lg shadow-2xl"
+              />
+
+
             </div>
           </div>
         </main>
