@@ -1,12 +1,14 @@
 import { userService } from "@/domains/services/user";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useToast } from "../use-toast";
-import { UserPayload } from "@/domains/models/user";
+import { UserPayload, UserParams } from "@/domains/models/user";
+import { QueryKey } from "@/domains/stores/query-key";
 
-export const useUser = (page: number, size: number) => {
+export const useUser = (params: UserParams = { page: 1, size: 10 }) => {
   return useQuery({
-    queryKey: ["users", page, size],
-    queryFn: () => userService.get.list({ page, size }),
+    queryKey: [QueryKey.LIST_USER, params],
+    queryFn: () => userService.get.list(params),
+    
   });
 };
 

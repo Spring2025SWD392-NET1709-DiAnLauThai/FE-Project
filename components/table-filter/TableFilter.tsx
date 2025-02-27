@@ -50,14 +50,28 @@ export function TableFilter({ onFilterChange }: TableFilterProps) {
     setIsOpen(false);
   };
 
-  const resetFilters = () => {
-    setFilters({});
-    onFilterChange({});
-    setIsOpen(false);
-  };
+
+   const resetAndApplyFilters = () => {
+     // Create a consistent empty filters object with all fields explicitly set
+     const emptyFilters: FilterOptions = {
+       role: undefined,
+       status: undefined,
+       createdFrom: undefined,
+       createdTo: undefined,
+       search: "",
+     };
+
+     // Update local state with the same object we'll send to parent
+     setFilters(emptyFilters);
+
+     // Send the explicitly defined empty filters to parent
+     onFilterChange(emptyFilters);
+     setIsOpen(false);
+   };
+
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 pb-5">
       <Input
         placeholder="Search users..."
         className="max-w-sm"
@@ -173,13 +187,20 @@ export function TableFilter({ onFilterChange }: TableFilterProps) {
               </Popover>
             </div>
 
-            <div className="flex items-center justify-between pt-2">
-              <Button variant="outline" size="sm" onClick={resetFilters}>
-                <X className="h-4 w-4 mr-1" /> Reset
-              </Button>
-              <Button size="sm" onClick={applyFilters}>
-                Apply Filters
-              </Button>
+            <div className="flex items-center justify-center pt-2">
+              
+              <div className="space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={resetAndApplyFilters}
+                >
+                  Reset & Apply
+                </Button>
+                <Button size="sm" onClick={applyFilters}>
+                  Apply Filters
+                </Button>
+              </div>
             </div>
           </div>
         </PopoverContent>

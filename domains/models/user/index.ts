@@ -16,7 +16,6 @@ export type UserParams = RootRequest;
 
 // response
 export interface UserResponse {
-  id: string;
   name: string;
   email: string;
   phone: number;
