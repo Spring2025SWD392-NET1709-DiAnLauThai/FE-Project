@@ -1,6 +1,6 @@
 import { LogOut, MoveUpRight, Settings, FileText } from "lucide-react";
 import Link from "next/link";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuthStore } from "@/domains/stores/use-auth-store";
 import { UserResponse } from "@/domains/models/user";
 
@@ -39,7 +39,15 @@ export default function Profile({ user }: Profile01Props) {
           <div className="flex items-center gap-4 mb-8">
             <div className="relative shrink-0">
               <Avatar>
-                <AvatarFallback>{user.name?.[0]}</AvatarFallback>
+                {user.image_url ? (
+                  <AvatarImage
+                    src={user.image_url}
+                    alt={user.name || "User avatar"}
+                  />
+                ) : null}
+                <AvatarFallback>
+                  {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                </AvatarFallback>
               </Avatar>
               <div className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-zinc-900" />
             </div>

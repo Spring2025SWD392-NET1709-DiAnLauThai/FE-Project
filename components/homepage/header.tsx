@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import Profile from "./profile";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export function Header() {
   const router = useRouter();
@@ -62,7 +62,15 @@ export function Header() {
             <DropdownMenu>
               <DropdownMenuTrigger className="focus:outline-none">
                 <Avatar>
-                  <AvatarFallback>{user.name?.[0]}</AvatarFallback>
+                  {user.image_url ? (
+                    <AvatarImage
+                      src={user.image_url}
+                      alt={user.name || "User avatar"}
+                    />
+                  ) : null}
+                  <AvatarFallback>
+                    {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                  </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent

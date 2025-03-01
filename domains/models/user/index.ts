@@ -24,6 +24,7 @@ export interface UserResponse {
   role: UserRole;
   createdAt: Date;
   status: string;
+  image_url: string;
 }
 
 export interface UserProfile {
