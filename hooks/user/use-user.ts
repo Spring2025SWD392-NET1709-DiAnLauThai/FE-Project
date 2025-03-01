@@ -1,7 +1,7 @@
 import { userService } from "@/domains/services/user";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useToast } from "../use-toast";
-import { UserPayload, UserParams } from "@/domains/models/user";
+import { UserProfile, UserPayload, UserParams } from "@/domains/models/user";
 import { QueryKey } from "@/domains/stores/query-key";
 
 export const useUser = (params: UserParams = { page: 1, size: 10 }) => {
@@ -11,6 +11,14 @@ export const useUser = (params: UserParams = { page: 1, size: 10 }) => {
     
   });
 };
+
+export const useDetailUser = (id: string) => { 
+  return useQuery({
+    queryKey: [QueryKey.USER_PROFILE, id],
+    queryFn: () => userService.get.userProfile(id),
+  });
+};
+
 
 export const useCreateUser = () => {
   const toast = useToast();
@@ -67,3 +75,38 @@ export const useUpdateUser = () => {
 
   return { updateUserMutation };
 };
+
+export const useUpdateUserProfile = () => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const updateProfileMutation = useMutation({
+    mutationKey: [QueryKey.UPDATE_USER_PROFILE],
+    mutationFn: async (formData: FormData) => {
+      return await userService.put.updateProfile(formData);
+    },
+    onSuccess: (data) => {
+      const message = data.message || "Your profile has been updated successfully";
+      
+      toast({
+        title: "Profile Updated",
+        description: message,
+      });
+      queryClient.invalidateQueries({ queryKey: [QueryKey.USER_PROFILE] });
+    },
+    onError: (error: any) => {
+      console.error("Profile update failed:", error);
+      
+      const errorMessage = error.response?.data?.message || "There was a problem updating your profile";
+      
+      toast({
+        title: "Update Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    },
+  });
+
+  return { updateProfileMutation };
+};
+

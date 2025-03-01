@@ -26,6 +26,16 @@ export interface UserResponse {
   status: string;
 }
 
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  phone: number;
+  address: string;
+  dateOfBirth: string;
+  image_url: string;
+}
+
 export interface UserPayload {
   id: string;
   email: string;

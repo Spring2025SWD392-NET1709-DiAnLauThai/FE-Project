@@ -1,5 +1,5 @@
 import axiosInstance from "@/configs/axios.config";
-import { UserParams, UserPayload, UserResponse } from "@/domains/models/user";
+import { UserParams, UserPayload, UserProfile, UserResponse } from "@/domains/models/user";
 
 export const userService = {
   get: {
@@ -33,6 +33,18 @@ export const userService = {
         throw error;
       }
     },
+
+    userProfile: async (id: string): Promise<RootResponse<UserProfile>> => {
+      try {
+        if (!id) {
+          throw new Error("User ID is required for fetching profile");
+        }
+        const response = await axiosInstance.get(`/accounts/${id}`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
   post: {
     account: async (data: UserPayload): Promise<RootResponse<UserResponse>> => {
@@ -51,6 +63,24 @@ export const userService = {
     ): Promise<RootResponse<UserResponse>> => {
       try {
         const response = await axiosInstance.put(`/accounts/${id}`, data);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    updateProfile: async (
+      formData: Partial<UserProfile>
+    ): Promise<RootResponse<UserProfile>> => {
+      try {
+        const response = await axiosInstance.put(
+          "/accounts/profile",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         return response.data;
       } catch (error) {
         throw error;
