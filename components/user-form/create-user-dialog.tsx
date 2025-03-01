@@ -53,6 +53,7 @@ export function CreateUserDialog() {
           onSubmit={handleFormSubmit}
           isLoading={isLoading}
           type="create"
+          isAdminUpdate={false}
         />
       </DialogContent>
     </Dialog>

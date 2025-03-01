@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { UserResponse, UserStatus } from "@/domains/models/user";
+import { UserPayload, UserResponse, UserStatus } from "@/domains/models/user";
 import { Badge } from "@/components/ui/badge";
 import { MenuAction, MenuActions } from "@/components/table/Menu";
 import { UserDetailCard } from "@/components/user-card/user-detail-card";
@@ -9,7 +9,7 @@ import { UserForm } from "@/components/user-form/user-form";
 import { useUserForm } from "@/hooks/user/use-user-form";
 import { format } from "date-fns";
 
-export const columns: ColumnDef<UserResponse>[] = [
+export const columns: ColumnDef<UserPayload>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -75,7 +75,7 @@ export const columns: ColumnDef<UserResponse>[] = [
       };
 
       // Define actions
-      const userActions: MenuAction<UserResponse>[] = [
+      const userActions: MenuAction<UserPayload>[] = [
         {
           label: "View Details",
           dialogTitle: "User Details",
@@ -104,18 +104,12 @@ export const columns: ColumnDef<UserResponse>[] = [
                 onSubmit={handleFormSubmit}
                 isLoading={isLoading}
                 type="update"
+                isAdminUpdate={true}
               />
             );
           },
         },
-        {
-          label: "Delete",
-          danger: true,
-          onClick: (user) => {
-            // Handle delete action
-            console.log("Delete user:", user.id);
-          },
-        },
+        
       ];
 
       return (
