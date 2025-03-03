@@ -5,7 +5,7 @@ export const userService = {
   get: {
     list: async (
       params: UserParams = {}
-    ): Promise<RootResponse<Pagination<UserResponse>>> => {
+    ): Promise<RootResponse<Pagination<UserParams>>> => {
       try {
         // Make sure params is properly structured with defaults if needed
         const defaultParams: UserParams = {

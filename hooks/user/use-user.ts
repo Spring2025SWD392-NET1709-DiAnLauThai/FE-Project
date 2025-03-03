@@ -4,11 +4,19 @@ import { useToast } from "../use-toast";
 import { UserProfile, UserPayload, UserParams } from "@/domains/models/user";
 import { QueryKey } from "@/domains/stores/query-key";
 
-export const useUser = (params: UserParams = { page: 1, size: 10 }) => {
+export const useUser = (
+  params: UserParams = {
+    page: 1,
+    size: 10,
+    keyword:"",
+    sortDir: "asc",
+    sortBy: "createdAt",
+    ...params,
+  }
+) => {
   return useQuery({
     queryKey: [QueryKey.LIST_USER, params],
     queryFn: () => userService.get.list(params),
-    
   });
 };
 

@@ -20,7 +20,7 @@ export default function Profile({ user }: Profile01Props) {
   const { logout } = useAuthStore();
   const menuItems: MenuItem[] = [
     {
-      label: "Settings",
+      label: "Account Settings",
       href: "user-profile",
       icon: <Settings className="w-4 h-4" />,
     },

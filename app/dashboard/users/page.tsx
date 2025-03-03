@@ -9,7 +9,7 @@ import { CreateUserDialog } from "@/components/user-form/create-user-dialog";
 import {
   TableFilter,
   FilterOptions,
-} from "@/components/table-filter/TableFilter";
+} from "@/components/table-filter/UserTableFilter";
 import { UserResponse, UserRole, UserStatus } from "@/domains/models/user";
 
 const ITEMS_PER_PAGE = 10;
