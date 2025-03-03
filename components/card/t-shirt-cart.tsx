@@ -79,7 +79,7 @@ export default function TShirtCart({
         </div>
 
         {/* Specs */}
-        <div className="flex justify-start text-sm text-muted-foreground gap-4">
+        {/* <div className="flex justify-start text-sm text-muted-foreground gap-4">
           <div className="flex items-center gap-1">
             <Ruler className="h-4 w-4" />
             <span>{sizes}</span>
@@ -92,7 +92,7 @@ export default function TShirtCart({
             <Printer className="h-4 w-4" />
             <span>{printProviders}</span>
           </div>
-        </div>
+        </div> */}
 
         <div className="flex justify-between items-center">
           {/* Rating */}
@@ -115,9 +115,9 @@ export default function TShirtCart({
           </div>
 
           {/* Price */}
-          <div className="flex items-baseline gap-2">
+          {/* <div className="flex items-baseline gap-2">
             <span className="text-lg font-semibold">${price.toFixed(2)}</span>
-          </div>
+          </div> */}
         </div>
 
         {/* Add to Cart Button */}

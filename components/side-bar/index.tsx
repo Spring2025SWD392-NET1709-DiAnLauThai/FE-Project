@@ -109,8 +109,8 @@ export default function Sidebar() {
                   <NavItem href="#" icon={Building2}>
                     Organization
                   </NavItem>
-                  <NavItem href="#" icon={Folder}>
-                    Projects
+                  <NavItem href="/dashboard/tasks" icon={Folder}>
+                    Tasks Manage
                   </NavItem>
                   <NavItem href="/dashboard/users" icon={Users2}>
                     User Account

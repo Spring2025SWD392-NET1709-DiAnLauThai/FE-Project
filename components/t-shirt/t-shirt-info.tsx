@@ -40,7 +40,7 @@ export function TShirtInfo({
         <span className="text-muted-foreground">({reviews} reviews)</span>
       </div>
 
-      <div className="text-3xl font-bold">${price.toFixed(2)}</div>
+      {/* <div className="text-3xl font-bold">${price.toFixed(2)}</div> */}
     </div>
   );
 }

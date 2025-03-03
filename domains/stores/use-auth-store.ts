@@ -31,7 +31,7 @@ export const useAuthStore = create<AuthState>()(
 
           const response = await userService.get.detail(decoded.sub);
 
-          set({ user: response });
+          set({ user: response.data });
         } catch (error) {
           console.error("Invalid token", error);
         }

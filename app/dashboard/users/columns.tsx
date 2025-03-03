@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { ColumnDef } from "@tanstack/react-table"
-import { User, UserRole, UserStatus } from "@/domains/models/user";
+import { ColumnDef } from "@tanstack/react-table";
+import { UserPayload, UserResponse, UserStatus } from "@/domains/models/user";
 import { Badge } from "@/components/ui/badge";
 import { MenuAction, MenuActions } from "@/components/table/Menu";
 import { UserDetailCard } from "@/components/user-card/user-detail-card";
 import { UserForm } from "@/components/user-form/user-form";
 import { useUserForm } from "@/hooks/user/use-user-form";
-import { useState } from "react";
+import { format } from "date-fns";
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<UserPayload>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -29,33 +29,34 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "dateOfBirth",
     header: "DOB",
-    // cell: ({ row }) => {
-    //   const date = new Date(row.getValue("dateOfBirth"));
-    //   return format(date, "dd/MM/yyyy");
-    // },
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("dateOfBirth"));
+      return format(date, "dd/MM/yyyy");
+    },
   },
   {
     accessorKey: "createdAt",
     header: "Created At",
-    // cell: ({ row }) => {
-    //   const date = new Date(row.getValue("createdAt"));
-    //   return format(date, "dd/MM/yyyy");
-    // },
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt"));
+      return format(date, "dd/MM/yyyy");
+    },
   },
-{
-  accessorKey: "status",
-  header: "Status",
-  cell: ({ row }) => {
-    const status = row.getValue("status") as UserStatus;
-    
-    // Define colors based on status
-    const badgeClass = status === UserStatus.ACTIVE
-      ? "bg-green-500 hover:bg-green-600 text-white" // Active: Green
-      : "bg-red-500 hover:bg-red-600 text-white";    // Inactive: Red
-    
-    return <Badge className={badgeClass}>{status}</Badge>;
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as UserStatus;
+
+      // Define colors based on status
+      const badgeClass =
+        status === UserStatus.ACTIVE
+          ? "bg-green-500 hover:bg-green-600 text-white" // Active: Green
+          : "bg-red-500 hover:bg-red-600 text-white"; // Inactive: Red
+
+      return <Badge className={badgeClass}>{status}</Badge>;
+    },
   },
-},
   {
     id: "actions",
     cell: ({ row }) => {
@@ -74,7 +75,7 @@ export const columns: ColumnDef<User>[] = [
       };
 
       // Define actions
-      const userActions: MenuAction<User>[] = [
+      const userActions: MenuAction<UserPayload>[] = [
         {
           label: "View Details",
           dialogTitle: "User Details",
@@ -103,18 +104,12 @@ export const columns: ColumnDef<User>[] = [
                 onSubmit={handleFormSubmit}
                 isLoading={isLoading}
                 type="update"
+                isAdminUpdate={true}
               />
             );
           },
         },
-        {
-          label: "Delete",
-          danger: true,
-          onClick: (user) => {
-            // Handle delete action
-            console.log("Delete user:", user.id);
-          },
-        },
+        
       ];
 
       return (

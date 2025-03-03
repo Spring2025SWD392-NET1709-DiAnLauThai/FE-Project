@@ -7,9 +7,17 @@ declare global {
   }
 
   interface RootRequest {
-    page: number;
-    size: number;
+    page?: number;
+    size?: number;
+    keyword?: string;
+    role?: string;
+    status?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    sortDir?: "asc" | "desc";
+    sortBy?: string;
   }
+  
   interface Pagination<T> {
     content: T[];
     totalElements: number;

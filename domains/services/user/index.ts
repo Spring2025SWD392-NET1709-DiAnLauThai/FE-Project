@@ -4,18 +4,28 @@ import { UserParams, UserPayload, UserResponse } from "@/domains/models/user";
 export const userService = {
   get: {
     list: async (
-      params?: UserParams
+      params: UserParams = {}
     ): Promise<RootResponse<Pagination<UserResponse>>> => {
       try {
-        const response = await axiosInstance.get("/accounts", { params });
+        // Make sure params is properly structured with defaults if needed
+        const defaultParams: UserParams = {
+          page: 1,
+          size: 10,
+          sortDir: "asc",
+          sortBy: "createdAt",
+          ...params,
+        };
 
+        const response = await axiosInstance.get("/accounts", {
+          params: defaultParams,
+        });
         return response.data;
       } catch (error) {
         throw error;
       }
     },
 
-    detail: async (id: string): Promise<UserResponse> => {
+    detail: async (id: string): Promise<RootResponse<UserResponse>> => {
       try {
         const response = await axiosInstance.get(`/accounts/${id}`);
         return response.data;
