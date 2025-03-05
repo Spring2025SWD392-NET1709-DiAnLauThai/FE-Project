@@ -28,12 +28,6 @@ export function LoginForm() {
   return (
     <>
       <div className="space-y-6">
-        <div className="space-y-2 text-left">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Nice to see you again
-          </h1>
-        </div>
-
         <Form {...form}>
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-2">

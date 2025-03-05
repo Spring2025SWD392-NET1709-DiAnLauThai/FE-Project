@@ -21,6 +21,11 @@ export default function LoginPage() {
       <div className="flex w-full flex-col items-center justify-center p-4 lg:w-1/2">
         <div className="w-full max-w-sm space-y-6">
           <HeaderTitle />
+          <div className="space-y-2 text-left">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Nice to see you again
+            </h1>
+          </div>
           <LoginForm />
         </div>
       </div>

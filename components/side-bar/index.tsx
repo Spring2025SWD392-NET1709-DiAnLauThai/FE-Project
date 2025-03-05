@@ -58,9 +58,15 @@ export default function Sidebar() {
           roles: [Role.CUSTOMER],
         },
         {
-          href: "/my-order",
+          href: "/my-booking",
           icon: Archive,
-          label: "My Order",
+          label: "My Booking",
+          roles: [Role.CUSTOMER],
+        },
+        {
+          href: "/my-booking/create",
+          icon: ClipboardList,
+          label: "Booking Design",
           roles: [Role.CUSTOMER],
         },
       ],
