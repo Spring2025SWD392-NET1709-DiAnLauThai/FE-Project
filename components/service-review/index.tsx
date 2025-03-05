@@ -12,9 +12,7 @@ interface Review {
 }
 
 const ServiceReviewPage: React.FC = () => {
-  const [reviews, setReviews] = useState<Review[]>(
-    initialReviewsData.map((review, index) => ({ id: index + 1, ...review }))
-  );
+  const [reviews, setReviews] = useState<Review[]>(initialReviewsData.map((review, index) => ({ id: index + 1, ...review })));
   const [newReview, setNewReview] = useState<string>("");
   const [newRating, setNewRating] = useState<number>(5);
 
@@ -30,6 +28,7 @@ const ServiceReviewPage: React.FC = () => {
     };
     setReviews([...reviews, review]);
     setNewReview("");
+    setNewRating(5); // Reset rating
   };
 
   return (
@@ -44,6 +43,33 @@ const ServiceReviewPage: React.FC = () => {
 
       {/* Form thêm đánh giá */}
       <div className="mt-6">
+        {/* Hệ thống đánh giá sao - đặt TRÊN ô nhập review */}
+        <div className="flex flex-col items-start mb-4">
+          <label className="font-medium mb-2">Your Rating:</label>
+          <div className="rating flex flex-row-reverse">
+            {[5, 4, 3, 2, 1].map((star) => (
+              <React.Fragment key={star}>
+                <input
+                  type="radio"
+                  id={`star${star}`}
+                  name="rating"
+                  value={star}
+                  checked={newRating === star}
+                  onChange={() => setNewRating(star)}
+                  className="hidden peer"
+                />
+                <label
+                  htmlFor={`star${star}`}
+                  className="cursor-pointer text-3xl text-gray-300 transition-colors duration-200 peer-checked:text-yellow-400 hover:text-yellow-400"
+                >
+                  ★
+                </label>
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+        {/* Ô nhập review */}
         <textarea
           className="w-full border p-2 rounded-lg mb-4"
           rows={4}
@@ -51,19 +77,6 @@ const ServiceReviewPage: React.FC = () => {
           value={newReview}
           onChange={(e) => setNewReview(e.target.value)}
         ></textarea>
-
-        <label className="block mb-2 font-medium">Rating:</label>
-        <select
-          className="w-full border p-2 rounded-lg mb-4"
-          value={newRating}
-          onChange={(e) => setNewRating(Number(e.target.value))}
-        >
-          <option value={1}>⭐</option>
-          <option value={2}>⭐⭐</option>
-          <option value={3}>⭐⭐⭐</option>
-          <option value={4}>⭐⭐⭐⭐</option>
-          <option value={5}>⭐⭐⭐⭐⭐</option>
-        </select>
 
         <button
           onClick={handleAddReview}
