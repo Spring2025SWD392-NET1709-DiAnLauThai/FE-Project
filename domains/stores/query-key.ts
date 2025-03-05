@@ -6,4 +6,12 @@ export const QueryKey = {
   UPDATE_USER: "update-user",
   USER_PROFILE: "user-profile",
   UPDATE_USER_PROFILE: "update-user-profile",
+
+
+  TSHIRT: {
+    LIST: "list-tshirt",
+    CREATE: "create-tshirt",
+    UPDATE: "update-tshirt",
+    DELETE: "delete",
+  }
 };
