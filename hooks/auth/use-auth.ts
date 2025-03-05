@@ -1,6 +1,6 @@
 "use-client";
 import { AuthServices } from "@/domains/services/auth.services";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { LoginPayload, RegisterPayload } from "@/domains/models/auth.model";
 
 import { useRouter } from "next/navigation";
@@ -63,5 +63,72 @@ export const useAuth = () => {
     },
   });
 
-  return { loginMutation, registerMutation };
+  const useGoogleLogin = () => {
+    return useQuery({
+      queryKey: [QueryKey.GOOGLE_LOGIN],
+      queryFn: async () => {
+        try {
+          const data = await AuthServices.googleLogin();
+          if (data.code === 200 && data.data) {
+            // Redirect to Google's auth page
+            window.location.href = data.data;
+          } else {
+            toast({
+              title: "Google Login Failed",
+              description: "Failed to get Google authentication URL",
+              variant: "destructive",
+            });
+          }
+          return data;
+        } catch (error: any) {
+          toast({
+            title: "Google Login Failed",
+            description: error.message || "Failed to initiate Google login",
+            variant: "destructive",
+          });
+          throw error;
+        }
+      },
+      enabled: false,
+    });
+  };
+
+  const useGoogleCallback = (code: string) => {
+    return useQuery({
+      queryKey: [QueryKey.GOOGLE_CALLBACK, code],
+      queryFn: async() => {
+        if (!code) {
+          throw new Error("Authorization code is missing");
+        }
+        try {
+          const response = await AuthServices.googleCallback(code);
+            toast({
+              title: "Login success",
+              description: "Welcome back",
+            });
+    
+            login(response.data.accessToken, response.data.refreshToken);
+    
+            const decoded: TokenResponse = jwtDecode(response.data.accessToken);
+            if (decoded.role === "ADMIN") {
+              push("/dashboard");
+            } else {
+              push("/t-shirt");
+            }
+        } catch (error: any) {
+          toast({
+            title: "Google Login Failed",
+            description: error.message || "Failed to authenticate with Google",
+            variant: "destructive",
+          });
+          push("/login");
+          throw error;
+          
+        }
+      },
+      enabled: !!code, // Only run when code is available
+    });
+  };
+
+  return { loginMutation, registerMutation, useGoogleLogin, useGoogleCallback };
 };

@@ -19,10 +19,12 @@ import {
 import { Separator } from "../ui/separator";
 import { Switch } from "../ui/switch";
 import { ForgotPasswordDialog } from "./forget-password";
+import { useGoogleAuth } from "@/hooks/auth/use-google-auth";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const { openDialog } = useDialogStore();
+  const { signInWithGoogle, isLoading: isGoogleLoading } = useGoogleAuth();
 
   const { form, onSubmit, isLoading } = useAuthForm({ type: "login" });
   return (
@@ -132,15 +134,24 @@ export function LoginForm() {
           <p>Or</p>
           <Separator className="text-muted-foreground w-1/2" />
         </div>
-        <Button className="w-full">
-          <Image
-            className="dark:invert"
-            src="/google.svg"
-            alt="Google logo"
-            width={20}
-            height={20}
-          />
-          Or Sign in with Google
+        <Button
+          className="w-full"
+          variant="outline"
+          onClick={signInWithGoogle}
+          disabled={isGoogleLoading}
+        >
+          {isGoogleLoading ? (
+            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+          ) : (
+            <Image
+              className="mr-2 dark:invert"
+              src="/google.svg"
+              alt="Google logo"
+              width={20}
+              height={20}
+            />
+          )}
+          {isGoogleLoading ? "Loading..." : "Sign in with Google"}
         </Button>
         <div className="text-center text-sm">
           {"Don't have an account? "}
