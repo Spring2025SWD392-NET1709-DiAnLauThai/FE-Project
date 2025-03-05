@@ -6,14 +6,6 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Input } from "../ui/input";
-import { useAuthStore } from "@/domains/stores/use-auth-store";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import Profile from "./profile";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export function Header() {
   const router = useRouter();
@@ -21,7 +13,7 @@ export function Header() {
 
   return (
     <header className=" w-full ">
-      <div className="container flex items-center justify-between h-16 px-4">
+      <div className=" flex items-center justify-between h-16 px-4">
         <div className="gap-4 flex items-center">
           {pathname !== "/t-shirt" && pathname !== "/" && (
             <ArrowLeft onClick={() => router.back()} />
@@ -50,11 +42,11 @@ export function Header() {
 
         <div className="flex items-center space-x-4">
           <div className="flex items-center">
-            <Input
+            {/* <Input
               className="border-none placeholder-foreground "
               placeholder="Looking for something?"
               rightIcon={<Search className="w-4 h-4 ml-2" />}
-            />
+            /> */}
             {/* <span className="text-sm">Looking for something?</span> */}
           </div>
           <Button variant="default" onClick={() => router.push("/login")}>

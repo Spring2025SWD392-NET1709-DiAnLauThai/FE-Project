@@ -8,7 +8,7 @@
 }
 
 .product-swiper .swiper-slide {
-  width: 280px !important;
+  width: 12rem !important;
   flex-shrink: 0;
 }
 
@@ -55,4 +55,3 @@
     display: none;
   }
 }
-

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuthStore } from "@/domains/stores/use-auth-store";
 import { UserResponse } from "@/domains/models/user";
+import { Role } from "@/domains/enums";
 
 interface MenuItem {
   label: string;
@@ -10,6 +11,7 @@ interface MenuItem {
   href: string;
   icon?: React.ReactNode;
   external?: boolean;
+  role: string[];
 }
 
 interface Profile01Props {
@@ -17,18 +19,20 @@ interface Profile01Props {
 }
 
 export default function Profile({ user }: Profile01Props) {
-  const { logout } = useAuthStore();
+  const { logout, role } = useAuthStore();
   const menuItems: MenuItem[] = [
     {
-      label: "Account Settings",
+      label: "Profile Settings",
       href: "user-profile",
       icon: <Settings className="w-4 h-4" />,
+      role: [Role.ADMIN, Role.CUSTOMER, Role.DESIGNER, Role.MANAGER],
     },
     {
       label: "Terms & Policies",
       href: "#",
       icon: <FileText className="w-4 h-4" />,
       external: true,
+      role: [Role.CUSTOMER],
     },
   ];
 
@@ -64,31 +68,32 @@ export default function Profile({ user }: Profile01Props) {
           </div>
           <div className="h-px bg-zinc-200 dark:bg-zinc-800 my-6" />
           <div className="space-y-2">
-            {menuItems.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="flex items-center justify-between p-2 
+            {menuItems
+              .filter((item) => item.role.includes(role as Role))
+              .map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="flex items-center justify-between p-2 
                                     hover:bg-zinc-50 dark:hover:bg-zinc-800/50 
                                     rounded-lg transition-colors duration-200"
-              >
-                <div className="flex items-center gap-2">
-                  {item.icon}
-                  <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                    {item.label}
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  {item.value && (
-                    <span className="text-sm text-zinc-500 dark:text-zinc-400 mr-2">
-                      {item.value}
+                >
+                  <div className="flex items-center gap-2">
+                    {item.icon}
+                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                      {item.label}
                     </span>
-                  )}
-                  {item.external && <MoveUpRight className="w-4 h-4" />}
-                </div>
-              </Link>
-            ))}
-
+                  </div>
+                  <div className="flex items-center">
+                    {item.value && (
+                      <span className="text-sm text-zinc-500 dark:text-zinc-400 mr-2">
+                        {item.value}
+                      </span>
+                    )}
+                    {item.external && <MoveUpRight className="w-4 h-4" />}
+                  </div>
+                </Link>
+              ))}
             <button
               type="button"
               onClick={() => logout()}

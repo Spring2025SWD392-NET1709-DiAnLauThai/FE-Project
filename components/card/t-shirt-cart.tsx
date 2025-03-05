@@ -1,14 +1,7 @@
 "use client";
 
 import Image, { StaticImageData } from "next/image";
-import {
-  Heart,
-  Star,
-  Ruler,
-  Palette,
-  Printer,
-  SquareArrowUpRight,
-} from "lucide-react";
+import { Heart, Star, SquareArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
@@ -31,10 +24,6 @@ export default function TShirtCart({
   id,
   title,
   brand,
-  price,
-  sizes,
-  colors,
-  printProviders,
   rating,
   reviews,
   imageUrl,

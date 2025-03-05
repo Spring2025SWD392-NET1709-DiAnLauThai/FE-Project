@@ -66,21 +66,30 @@ const products = [
     reviews: "1k",
     image: Female,
   },
+  {
+    id: 6,
+    name: "Smart T-Shirt",
+    price: "40$",
+    quality: "Best quality",
+    rating: 5,
+    reviews: "1k",
+    image: Female,
+  },
 ];
 
 export default function TShirtSlider() {
   const router = useRouter();
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full overflow-hidden bg-blue-200">
       <Swiper
         modules={[Navigation]}
         navigation={true}
         spaceBetween={24}
         slidesPerView="auto"
-        className="product-swiper !overflow-visible"
+        className="product-swiper !overflow-visible  bg-orange-300"
       >
         {products.map((product) => (
-          <SwiperSlide key={product.id} className="!w-[280px]">
+          <SwiperSlide key={product.id} className="!w-[280px] ">
             <div
               className="group cursor-pointer"
               onClick={() => router.push(`/t-shirt/${product.id}`)}

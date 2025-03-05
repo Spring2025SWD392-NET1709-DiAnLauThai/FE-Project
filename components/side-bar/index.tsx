@@ -1,22 +1,15 @@
 "use client";
 
 import {
-  BarChart2,
-  Receipt,
-  Building2,
-  CreditCard,
-  Folder,
   Wallet,
   Users2,
-  Shield,
-  MessagesSquare,
-  Video,
   Settings,
   HelpCircle,
   Menu,
   LucideIcon,
   Shirt,
   Archive,
+  ClipboardList,
 } from "lucide-react";
 
 interface NavItem {
@@ -31,91 +24,6 @@ interface NavSection {
   items: NavItem[];
 }
 
-const navSections: NavSection[] = [
-  {
-    title: "Overview",
-    items: [
-      {
-        href: "/dashboard",
-        icon: Home,
-        label: "Dashboard",
-        roles: [Role.ADMIN, Role.MANAGER],
-      },
-      {
-        href: "/dashboard/tasks",
-        icon: Folder,
-        label: "Tasks Manage",
-        roles: [Role.ADMIN, Role.DESIGNER],
-      },
-      {
-        href: "/dashboard/users",
-        icon: Users2,
-        label: "User Account",
-        roles: [Role.ADMIN],
-      },
-      {
-        href: "/t-shirt",
-        icon: Shirt,
-        label: "T-Shirt",
-        roles: [Role.CUSTOMER],
-      },
-      {
-        href: "/my-order",
-        icon: Archive,
-        label: "My Order",
-        roles: [Role.CUSTOMER],
-      },
-    ],
-  },
-  {
-    title: "Finance",
-    items: [
-      {
-        href: "#",
-        icon: Wallet,
-        label: "Transactions",
-        roles: [Role.ADMIN, Role.MANAGER, Role.CUSTOMER],
-      },
-      {
-        href: "#",
-        icon: Receipt,
-        label: "Invoices",
-        roles: [Role.ADMIN, Role.MANAGER],
-      },
-      {
-        href: "#",
-        icon: CreditCard,
-        label: "Payments",
-        roles: [Role.ADMIN, Role.MANAGER],
-      },
-    ],
-  },
-  {
-    title: "Team",
-    items: [
-      {
-        href: "#",
-        icon: Users2,
-        label: "Members",
-        roles: [Role.ADMIN, Role.MANAGER],
-      },
-      { href: "#", icon: Shield, label: "Permissions", roles: [Role.ADMIN] },
-      {
-        href: "#",
-        icon: MessagesSquare,
-        label: "Chat",
-        roles: [Role.ADMIN, Role.MANAGER, Role.DESIGNER],
-      },
-      {
-        href: "#",
-        icon: Video,
-        label: "Meetings",
-        roles: [Role.ADMIN, Role.MANAGER, Role.DESIGNER],
-      },
-    ],
-  },
-];
-
 import { Home } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -126,6 +34,69 @@ import { Role } from "@/domains/enums";
 export default function Sidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { role } = useAuthStore();
+
+  const navSections: NavSection[] = [
+    {
+      title: "Overview",
+      items: [
+        {
+          href: "/dashboard",
+          icon: Home,
+          label: "Dashboard",
+          roles: [Role.ADMIN, Role.MANAGER],
+        },
+        {
+          href: "/dashboard/users",
+          icon: Users2,
+          label: "User Account",
+          roles: [Role.ADMIN],
+        },
+        {
+          href: "/t-shirt",
+          icon: Shirt,
+          label: "T-Shirt",
+          roles: [Role.CUSTOMER],
+        },
+        {
+          href: "/my-order",
+          icon: Archive,
+          label: "My Order",
+          roles: [Role.CUSTOMER],
+        },
+      ],
+    },
+    {
+      title: "Finance",
+      items: [
+        {
+          href:
+            role !== Role.CUSTOMER
+              ? "/dashboard/transactions"
+              : "/transactions",
+          icon: Wallet,
+          label: "Transactions",
+          roles: [Role.ADMIN, Role.MANAGER, Role.CUSTOMER],
+        },
+      ],
+    },
+    {
+      title: "Workplace",
+      items: [
+        {
+          href: "/dashboard/tasks",
+          icon: ClipboardList,
+          label: "Task List",
+          roles: [Role.ADMIN, Role.DESIGNER],
+        },
+        {
+          href: "/dashboard/order-list",
+          icon: Archive,
+          label: "Order List",
+          roles: [Role.ADMIN, Role.MANAGER, Role.DESIGNER],
+        },
+      ],
+    },
+  ];
 
   function handleNavigation() {
     setIsMobileMenuOpen(false);
@@ -154,7 +125,9 @@ export default function Sidebar() {
 
   function renderNavItems() {
     return navSections.map(({ title, items }) => {
-      const filteredItems = items.filter((item) => item.roles.includes(role));
+      const filteredItems = items.filter((item) =>
+        item.roles.includes(role as Role)
+      );
       if (filteredItems.length === 0) return null;
       return (
         <div key={title}>
@@ -218,61 +191,6 @@ export default function Sidebar() {
           </Link>
 
           <div className="flex-1 overflow-y-auto py-4 px-4">
-            {/* <div className="space-y-6">
-              <div>
-                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Overview
-                </div>
-                <div className="space-y-1">
-                  <NavItem href="/dashboard" icon={Home}>
-                    Dashboard
-                  </NavItem>
-                  <NavItem href="/dashboard/tasks" icon={Folder}>
-                    Tasks Manage
-                  </NavItem>
-                  <NavItem href="/dashboard/users" icon={Users2}>
-                    User Account
-                  </NavItem>
-                </div>
-              </div>
-
-              <div>
-                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Finance
-                </div>
-                <div className="space-y-1">
-                  <NavItem href="#" icon={Wallet}>
-                    Transactions
-                  </NavItem>
-                  <NavItem href="#" icon={Receipt}>
-                    Invoices
-                  </NavItem>
-                  <NavItem href="#" icon={CreditCard}>
-                    Payments
-                  </NavItem>
-                </div>
-              </div>
-
-              <div>
-                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Team
-                </div>
-                <div className="space-y-1">
-                  <NavItem href="#" icon={Users2}>
-                    Members
-                  </NavItem>
-                  <NavItem href="#" icon={Shield}>
-                    Permissions
-                  </NavItem>
-                  <NavItem href="#" icon={MessagesSquare}>
-                    Chat
-                  </NavItem>
-                  <NavItem href="#" icon={Video}>
-                    Meetings
-                  </NavItem>
-                </div>
-              </div>
-            </div> */}
             <div className="space-y-6">{renderNavItems()}</div>
           </div>
 

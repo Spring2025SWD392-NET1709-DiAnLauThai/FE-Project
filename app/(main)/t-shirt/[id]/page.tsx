@@ -36,7 +36,7 @@ const TShirt = {
 
 export default function TShirtDetailPage() {
   return (
-    <div className="container mx-auto py-8 space-y-8">
+    <div className="mx-auto py-8 space-y-8">
       <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <TShirtImageGallery
           images={TShirt.images}
@@ -70,14 +70,12 @@ export default function TShirtDetailPage() {
         </div>
       </section>
 
-      <section>
+      {/* <section className="bg-rose-300">
         <h1 className="text-3xl font-semibold text-muted-foreground">
           Recommend for you
         </h1>
-        <div className="px-4">
-          <TShirtSlider />
-        </div>
-      </section>
+        <TShirtSlider />
+      </section> */}
     </div>
   );
 }
