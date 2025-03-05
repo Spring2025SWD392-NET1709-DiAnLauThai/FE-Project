@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Comment from "@/components/service-review/comment";
-import initialReviewsData from "@/components/service-review/comment-data";
+import Comment from "@/components/desig-review/comment";
+import initialReviewsData from "@/components/desig-review/comment-data";
 
 interface Review {
   id: number;
@@ -11,7 +11,7 @@ interface Review {
   rating: number;
 }
 
-const ServiceReviewPage: React.FC = () => {
+const DesignReviewPage: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>(
     initialReviewsData.map((review, index) => ({ id: index + 1, ...review }))
   );
@@ -34,7 +34,7 @@ const ServiceReviewPage: React.FC = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-2xl font-bold mb-4">Service Reviews</h2>
+      <h2 className="text-2xl font-bold mb-4">Design Reviews</h2>
 
       <div className="space-y-4">
         {reviews.map((review) => (
@@ -67,7 +67,7 @@ const ServiceReviewPage: React.FC = () => {
 
         <button
           onClick={handleAddReview}
-          className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+          className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
         >
           Submit Review
         </button>
@@ -76,4 +76,4 @@ const ServiceReviewPage: React.FC = () => {
   );
 };
 
-export default ServiceReviewPage;
+export default DesignReviewPage;
