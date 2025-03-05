@@ -43,6 +43,36 @@ const OrderForm = () => {
               />
             </FieldLayout>
           </div>
+          <div className="flex flex-row gap-4 ">
+            <FieldLayout label="Content">
+              <TipTapEditor />
+            </FieldLayout>
+            <FieldLayout label="Cover Image">
+              <FileImporter
+                onFileContent={(content) => console.log("content", content)}
+              />
+            </FieldLayout>
+          </div>
+          <div className="flex flex-row gap-4 ">
+            <FieldLayout label="Content">
+              <TipTapEditor />
+            </FieldLayout>
+            <FieldLayout label="Cover Image">
+              <FileImporter
+                onFileContent={(content) => console.log("content", content)}
+              />
+            </FieldLayout>
+          </div>
+          <div className="flex flex-row gap-4 ">
+            <FieldLayout label="Content">
+              <TipTapEditor />
+            </FieldLayout>
+            <FieldLayout label="Cover Image">
+              <FileImporter
+                onFileContent={(content) => console.log("content", content)}
+              />
+            </FieldLayout>
+          </div>
         </form>
       </CardContent>
       <CardFooter className="flex justify-end space-x-2">

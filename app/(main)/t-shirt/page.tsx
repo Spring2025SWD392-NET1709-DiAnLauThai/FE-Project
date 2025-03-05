@@ -1,13 +1,15 @@
+import ProtectedRoute from "@/components/auth-provider/protected-route";
 import TShirtGrid from "@/components/card/t-shirt-grid";
-import Sidebar from "@/components/layout/home-sidebar";
+import { Role } from "@/domains/enums";
 import React from "react";
 
 const TShirtPage = () => {
   return (
-    <main className="flex gap-20">
-      <Sidebar />
-      <TShirtGrid />
-    </main>
+    <ProtectedRoute allowedRoles={[Role.CUSTOMER]}>
+      <main className="flex gap-20">
+        <TShirtGrid />
+      </main>
+    </ProtectedRoute>
   );
 };
 

@@ -2,10 +2,10 @@
 import { TShirttDetails } from "@/components/t-shirt/t-shirt-detail";
 import { TShirtImageGallery } from "@/components/t-shirt/t-shirt-gallery";
 import { TShirtInfo } from "@/components/t-shirt/t-shirt-info";
-import { TShirtSizeSelector } from "@/components/t-shirt/t-shirt-size-selector";
 import TShirtSlider from "@/components/t-shirt/t-shirt-slider";
-import { TShirtSpecs } from "@/components/t-shirt/t-shirt-specs";
+import { Button } from "@/components/ui/button";
 import Female from "@/public/images/male.png";
+import Link from "next/link";
 
 // This would normally come from a database or API
 const TShirt = {
@@ -62,6 +62,11 @@ export default function TShirtDetailPage() {
             description={TShirt.description}
             features={TShirt.features}
           />
+          <Button>
+            <Link href="/my-order">
+              <span>To do design</span>
+            </Link>
+          </Button>
         </div>
       </section>
 

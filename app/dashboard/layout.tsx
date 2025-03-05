@@ -1,6 +1,5 @@
 import { ThemeProvider } from "@/components/theme-provide";
 import Layout from "@/components/layout/dashboard-layout";
-import { ProtectedRoute } from "@/components/route/protected-route";
 
 export default function RootLayout({
   children,

@@ -17,20 +17,13 @@ declare global {
     sortDir?: "asc" | "desc";
     sortBy?: string;
   }
-  
+
   interface Pagination<T> {
     content: T[];
     totalElements: number;
     pageNumber: number;
     pageSize: number;
     totalPages: number;
-  }
-
-  enum Role {
-    ADMIN = "ADMIN",
-    CUSTOMER = "CUSTOMER",
-    DESIGNER = "DESIGNER",
-    MANAGER = "MANAGER",
   }
 
   interface TokenResponse {

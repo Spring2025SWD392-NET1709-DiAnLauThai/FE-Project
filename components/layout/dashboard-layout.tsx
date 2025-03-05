@@ -5,6 +5,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import Sidebar from "../side-bar";
 import TopNav from "../side-bar/top-nav";
+import { useAuthStore } from "@/domains/stores/use-auth-store";
 
 interface LayoutProps {
   children: ReactNode;
@@ -13,6 +14,10 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
+
+  const { user } = useAuthStore();
+
+  console.log("user", user);
 
   useEffect(() => {
     setMounted(true);

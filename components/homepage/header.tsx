@@ -18,7 +18,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useAuthStore();
 
   return (
     <header className=" w-full ">
@@ -58,34 +57,9 @@ export function Header() {
             />
             {/* <span className="text-sm">Looking for something?</span> */}
           </div>
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger className="focus:outline-none">
-                <Avatar>
-                  {user.image_url ? (
-                    <AvatarImage
-                      src={user.image_url}
-                      alt={user.name || "User avatar"}
-                    />
-                  ) : null}
-                  <AvatarFallback>
-                    {user.name ? user.name.charAt(0).toUpperCase() : "U"}
-                  </AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                sideOffset={8}
-                className="w-[280px] sm:w-80 bg-background border-border rounded-lg shadow-lg"
-              >
-                <Profile user={user} />
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button variant="default" onClick={() => router.push("/login")}>
-              Login / Sign up
-            </Button>
-          )}
+          <Button variant="default" onClick={() => router.push("/login")}>
+            Login / Sign up
+          </Button>
         </div>
       </div>
     </header>

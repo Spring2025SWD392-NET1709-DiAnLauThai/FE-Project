@@ -1,143 +1,3 @@
-// "use client";
-
-// import { useState, useEffect } from "react";
-// import { Task, TaskStatus } from "@/domains/models/tasks";
-// import { useTasks } from "@/hooks/assign-tasks/use-task";
-// import { DataTable } from "@/components/table/Table";
-// import { generateColumns, mockTasks } from "./columns";
-// import { DataTablePagination } from "@/components/table/Pagination";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogHeader,
-//   DialogTitle,
-// } from "@/components/ui/dialog";
-// import { AssignDesignerForm } from "@/components/assign-task/task-assign-design";
-// import { Input } from "@/components/ui/input";
-// import {
-//   TaskTableFilter,
-//   TaskFilterOptions,
-// } from "@/components/table-filter/TaskTableFilter";
-// import { Skeleton } from "@/components/ui/skeleton";
-
-// export default function TasksPage() {
-//   const [page, setPage] = useState(1);
-//   const [size, setSize] = useState(10);
-//   const [filters, setFilters] = useState<TaskFilterOptions>({});
-//   const [searchQuery, setSearchQuery] = useState("");
-//   const [assignModalOpen, setAssignModalOpen] = useState(false);
-//   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-
-//   // Sử dụng dữ liệu giả thay vì gọi API
-//   const {
-//     data: apiData,
-//     isLoading,
-//     error,
-//   } = useTasks({
-//     page,
-//     size,
-//     status: filters.status,
-//   });
-
-//   // Sử dụng dữ liệu giả hoặc API data nếu có
-//   const data = apiData || {
-//     data: mockTasks,
-//     totalItems: mockTasks.length,
-//     totalPages: 1,
-//     currentPage: 1,
-//   };
-
-//   // Reset to first page when filters change
-//   useEffect(() => {
-//     setPage(1);
-//   }, [filters]);
-
-//   const handleFilterChange = (newFilters: TaskFilterOptions) => {
-//     setFilters(newFilters);
-//   };
-
-//   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     setSearchQuery(e.target.value);
-//     // Reset to first page on search change
-//     setPage(1);
-//   };
-
-//   // Filter data based on search query
-//   const filteredData = data.data.filter((task) => {
-//     if (!searchQuery) return true;
-
-//     const searchLower = searchQuery.toLowerCase();
-//     return (
-//       task.subject.toLowerCase().includes(searchLower) ||
-//       task.orderId.toLowerCase().includes(searchLower) ||
-//       task.designerName?.toLowerCase().includes(searchLower) ||
-//       false
-//     );
-//   });
-
-//   // Generate columns with the assign designer capability
-//   const columns = generateColumns({
-//     setAssignModalOpen,
-//     setSelectedTask,
-//   });
-
-//   return (
-//     <div className="container mx-auto py-10">
-//       <h1 className="text-3xl font-bold mb-6">Task Management</h1>
-
-//       <Dialog open={assignModalOpen} onOpenChange={setAssignModalOpen}>
-//         <DialogContent className="sm:max-w-[500px]">
-//           <DialogHeader>
-//             <DialogTitle>Assign Designer to Task</DialogTitle>
-//           </DialogHeader>
-//           {selectedTask && (
-//             <AssignDesignerForm
-//               task={selectedTask}
-//               onSuccess={() => setAssignModalOpen(false)}
-//             />
-//           )}
-//         </DialogContent>
-//       </Dialog>
-
-//       <div className="flex items-center justify-between mb-6">
-//         <div className="flex gap-2">
-//           <Input
-//             placeholder="Search tasks..."
-//             value={searchQuery}
-//             onChange={handleSearchChange}
-//             className="max-w-sm"
-//           />
-//           <TaskTableFilter onFilterChange={handleFilterChange} />
-//         </div>
-//       </div>
-
-//       {isLoading ? (
-//         <div className="space-y-4">
-//           <Skeleton className="h-8 w-full" />
-//           <Skeleton className="h-8 w-full" />
-//           <Skeleton className="h-8 w-full" />
-//           <Skeleton className="h-8 w-full" />
-//           <Skeleton className="h-8 w-full" />
-//         </div>
-//       ) : error ? (
-//         <div className="text-red-500">Failed to load tasks</div>
-//       ) : (
-//         <>
-//           <DataTable columns={columns} data={filteredData || []} />
-
-//           <div className="mt-4">
-//             <DataTablePagination
-//               currentPage={page}
-//               totalPages={data.totalPages || 1}
-//               onPageChange={setPage}
-//             />
-//           </div>
-//         </>
-//       )}
-//     </div>
-//   );
-// }
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -158,6 +18,8 @@ import {
   TaskTableFilter,
   TaskFilterOptions,
 } from "@/components/table-filter/TaskTableFilter";
+import ProtectedRoute from "@/components/auth-provider/protected-route";
+import { Role } from "@/domains/enums";
 
 export default function TasksPage() {
   const [page, setPage] = useState(1);
@@ -233,56 +95,58 @@ export default function TasksPage() {
   });
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">Task Management</h1>
+    <ProtectedRoute allowedRoles={[Role.ADMIN, Role.MANAGER, Role.DESIGNER]}>
+      <div className="container mx-auto py-10">
+        <h1 className="text-3xl font-bold mb-6">Task Management</h1>
 
-      <Dialog open={assignModalOpen} onOpenChange={setAssignModalOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Assign Designer to Task</DialogTitle>
-          </DialogHeader>
-          {selectedTask && (
-            <AssignDesignerForm
-              task={selectedTask}
-              onSuccess={() => setAssignModalOpen(false)}
+        <Dialog open={assignModalOpen} onOpenChange={setAssignModalOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Assign Designer to Task</DialogTitle>
+            </DialogHeader>
+            {selectedTask && (
+              <AssignDesignerForm
+                task={selectedTask}
+                onSuccess={() => setAssignModalOpen(false)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Search tasks..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="max-w-sm"
             />
-          )}
-        </DialogContent>
-      </Dialog>
-
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex gap-2">
-          <Input
-            placeholder="Search tasks..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="max-w-sm"
-          />
-          <TaskTableFilter onFilterChange={handleFilterChange} />
-        </div>
-      </div>
-
-      {isLoading ? (
-        <div className="space-y-4">
-          <div className="h-8 w-full bg-gray-200 animate-pulse rounded"></div>
-          <div className="h-8 w-full bg-gray-200 animate-pulse rounded"></div>
-          <div className="h-8 w-full bg-gray-200 animate-pulse rounded"></div>
-          <div className="h-8 w-full bg-gray-200 animate-pulse rounded"></div>
-          <div className="h-8 w-full bg-gray-200 animate-pulse rounded"></div>
-        </div>
-      ) : (
-        <>
-          <DataTable columns={columns} data={paginatedData} />
-
-          <div className="mt-4">
-            <DataTablePagination
-              currentPage={page}
-              totalPages={totalFilteredPages || 1}
-              onPageChange={setPage}
-            />
+            <TaskTableFilter onFilterChange={handleFilterChange} />
           </div>
-        </>
-      )}
-    </div>
+        </div>
+
+        {isLoading ? (
+          <div className="space-y-4">
+            <div className="h-8 w-full bg-gray-200 animate-pulse rounded"></div>
+            <div className="h-8 w-full bg-gray-200 animate-pulse rounded"></div>
+            <div className="h-8 w-full bg-gray-200 animate-pulse rounded"></div>
+            <div className="h-8 w-full bg-gray-200 animate-pulse rounded"></div>
+            <div className="h-8 w-full bg-gray-200 animate-pulse rounded"></div>
+          </div>
+        ) : (
+          <>
+            <DataTable columns={columns} data={paginatedData} />
+
+            <div className="mt-4">
+              <DataTablePagination
+                currentPage={page}
+                totalPages={totalFilteredPages || 1}
+                onPageChange={setPage}
+              />
+            </div>
+          </>
+        )}
+      </div>
+    </ProtectedRoute>
   );
 }

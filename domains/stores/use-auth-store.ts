@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { userService } from "../services/user";
 import { UserResponse } from "../models/user";
+import { Role } from "../enums";
 
 interface AuthState {
   accessToken: string | null;
@@ -23,15 +24,15 @@ export const useAuthStore = create<AuthState>()(
       login: async (accessToken, refreshToken) => {
         try {
           const decoded: TokenResponse = jwtDecode(accessToken);
+
+          const response = await userService.get.detail(decoded.sub);
+
           set({
             accessToken,
             refreshToken,
             role: decoded.role as Role,
+            user: response.data,
           });
-
-          const response = await userService.get.detail(decoded.sub);
-
-          set({ user: response.data });
         } catch (error) {
           console.error("Invalid token", error);
         }

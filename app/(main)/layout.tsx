@@ -1,5 +1,7 @@
 "use client";
-import { Header } from "@/components/homepage/header";
+import React from "react";
+import Layout from "@/components/layout/dashboard-layout";
+import { useAuthStore } from "@/domains/stores/use-auth-store";
 import { usePathname } from "next/navigation";
 
 export default function MainLayout({
@@ -7,12 +9,16 @@ export default function MainLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const path = usePathname();
+  const { user } = useAuthStore();
+  const pathname = usePathname();
 
   return (
     <div>
-      {path !== "/" && <Header />}
-      <main className="container mx-auto p-4">{children}</main>
+      {user && pathname !== "/" ? (
+        <Layout>{children}</Layout>
+      ) : (
+        <div>{children}</div>
+      )}
     </div>
   );
 }

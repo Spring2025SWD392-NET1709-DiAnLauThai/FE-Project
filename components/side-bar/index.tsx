@@ -14,15 +14,118 @@ import {
   Settings,
   HelpCircle,
   Menu,
+  LucideIcon,
+  Shirt,
+  Archive,
 } from "lucide-react";
+
+interface NavItem {
+  href: string;
+  icon: LucideIcon;
+  label: string;
+  roles: string[];
+}
+
+interface NavSection {
+  title: string;
+  items: NavItem[];
+}
+
+const navSections: NavSection[] = [
+  {
+    title: "Overview",
+    items: [
+      {
+        href: "/dashboard",
+        icon: Home,
+        label: "Dashboard",
+        roles: [Role.ADMIN, Role.MANAGER],
+      },
+      {
+        href: "/dashboard/tasks",
+        icon: Folder,
+        label: "Tasks Manage",
+        roles: [Role.ADMIN, Role.DESIGNER],
+      },
+      {
+        href: "/dashboard/users",
+        icon: Users2,
+        label: "User Account",
+        roles: [Role.ADMIN],
+      },
+      {
+        href: "/t-shirt",
+        icon: Shirt,
+        label: "T-Shirt",
+        roles: [Role.CUSTOMER],
+      },
+      {
+        href: "/my-order",
+        icon: Archive,
+        label: "My Order",
+        roles: [Role.CUSTOMER],
+      },
+    ],
+  },
+  {
+    title: "Finance",
+    items: [
+      {
+        href: "#",
+        icon: Wallet,
+        label: "Transactions",
+        roles: [Role.ADMIN, Role.MANAGER, Role.CUSTOMER],
+      },
+      {
+        href: "#",
+        icon: Receipt,
+        label: "Invoices",
+        roles: [Role.ADMIN, Role.MANAGER],
+      },
+      {
+        href: "#",
+        icon: CreditCard,
+        label: "Payments",
+        roles: [Role.ADMIN, Role.MANAGER],
+      },
+    ],
+  },
+  {
+    title: "Team",
+    items: [
+      {
+        href: "#",
+        icon: Users2,
+        label: "Members",
+        roles: [Role.ADMIN, Role.MANAGER],
+      },
+      { href: "#", icon: Shield, label: "Permissions", roles: [Role.ADMIN] },
+      {
+        href: "#",
+        icon: MessagesSquare,
+        label: "Chat",
+        roles: [Role.ADMIN, Role.MANAGER, Role.DESIGNER],
+      },
+      {
+        href: "#",
+        icon: Video,
+        label: "Meetings",
+        roles: [Role.ADMIN, Role.MANAGER, Role.DESIGNER],
+      },
+    ],
+  },
+];
 
 import { Home } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
+import { useAuthStore } from "@/domains/stores/use-auth-store";
+import { Role } from "@/domains/enums";
 
 export default function Sidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { role } = useAuthStore();
 
   function handleNavigation() {
     setIsMobileMenuOpen(false);
@@ -34,7 +137,7 @@ export default function Sidebar() {
     children,
   }: {
     href: string;
-    icon: any;
+    icon: LucideIcon;
     children: React.ReactNode;
   }) {
     return (
@@ -47,6 +150,27 @@ export default function Sidebar() {
         {children}
       </Link>
     );
+  }
+
+  function renderNavItems() {
+    return navSections.map(({ title, items }) => {
+      const filteredItems = items.filter((item) => item.roles.includes(role));
+      if (filteredItems.length === 0) return null;
+      return (
+        <div key={title}>
+          <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            {title}
+          </div>
+          <div className="space-y-1">
+            {filteredItems.map(({ href, icon, label }) => (
+              <NavItem key={href} href={href} icon={icon}>
+                {label}
+              </NavItem>
+            ))}
+          </div>
+        </div>
+      );
+    });
   }
 
   return (
@@ -94,7 +218,7 @@ export default function Sidebar() {
           </Link>
 
           <div className="flex-1 overflow-y-auto py-4 px-4">
-            <div className="space-y-6">
+            {/* <div className="space-y-6">
               <div>
                 <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   Overview
@@ -102,12 +226,6 @@ export default function Sidebar() {
                 <div className="space-y-1">
                   <NavItem href="/dashboard" icon={Home}>
                     Dashboard
-                  </NavItem>
-                  <NavItem href="#" icon={BarChart2}>
-                    Analytics
-                  </NavItem>
-                  <NavItem href="#" icon={Building2}>
-                    Organization
                   </NavItem>
                   <NavItem href="/dashboard/tasks" icon={Folder}>
                     Tasks Manage
@@ -154,7 +272,8 @@ export default function Sidebar() {
                   </NavItem>
                 </div>
               </div>
-            </div>
+            </div> */}
+            <div className="space-y-6">{renderNavItems()}</div>
           </div>
 
           <div className="px-4 py-4 border-t border-gray-200 dark:border-[#1F1F23]">

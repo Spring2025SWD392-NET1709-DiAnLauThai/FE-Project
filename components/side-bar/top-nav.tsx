@@ -12,17 +12,21 @@ import { ThemeToggle } from "../theme-provide/theme-toggle";
 import { useAuthStore } from "@/domains/stores/use-auth-store";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import Profile from "../homepage/profile";
+import { Role } from "@/domains/enums";
 
 // import Profile01 from "../profile";
 
 export default function TopNav() {
-  const { user } = useAuthStore();
+  const { user, role } = useAuthStore();
   const pathname = usePathname();
   // Tách đường dẫn thành các segment, bỏ các chuỗi rỗng
   const segments = pathname.split("/").filter((seg) => seg.length > 0);
 
   // Breadcrumb tĩnh đầu tiên là "T&D"
-  const staticBreadcrumb = { label: "T&D", href: "/" };
+  const staticBreadcrumb = {
+    label: "T&D",
+    href: role === Role.CUSTOMER ? "/t-shirt" : "/dashboard",
+  };
 
   // Tạo breadcrumb động dựa theo URL (nếu có)
   const dynamicBreadcrumbs = segments.map((segment, index) => {

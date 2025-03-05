@@ -12,7 +12,7 @@ import { jwtDecode } from "jwt-decode";
 export const useAuth = () => {
   const { toast } = useToast();
   const { login } = useAuthStore();
-  const { push } = useRouter();
+  const { replace, push } = useRouter();
 
   const loginMutation = useMutation({
     mutationKey: [QueryKey.LOGIN],
@@ -51,7 +51,7 @@ export const useAuth = () => {
         description: "Welcome to T&D",
       });
 
-      push("/login");
+      replace("/login");
 
       console.log("Register success", data);
     },

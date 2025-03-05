@@ -1,22 +1,27 @@
 "use client";
 
 import { useAuthStore } from "@/domains/stores/use-auth-store";
-import { useRouter } from "next/navigation";
 import { useEffect, ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { Role } from "@/domains/enums";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const { accessToken } = useAuthStore();
+  const { user, role } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    if (!accessToken) {
-      router.push("/");
+    if (!user) {
+      router.replace("/");
+    } else if (user && role === Role.CUSTOMER) {
+      router.replace("/t-shirt");
+    } else if (user && role !== Role.CUSTOMER) {
+      router.replace("/dashboard");
     }
-  }, [accessToken, router]);
+  }, [role, user, router]);
 
   return <>{children}</>;
 };

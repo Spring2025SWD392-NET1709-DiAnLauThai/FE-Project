@@ -11,6 +11,8 @@ import {
   FilterOptions,
 } from "@/components/table-filter/UserTableFilter";
 import { UserResponse, UserRole, UserStatus } from "@/domains/models/user";
+import ProtectedRoute from "@/components/auth-provider/protected-route";
+import { Role } from "@/domains/enums";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -62,53 +64,55 @@ export default function UserPage() {
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="flex justify-between mb-4">
-        <h1 className="text-2xl font-bold">Users</h1>
-        <CreateUserDialog />
-      </div>
+    <ProtectedRoute allowedRoles={[Role.ADMIN, Role.MANAGER]}>
+      <div className="container mx-auto py-10">
+        <div className="flex justify-between mb-4">
+          <h1 className="text-2xl font-bold">Users</h1>
+          <CreateUserDialog />
+        </div>
 
-      <TableFilter
-        onFilterChange={handleFilterChange}
-        filters={{
-          keyword: {
-            label: "Search",
-            type: "text",
-            placeholder: "Search users...",
-          },
-          role: {
-            label: "Role",
-            type: "select",
-            options: roleOptions,
-            placeholder: "Select role",
-          },
-          status: {
-            label: "Status",
-            type: "select",
-            options: statusOptions,
-            placeholder: "Select status",
-          },
-          dateFrom: {
-            label: "From Date",
-            type: "date",
-          },
-          dateTo: {
-            label: "To Date",
-            type: "date",
-          },
-        }}
-      />
-
-      <DataTable columns={columns} data={users} isLoading={isLoading} />
-
-      <div className="mt-4">
-        <DataTablePagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          totalItems={totalElements}
+        <TableFilter
+          onFilterChange={handleFilterChange}
+          filters={{
+            keyword: {
+              label: "Search",
+              type: "text",
+              placeholder: "Search users...",
+            },
+            role: {
+              label: "Role",
+              type: "select",
+              options: roleOptions,
+              placeholder: "Select role",
+            },
+            status: {
+              label: "Status",
+              type: "select",
+              options: statusOptions,
+              placeholder: "Select status",
+            },
+            dateFrom: {
+              label: "From Date",
+              type: "date",
+            },
+            dateTo: {
+              label: "To Date",
+              type: "date",
+            },
+          }}
         />
+
+        <DataTable columns={columns} data={users} isLoading={isLoading} />
+
+        <div className="mt-4">
+          <DataTablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            totalItems={totalElements}
+          />
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }
