@@ -7,7 +7,7 @@ import BackImg from "@/public/images/your-background.jpg";
 import { Header } from "@/components/homepage/header";
 
 // Import động để tối ưu hiệu suất
-const DesignReviewPage = dynamic(() => import("@/components/design-review"));
+const DesignReviewPage = dynamic(() => import("@/components/designs-review"));
 const ServiceReviewPage = dynamic(() => import("@/components/service-review"));
 
 const ReviewPage: React.FC = () => {

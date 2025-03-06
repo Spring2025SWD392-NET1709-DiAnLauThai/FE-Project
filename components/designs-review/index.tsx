@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Comment from "@/components/design-review/comment";
-import initialReviewsData from "@/components/design-review/comment-data";
+import Comment from "@/components/designs-review/comment";
+import initialReviewsData from "@/components/designs-review/comment-data";
 
 interface Review {
   id: number;
