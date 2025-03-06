@@ -1,15 +1,36 @@
-import { BookingParams, BookingPayload } from "@/domains/models/booking";
+import {
+  BookingParams,
+  BookingPayload,
+  BookingResponse,
+} from "@/domains/models/booking";
 import { BookingService } from "@/domains/services/booking";
 import { QueryKey } from "@/domains/stores/query-key";
-import { QueryClient, useMutation } from "@tanstack/react-query";
-import { redirect } from "next/navigation";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "../use-toast";
 
 interface BookingQuery {
   params: BookingParams;
 }
 
-export const useBookingsQuery = ({}: BookingQuery) => {};
+export const useBookingsQuery = ({ params }: BookingQuery) => {
+  const bookingQuery = useQuery({
+    queryKey: [QueryKey.BOOKING.LIST, params ? params : {}],
+    queryFn: async () => await BookingService.get.list(params),
+    initialData: {
+      data: {
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        pageNumber: 0,
+        pageSize: 0,
+      },
+      message: "",
+      code: 0,
+    } as RootResponse<Pagination<BookingResponse>>,
+  });
+
+  return { bookingQuery };
+};
 
 export const useBookingDetailQuery = () => {};
 

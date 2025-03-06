@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { MoreHorizontal } from "lucide-react";
+import { ClipboardList, ClipboardX, MoreHorizontal } from "lucide-react";
 
 interface BookingMenuActionProps {
   booking: BookingResponse;
@@ -30,10 +30,15 @@ const BookingMenuAction: React.FC<BookingMenuActionProps> = ({ booking }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem>Copy payment ID</DropdownMenuItem>
+        <DropdownMenuItem>
+          <ClipboardList />
+          <span>View Detail</span>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>View customer</DropdownMenuItem>
-        <DropdownMenuItem>View payment details</DropdownMenuItem>
+        <DropdownMenuItem>
+          <ClipboardX />
+          <span>Cancel</span>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

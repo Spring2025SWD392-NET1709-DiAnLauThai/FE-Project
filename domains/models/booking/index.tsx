@@ -1,6 +1,16 @@
-export interface BookingParams {}
+export interface BookingParams {
+  page?: number;
+  size?: number;
+}
 export interface BookingResponse {
   id: string;
+  totalPrice: number;
+  totalQuantity: number;
+  status: string;
+  startDate: Date;
+  endDate: Date;
+  code: string;
+  title: string;
 }
 
 export interface BookingPayload {
