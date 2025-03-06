@@ -40,7 +40,7 @@ const PaginationTable = <T,>({ value }: IPaginationTable<T>) => {
             <SelectGroup>
               <SelectLabel>Page</SelectLabel>
               {Array.from(
-                { length: Math.ceil(value.totalItems / value.pageSize) },
+                { length: Math.ceil(value.totalElements / value.pageSize) },
                 (_, i) => i + 1
               ).map((item) => (
                 <SelectItem value={String(item)} key={item}>
@@ -57,7 +57,7 @@ const PaginationTable = <T,>({ value }: IPaginationTable<T>) => {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Size page</SelectLabel>
-              {["1", "2", "6", "8", "50"].map((item) => (
+              {["10", "20", "30", "40", "50"].map((item) => (
                 <SelectItem value={item} key={item}>
                   {item}
                 </SelectItem>
@@ -67,7 +67,8 @@ const PaginationTable = <T,>({ value }: IPaginationTable<T>) => {
         </Select>
         <div className="border border-slate-200 rounded-lg p-1.5 shadow-sm px-4">
           <span>
-            {value.pageNumber} of {Math.ceil(value.totalItems / value.pageSize)}
+            {value.pageNumber + 1} of{" "}
+            {Math.ceil(value.totalElements / value.pageSize)}
           </span>
         </div>
       </PaginationContent>

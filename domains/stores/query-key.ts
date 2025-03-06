@@ -7,11 +7,16 @@ export const QueryKey = {
   USER_PROFILE: "user-profile",
   UPDATE_USER_PROFILE: "update-user-profile",
 
-
   TSHIRT: {
     LIST: "list-tshirt",
     CREATE: "create-tshirt",
     UPDATE: "update-tshirt",
     DELETE: "delete",
-  }
+  },
+  BOOKING: {
+    LIST: "list-booking",
+    CREATE: "create-booking",
+    UPDATE: "update-booking",
+    DELETE: "delete-booking",
+  },
 };

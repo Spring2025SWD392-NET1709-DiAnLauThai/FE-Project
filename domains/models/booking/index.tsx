@@ -1,15 +1,49 @@
-export interface BookingParams {}
+export interface BookingParams {
+  page?: number;
+  size?: number;
+}
 export interface BookingResponse {
   id: string;
-}
-export interface BookingRequest {
+  totalPrice: number;
+  totalQuantity: number;
+  status: string;
+  startDate: Date;
+  endDate: Date;
+  code: string;
   title: string;
-  items: BookingDetailRequest[];
 }
 
-export interface BookingDetailRequest {
+export interface BookingPayload {
+  title: string;
+  startdate: Date;
+  enddate: Date;
+  bookingdetails: Bookingdetail[];
+}
+
+export interface Bookingdetail {
   description: string;
-  image: File[];
+  designFile: string;
+  unitprice: number;
 }
 
-export interface BookingDetailResponse {}
+export interface BookingPayloadResponse {
+  bookingId: string;
+  totalPrice: number;
+  totalQuantity: number;
+  accountId: string;
+  code: string;
+  title: string;
+  status: string;
+  startdate: Date;
+  enddate: Date;
+  bookingDetails: BookingDetail[];
+  vnpayurl: string;
+}
+
+interface BookingDetail {
+  bookingDetailId: string;
+  designId: string;
+  designFile: string;
+  description: string;
+  unitPrice: number;
+}
