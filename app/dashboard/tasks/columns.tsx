@@ -232,8 +232,8 @@ export const mockTasks: Task[] = [
     status: TaskStatus.PENDING,
     createdAt: "2024-02-18T08:45:00Z",
     updatedAt: "2024-02-18T08:45:00Z",
-    designerId: "aaaa",
-    designerName: "aaaa",
+    designerId: "",
+    designerName: "",
     footlineImage:
       "https://images.unsplash.com/photo-1622573011056-7d9d3b846fc0?q=80&w=300",
   },
