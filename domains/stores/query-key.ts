@@ -18,5 +18,6 @@ export const QueryKey = {
     CREATE: "create-booking",
     UPDATE: "update-booking",
     DELETE: "delete-booking",
+    DETAIL: "detail-booking",
   },
 };

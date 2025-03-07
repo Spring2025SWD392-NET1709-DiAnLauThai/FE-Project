@@ -2,6 +2,7 @@ import {
   BookingParams,
   BookingPayload,
   BookingResponse,
+  BookingDetailGetParams,
 } from "@/domains/models/booking";
 import { BookingService } from "@/domains/services/booking";
 import { QueryKey } from "@/domains/stores/query-key";
@@ -32,7 +33,13 @@ export const useBookingsQuery = ({ params }: BookingQuery) => {
   return { bookingQuery };
 };
 
-export const useBookingDetailQuery = () => {};
+export const useBookingDetailsQuery = (params: BookingDetailGetParams) => {
+  return useQuery({
+    queryKey: [QueryKey.BOOKING.DETAIL, params],
+    queryFn: () => BookingService.get.getBookingDetails(params),
+    enabled: !!params.bookingId,
+  });
+};
 
 export const useBookingMutation = () => {
   const { toast } = useToast();

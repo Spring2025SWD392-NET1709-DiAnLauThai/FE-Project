@@ -1,9 +1,11 @@
 import axiosInstance from "@/configs/axios.config";
 import {
   BookingParams,
+  BookingDetailGetParams,
   BookingPayload,
   BookingPayloadResponse,
   BookingResponse,
+  BookingDetail,
 } from "@/domains/models/booking";
 
 export const BookingService = {
@@ -12,14 +14,35 @@ export const BookingService = {
       params: BookingParams
     ): Promise<RootResponse<Pagination<BookingResponse>>> => {
       try {
-        const response = await axiosInstance.get("/bookings", { params });
-
+        const response = await axiosInstance.get("/bookings", {
+          params: {
+            page: params.page,
+            size: params.size,
+          },
+        });
         return response.data;
       } catch (error) {
         throw error;
       }
     },
-    detail: async () => {},
+    getBookingDetails: async (
+      params: BookingDetailGetParams
+    ): Promise<RootResponse<Pagination<BookingDetail>>> => {
+      try {
+        const response = await axiosInstance.get(
+          `/bookingsdetails/bookings/${params.bookingId}/details`,
+          {
+            params: {
+              page: params.page,
+              size: params.size,
+            },
+          }
+        );
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
   post: {
     booking: async (
