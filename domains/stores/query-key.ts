@@ -20,4 +20,14 @@ export const QueryKey = {
     DELETE: "delete-booking",
     DETAIL: "detail-booking",
   },
+  TASK: {
+    ASSIGN_DESIGNER: "assign-designer",
+    
+  },
+  DESIGNER: {
+    LIST: "list-designer",
+  },
+  TRANSACTION: {
+    CALLBACK: "callback",
+  }
 };

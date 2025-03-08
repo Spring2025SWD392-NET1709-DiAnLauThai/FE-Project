@@ -6,8 +6,8 @@ import {
   BookingPayloadResponse,
   BookingResponse,
   BookingDetail,
-} from "@/domains/models/booking";
 
+} from "@/domains/models/booking";
 export const BookingService = {
   get: {
     list: async (
@@ -49,8 +49,8 @@ export const BookingService = {
       payload: BookingPayload
     ): Promise<RootResponse<BookingPayloadResponse>> => {
       try {
-        const response = await axiosInstance.post("/bookings", { payload });
-
+        const response = await axiosInstance.post("/bookings", payload);
+        console.log(response.data);
         return response.data;
       } catch (error) {
         throw error;

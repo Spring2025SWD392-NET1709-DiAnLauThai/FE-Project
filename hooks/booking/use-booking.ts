@@ -8,6 +8,7 @@ import { BookingService } from "@/domains/services/booking";
 import { QueryKey } from "@/domains/stores/query-key";
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "../use-toast";
+import { useRouter } from "next/navigation";
 
 interface BookingQuery {
   params: BookingParams;
@@ -43,6 +44,7 @@ export const useBookingDetailsQuery = (params: BookingDetailGetParams) => {
 
 export const useBookingMutation = () => {
   const { toast } = useToast();
+  const router = useRouter();
   const queryClient = new QueryClient();
   const createBooking = useMutation({
     mutationKey: [QueryKey.BOOKING.CREATE],
@@ -58,6 +60,11 @@ export const useBookingMutation = () => {
 
     onError: (error) => {
       console.error("error", error);
+      toast({
+        title: "Error",
+        description: "Failed to create booking. Please try again.",
+        variant: "destructive",
+      });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKey.BOOKING.LIST] });

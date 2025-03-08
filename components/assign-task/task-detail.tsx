@@ -39,7 +39,7 @@ export function TaskDetailCard({ task }: TaskDetailCardProps) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-lg font-bold">{task.subject}</CardTitle>
-            <CardDescription>Order ID: {task.orderId}</CardDescription>
+            <CardDescription>Order ID: {task.bookingId}</CardDescription>
           </div>
           <Badge className={getStatusColor(task.status)}>{task.status}</Badge>
         </div>
@@ -80,7 +80,7 @@ export function TaskDetailCard({ task }: TaskDetailCardProps) {
             <h3 className="font-semibold text-sm text-gray-500 mb-1">
               Order ID
             </h3>
-            <p>{task.orderId}</p>
+            <p>{task.bookingId}</p>
           </div>
         </div>
 

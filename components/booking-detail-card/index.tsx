@@ -14,9 +14,10 @@ import { Badge } from "../ui/badge";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
-import { Separator } from "@/components/ui/separator";
 import { DataTablePagination } from "../table/Pagination";
 import { PlusIcon } from "lucide-react";
+import { Button } from "../ui/button";
+import { AssignDesignerForm } from "../assign-task/task-assign-design";
 
 interface BookingDetailModalProps {
   booking: BookingResponse;
@@ -35,7 +36,10 @@ export function BookingDetailModal({
     size: 100,
   });
 
-  const { data, isPending } = useBookingDetailsQuery(params);
+  // Add state for showing the designer assignment modal
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  
+  const { data, isPending, refetch } = useBookingDetailsQuery(params);
 
   const handlePageChange = (page: number) => {
     setParams({
@@ -70,6 +74,20 @@ export function BookingDetailModal({
     return data.data.content.reduce((sum, item) => sum + item.unitPrice, 0);
   };
 
+  // Get the designer name from the booking data if available
+  const designerName = data?.data?.designerName;
+
+  // Create a task object for the assign designer form
+  const taskForAssignment = {
+    id: booking.id,
+    code: booking.code,
+    title: booking.title,
+    status: booking.status,
+    startDate: booking.startDate,
+    endDate: booking.endDate,
+    totalPrice: booking.totalPrice,
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[100vh] overflow-y-auto">
@@ -82,186 +100,215 @@ export function BookingDetailModal({
           </DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="summary" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="summary">Booking Summary</TabsTrigger>
-            <TabsTrigger value="details">Booking Details</TabsTrigger>
-          </TabsList>
+        {/* Show the designer assignment modal when needed */}
+        {showAssignModal && (
+          <div className="rounded-lg border bg-background p-4 shadow-sm">
+            <h3 className="mb-4 text-lg font-medium">Assign Designer</h3>
+            <AssignDesignerForm 
+              task={taskForAssignment} 
+              onSuccess={() => {
+                setShowAssignModal(false);
+                refetch(); // Refresh the data after assignment
+              }} 
+            />
+          </div>
+        )}
 
-          <TabsContent value="summary" className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>{booking.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Booking Code
-                    </p>
-                    <p className="font-medium">{booking.code}</p>
+        {!showAssignModal && (
+          <Tabs defaultValue="summary" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="summary">Booking Summary</TabsTrigger>
+              <TabsTrigger value="details">Booking Details</TabsTrigger>
+            </TabsList>
+
+            {/* Summary tab content */}
+            <TabsContent value="summary" className="mt-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{booking.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Booking Code
+                      </p>
+                      <p className="font-medium">{booking.code}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Total Price
+                      </p>
+                      <p className="font-medium">
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(booking.totalPrice)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Quantity
+                      </p>
+                      <p className="font-medium">{booking.totalQuantity}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Start Date
+                      </p>
+                      <p className="font-medium">
+                        {format(new Date(booking.startDate), "dd/MM/yyyy")}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        End Date
+                      </p>
+                      <p className="font-medium">
+                        {format(new Date(booking.endDate), "dd/MM/yyyy")}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Status
+                      </p>
+                      <Badge className={getBadgeClass(booking.status)}>
+                        {booking.status}
+                      </Badge>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Total Price
-                    </p>
-                    <p className="font-medium">
-                      {new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      }).format(booking.totalPrice)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Quantity
-                    </p>
-                    <p className="font-medium">{booking.totalQuantity}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Start Date
-                    </p>
-                    <p className="font-medium">
-                      {format(new Date(booking.startDate), "dd/MM/yyyy")}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      End Date
-                    </p>
-                    <p className="font-medium">
-                      {format(new Date(booking.endDate), "dd/MM/yyyy")}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Status
-                    </p>
-                    <Badge className={getBadgeClass(booking.status)}>
-                      {booking.status}
-                    </Badge>
-                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Details tab content */}
+            <TabsContent value="details" className="mt-4 space-y-4">
+              {isPending ? (
+                <div className="h-48 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              ) : (
+                <>
+                  {data?.data?.content && data.data.content.length > 0 ? (
+                    <>
+                      {data.data.content.map((item, index) => (
+                        <Card
+                          key={item.bookingDetailId}
+                          className="overflow-hidden"
+                        >
+                          <div className="flex flex-col md:flex-row">
+                            {/* Design Image */}
+                            <div className="w-full md:w-1/3 relative h-48 md:h-auto">
+                              <Image
+                                src={item.designFile}
+                                alt="Design"
+                                fill
+                                className="object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src = "/placeholder-image.png";
+                                }}
+                              />
+                            </div>
 
-          <TabsContent value="details" className="mt-4 space-y-4">
-            {isPending ? (
-              <div className="h-48 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : (
-              <>
-                {data?.data?.content && data.data.content.length > 0 ? (
-                  <>
-                    {data.data.content.map((item, index) => (
-                      <Card
-                        key={item.bookingDetailId}
-                        className="overflow-hidden"
-                      >
-                        <div className="flex flex-col md:flex-row">
-                          {/* Design Image */}
-                          <div className="w-full md:w-1/3 relative h-48 md:h-auto">
-                            <Image
-                              src={item.designFile}
-                              alt="Design"
-                              fill
-                              className="object-cover"
-                              onError={(e) => {
-                                e.currentTarget.src = "/placeholder-image.png";
-                              }}
-                            />
-                          </div>
+                            {/* Design Details */}
+                            <div className="p-4 w-full md:w-2/3">
+                              <h3 className="font-semibold text-lg">
+                                Design #{index + 1}
+                              </h3>
 
-                          {/* Design Details */}
-                          <div className="p-4 w-full md:w-2/3">
-                            <h3 className="font-semibold text-lg">
-                              Design #{index + 1}
-                            </h3>
-
-                            <div className="mt-2 space-y-3">
-                              <div>
-                                <p className="text-sm font-medium text-muted-foreground">
-                                  Description
-                                </p>
-                                <p>
-                                  {item.description ||
-                                    "No description provided"}
-                                </p>
-                              </div>
-
-                              <div className="grid grid-cols-2 gap-4">
+                              <div className="mt-2 space-y-3">
                                 <div>
                                   <p className="text-sm font-medium text-muted-foreground">
-                                    Unit Price
+                                    Description
                                   </p>
-                                  <p className="font-medium">
-                                    {new Intl.NumberFormat("vi-VN", {
-                                      style: "currency",
-                                      currency: "VND",
-                                    }).format(item.unitPrice)}
+                                  <p>
+                                    {item.description ||
+                                      "No description provided"}
                                   </p>
                                 </div>
-                                <div>
-                                  <p className="text-sm font-medium text-muted-foreground">
-                                    Design ID
-                                  </p>
-                                  <p className="font-mono text-xs truncate">
-                                    {item.designId}
-                                  </p>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <p className="text-sm font-medium text-muted-foreground">
+                                      Unit Price
+                                    </p>
+                                    <p className="font-medium">
+                                      {new Intl.NumberFormat("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                      }).format(item.unitPrice)}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-muted-foreground">
+                                      Design ID
+                                    </p>
+                                    <p className="font-mono text-xs truncate">
+                                      {item.designId}
+                                    </p>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </Card>
-                    ))}
+                        </Card>
+                      ))}
 
-                    <Card>
-                      <CardContent className="pt-6">
-                        <div className="flex justify-between items-center">
-                          <div className="font-medium">Desginer</div>
-                          <div className="flex items-center text-sm text-blue-600">
-                            <PlusIcon className="w-4 h-4 mr-1" />
-                            <span>Assign Designer</span>
+                      {/* Designer card with conditional rendering */}
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="flex justify-between items-center">
+                            <div className="font-medium">Designer</div>
+                            {designerName ? (
+                              <div className="font-medium text-blue-600">{designerName}</div>
+                            ) : (
+                              <Button 
+                                variant="ghost"
+                                size="sm"
+                                className="flex items-center text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-700 p-1"
+                                onClick={() => setShowAssignModal(true)}
+                              >
+                                <PlusIcon className="w-4 h-4 mr-1" />
+                                <span>Assign Designer</span>
+                              </Button>
+                            )}
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardContent className="pt-6">
-                        <div className="flex justify-between items-center">
-                          <div className="font-medium">Total Amount</div>
-                          <div className="font-bold">
-                            {new Intl.NumberFormat("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            }).format(calculateTotal())}
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="flex justify-between items-center">
+                            <div className="font-medium">Total Amount</div>
+                            <div className="font-bold">
+                              {new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              }).format(calculateTotal())}
+                            </div>
                           </div>
-                        </div>
-                      </CardContent>
+                        </CardContent>
+                      </Card>
+                      <div className="flex items-center justify-end px-2">
+                        <DataTablePagination
+                          currentPage={(params.page || 0) + 1}
+                          totalPages={data?.data?.totalPages || 1}
+                          onPageChange={handlePageChange}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <Card className="p-6 text-center">
+                      <p className="text-muted-foreground">
+                        No design details available for this booking.
+                      </p>
                     </Card>
-                    <div className="flex items-center justify-end px-2">
-                      <DataTablePagination
-                        currentPage={(params.page || 0) + 1}
-                        totalPages={data?.data?.totalPages || 1}
-                        onPageChange={handlePageChange}
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <Card className="p-6 text-center">
-                    <p className="text-muted-foreground">
-                      No design details available for this booking.
-                    </p>
-                  </Card>
-                )}
-              </>
-            )}
-          </TabsContent>
-        </Tabs>
+                  )}
+                </>
+              )}
+            </TabsContent>
+          </Tabs>
+        )}
       </DialogContent>
     </Dialog>
   );
