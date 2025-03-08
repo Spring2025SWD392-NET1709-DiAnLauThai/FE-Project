@@ -21,6 +21,7 @@ export const QueryKey = {
     DETAIL: "detail-booking",
   },
   TASK: {
+    LIST: "list-task",
     ASSIGN_DESIGNER: "assign-designer",
     
   },

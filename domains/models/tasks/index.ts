@@ -1,10 +1,9 @@
 import {  UserRole } from "@/domains/models/user";
 // domains/models/task/index.ts
 export enum TaskStatus {
-  PENDING = "PENDING",
-  PROGRESSING = "PROGRESSING",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
+  ASSIGNED = "ASSIGNED",
+  COMPLETED = "COMPLETE",
+  DENIED = "DENIED",
 }
 
 export interface AssignDesignerPayload {
@@ -36,10 +35,12 @@ export interface DesignersResponse {
 
 
 export interface Task {
-  bookingId: string;
-  designerId: string;
-  id: string;
+  taskId: string;
+  designerName: string;
   taskStatus: string;
+  bookingId: string;
+  startDate: Date;
+  endDate: Date;
 }
 
 export interface TaskComment {
@@ -54,7 +55,11 @@ export interface TaskComment {
 export interface TaskParams {
   page: number;
   size: number;
-  status?: TaskStatus;
+  designerName: string;
+  startDate?: Date;
+  endDate?: Date;
+  sortDir?: string;
+  taskStatus?: TaskStatus;
 }
 
 export interface PaginatedTaskResponse {

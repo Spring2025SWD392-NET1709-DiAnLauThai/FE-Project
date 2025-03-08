@@ -9,8 +9,8 @@ import { useRouter } from "next/navigation";
 
 export default function SuccessBookingPage() {
   const searchParams = useSearchParams();
-  const status = searchParams.get("status");
-  const message = searchParams.get("message") || "";
+  const status = searchParams?.get("status");
+  const message = searchParams?.get("message") || "";
   const router = useRouter();
   
   // Determine payment status

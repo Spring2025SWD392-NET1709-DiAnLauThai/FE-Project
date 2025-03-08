@@ -49,7 +49,9 @@ export const BookingService = {
       payload: BookingPayload
     ): Promise<RootResponse<BookingPayloadResponse>> => {
       try {
-        const response = await axiosInstance.post("/bookings", payload);
+        const response = await axiosInstance.post("/bookings", payload, {
+          timeout: 30000,
+        });
         console.log(response.data);
         return response.data;
       } catch (error) {
