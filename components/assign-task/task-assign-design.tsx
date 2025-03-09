@@ -20,9 +20,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useAssignDesignerForm } from "@/hooks/assign-tasks/use-task-form";
+import { BookingResponse } from "@/domains/models/booking";
 
 interface AssignDesignerFormProps {
-  task: Task;
+  task: BookingResponse;
   onSuccess: () => void;
 }
 

@@ -68,3 +68,7 @@ export interface PaginatedTaskResponse {
   totalItems: number;
   currentPage: number;
 }
+
+export interface TaskDetail{
+  task: Task[];
+}

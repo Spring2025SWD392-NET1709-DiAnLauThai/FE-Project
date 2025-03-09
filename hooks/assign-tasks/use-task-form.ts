@@ -7,6 +7,7 @@ import { useAssignDesignerMutation } from "./use-task";
 import { useToast } from "../use-toast";
 import { QueryKey } from "@/domains/stores/query-key";
 import { Task } from "@/domains/models/tasks";
+import { BookingResponse } from "@/domains/models/booking";
 
 // Create form schema
 const AssignDesignerSchema = z.object({
@@ -17,7 +18,7 @@ const AssignDesignerSchema = z.object({
 
 export type AssignDesignerFormValues = z.infer<typeof AssignDesignerSchema>;
 
-export function useAssignDesignerForm(task: Task, onSuccess: () => void) {
+export function useAssignDesignerForm(task: BookingResponse, onSuccess: () => void) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
