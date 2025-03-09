@@ -14,6 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Task, TaskStatus } from "@/domains/models/tasks";
 import { format } from "date-fns";
 import Image from "next/image";
+import { useAuthStore } from "@/domains/stores/use-auth-store";
+import { Role } from "@/domains/enums";
 
 interface TaskDetailModalProps {
   task: Task;
@@ -26,6 +28,12 @@ export function TaskDetailModal({
   isOpen,
   onClose,
 }: TaskDetailModalProps) {
+  // Get user role from auth store
+  const { role } = useAuthStore();
+
+  // Check if user is admin or manager
+  const isAdminOrManager = role === Role.ADMIN || role === Role.MANAGER;
+
   // Set up booking query params
   const [bookingParams, setBookingParams] = useState({
     bookingId: task.bookingId || "",
@@ -61,7 +69,7 @@ export function TaskDetailModal({
       <DialogContent className="max-w-4xl max-h-[100vh] overflow-y-auto">
         <DialogHeader className="my-5">
           <DialogTitle className="flex items-center justify-between">
-            <span>Task #{task.taskId}</span>
+            <span>Task Detail</span>
             <Badge className={getStatusBadge(task.taskStatus as TaskStatus)}>
               {task.taskStatus}
             </Badge>
@@ -84,24 +92,13 @@ export function TaskDetailModal({
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">
-                      Task ID
-                    </p>
-                    <p className="font-medium">{task.taskId}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
                       Assigned To
                     </p>
                     <p className="font-medium">
                       {task.designerName || "Not assigned"}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Booking ID
-                    </p>
-                    <p className="font-medium truncate">{task.bookingId}</p>
-                  </div>
+
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">
                       Start Date
@@ -184,25 +181,20 @@ export function TaskDetailModal({
                               </div>
 
                               <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                  <p className="text-sm font-medium text-muted-foreground">
-                                    Unit Price
-                                  </p>
-                                  <p className="font-medium">
-                                    {new Intl.NumberFormat("vi-VN", {
-                                      style: "currency",
-                                      currency: "VND",
-                                    }).format(item.unitPrice)}
-                                  </p>
-                                </div>
-                                <div>
-                                  <p className="text-sm font-medium text-muted-foreground">
-                                    Design ID
-                                  </p>
-                                  <p className="font-mono text-xs truncate">
-                                    {item.designId}
-                                  </p>
-                                </div>
+                                {/* Unit Price - only show for ADMIN or MANAGER */}
+                                {isAdminOrManager && (
+                                  <div>
+                                    <p className="text-sm font-medium text-muted-foreground">
+                                      Unit Price
+                                    </p>
+                                    <p className="font-medium">
+                                      {new Intl.NumberFormat("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                      }).format(item.unitPrice)}
+                                    </p>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -210,19 +202,22 @@ export function TaskDetailModal({
                       </Card>
                     ))}
 
-                    <Card>
-                      <CardContent className="pt-6">
-                        <div className="flex justify-between items-center">
-                          <div className="font-medium">Total Amount</div>
-                          <div className="font-bold">
-                            {new Intl.NumberFormat("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            }).format(calculateTotal())}
+                    {/* Total Amount Card - only show for ADMIN or MANAGER */}
+                    {isAdminOrManager && (
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="flex justify-between items-center">
+                            <div className="font-medium">Total Amount</div>
+                            <div className="font-bold">
+                              {new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              }).format(calculateTotal())}
+                            </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+                    )}
                   </>
                 ) : (
                   <Card className="p-6 text-center">

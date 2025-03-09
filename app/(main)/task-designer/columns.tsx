@@ -29,18 +29,7 @@ export const taskColumns: ColumnDef<Task>[] = [
       return <div className="text-center">{row.index + 1}</div>;
     },
   },
-  {
-    accessorKey: "taskId", // Added task ID column
-    header: "Task ID",
-    cell: ({ row }) => {
-      const taskId = row.original.taskId;
-      return (
-        <div className="font-medium">
-          {taskId ? taskId.substring(0, 8) + "..." : "N/A"}
-        </div>
-      );
-    },
-  },
+  
   {
     accessorKey: "designerName",
     header: "Assigned To",
