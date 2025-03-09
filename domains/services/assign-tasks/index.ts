@@ -39,6 +39,24 @@ export const taskServices = {
         throw error;
       }
     },
+    listTaskDesigner: async (
+      params: TaskParams
+    ): Promise<RootResponse<Pagination<PaginatedTaskResponse>>> => {
+      try {
+        const defaultParams: TaskParams = {
+          ...params,
+          page: 1,
+          size: 10,
+          sortDir: "asc",
+        };
+        const response = await axiosInstance.get("/task/designer", {
+          params: defaultParams,
+        });
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
     listDesigner: async (): Promise<RootResponse<DesignersResponse>> => {
       try {
         const response = await axiosInstance.get(
