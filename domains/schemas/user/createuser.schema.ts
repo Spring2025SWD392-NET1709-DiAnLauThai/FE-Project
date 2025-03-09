@@ -63,7 +63,6 @@ export const userFormSchema = z.object({
     required_error: "Please select a role.",
   }),
   status: z.nativeEnum(UserStatus).optional(),
-  password: z.string().optional(),
 });
 
 export const userProfileSchema = z.object({

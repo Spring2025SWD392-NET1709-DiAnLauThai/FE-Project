@@ -13,7 +13,8 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
   const { role } = useAuthStore();
   const router = useRouter();
-
+  console.log("Current role:", role);
+  console.log("Allowed roles:", allowedRoles);
   useEffect(() => {
     if (role !== null && !allowedRoles.includes(role)) {
       router.replace("/unauthorized");

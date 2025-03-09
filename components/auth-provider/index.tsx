@@ -16,9 +16,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     if (!user) {
       router.replace("/");
-    } else if (user && role === Role.CUSTOMER) {
+    } else if (role === Role.CUSTOMER) {
       router.replace("/t-shirt");
-    } else if (user && role !== Role.CUSTOMER) {
+    } else if (role === Role.DESIGNER) {
+      router.replace("/task-designer");
+    } else if (role === Role.ADMIN || role === Role.MANAGER) {
       router.replace("/dashboard");
     }
   }, [role, user, router]);

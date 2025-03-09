@@ -58,6 +58,12 @@ export default function Sidebar() {
           roles: [Role.CUSTOMER],
         },
         {
+          href: "/task-designer",
+          icon: Shirt,
+          label: "Task",
+          roles: [Role.DESIGNER],
+        },
+        {
           href: "/my-booking",
           icon: Archive,
           label: "My Booking",
@@ -92,13 +98,13 @@ export default function Sidebar() {
           href: "/dashboard/tasks",
           icon: ClipboardList,
           label: "Task List",
-          roles: [Role.ADMIN, Role.DESIGNER],
+          roles: [Role.ADMIN],
         },
         {
           href: "/dashboard/order-list",
           icon: Archive,
           label: "Order List",
-          roles: [Role.ADMIN, Role.MANAGER, Role.DESIGNER],
+          roles: [Role.ADMIN, Role.MANAGER],
         },
       ],
     },
