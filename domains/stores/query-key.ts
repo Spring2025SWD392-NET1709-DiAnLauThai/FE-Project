@@ -30,5 +30,8 @@ export const QueryKey = {
   },
   TRANSACTION: {
     CALLBACK: "callback",
+  },
+  COLOR: {
+    CREATE: "create-color",
   }
 };

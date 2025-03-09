@@ -19,6 +19,8 @@ export interface BookingResponse {
   status: BookingStatus;
   startDate: Date;
   endDate: Date;
+  createdDate: Date;
+  updateDate: Date;
   code: string;
   title: string;
   assignedDesigner: string;

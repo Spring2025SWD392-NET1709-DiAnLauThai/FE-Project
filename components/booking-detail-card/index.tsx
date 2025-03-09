@@ -238,7 +238,6 @@ export function BookingDetailModal({
                                       }).format(item.unitPrice)}
                                     </p>
                                   </div>
-                                  
                                 </div>
                               </div>
                             </div>
@@ -254,6 +253,10 @@ export function BookingDetailModal({
                             {booking.assignedDesigner ? (
                               <div className="font-medium">
                                 {booking.assignedDesigner}
+                              </div>
+                            ) : booking.status === BookingStatus.UNPAID ? (
+                              <div className="flex items-center text-sm text-red-500">
+                                <span>Cannot assign - Booking is unpaid</span>
                               </div>
                             ) : (
                               <Button

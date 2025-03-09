@@ -23,6 +23,7 @@ export const columns: ColumnDef<BookingResponse>[] = [
     accessorKey: "totalQuantity",
     header: "Quantity",
   },
+
   {
     accessorKey: "assignedDesigner",
     header: "Assigned to",
@@ -45,10 +46,26 @@ export const columns: ColumnDef<BookingResponse>[] = [
     },
   },
   {
+    accessorKey: "createdDate",
+    header: "Created at",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdDate"));
+      return format(date, "dd/MM/yyyy");
+    },
+  },
+  {
     accessorKey: "startDate",
     header: "Start Date",
     cell: ({ row }) => {
       const date = new Date(row.getValue("startDate"));
+      return format(date, "dd/MM/yyyy");
+    },
+  },
+  {
+    accessorKey: "updateDate",
+    header: "Updated at",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("updateDate"));
       return format(date, "dd/MM/yyyy");
     },
   },

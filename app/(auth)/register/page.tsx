@@ -12,12 +12,14 @@ const RegisterPage = () => {
       {/* Left section - Image */}
       <div className="relative hidden w-2/3 lg:block">
         <Image
-          src={Background}
-          alt="Login background"
-          fill
-          className="object-cover"
-          priority
-        />
+                  src="/T-Shirt.gif"
+                  alt="Login background"
+                  fill
+                  className="object-cover"
+                  priority
+                  unoptimized
+                  draggable={false}
+                />
       </div>
 
       {/* Right section - Login form */}
