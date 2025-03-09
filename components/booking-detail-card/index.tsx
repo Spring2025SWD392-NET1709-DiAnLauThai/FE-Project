@@ -74,9 +74,6 @@ export function BookingDetailModal({
     return data.data.content.reduce((sum, item) => sum + item.unitPrice, 0);
   };
 
-  // Get the designer name from the booking data if available
-  const designerName = data?.data?.designerName;
-
   // Create a task object for the assign designer form
   const taskForAssignment = {
     id: booking.id,
@@ -86,6 +83,7 @@ export function BookingDetailModal({
     startDate: booking.startDate,
     endDate: booking.endDate,
     totalPrice: booking.totalPrice,
+    assignedDesigner: booking.assignedDesigner,
   };
 
   return (
@@ -104,12 +102,12 @@ export function BookingDetailModal({
         {showAssignModal && (
           <div className="rounded-lg border bg-background p-4 shadow-sm">
             <h3 className="mb-4 text-lg font-medium">Assign Designer</h3>
-            <AssignDesignerForm 
-              task={taskForAssignment} 
+            <AssignDesignerForm
+              task={taskForAssignment}
               onSuccess={() => {
                 setShowAssignModal(false);
                 refetch(); // Refresh the data after assignment
-              }} 
+              }}
             />
           </div>
         )}
@@ -205,7 +203,8 @@ export function BookingDetailModal({
                                 fill
                                 className="object-cover"
                                 onError={(e) => {
-                                  e.currentTarget.src = "/placeholder-image.png";
+                                  e.currentTarget.src =
+                                    "/placeholder-image.png";
                                 }}
                               />
                             </div>
@@ -239,14 +238,7 @@ export function BookingDetailModal({
                                       }).format(item.unitPrice)}
                                     </p>
                                   </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-muted-foreground">
-                                      Design ID
-                                    </p>
-                                    <p className="font-mono text-xs truncate">
-                                      {item.designId}
-                                    </p>
-                                  </div>
+                                  
                                 </div>
                               </div>
                             </div>
@@ -259,10 +251,12 @@ export function BookingDetailModal({
                         <CardContent className="pt-6">
                           <div className="flex justify-between items-center">
                             <div className="font-medium">Designer</div>
-                            {designerName ? (
-                              <div className="font-medium text-blue-600">{designerName}</div>
+                            {booking.assignedDesigner ? (
+                              <div className="font-medium">
+                                {booking.assignedDesigner}
+                              </div>
                             ) : (
-                              <Button 
+                              <Button
                                 variant="ghost"
                                 size="sm"
                                 className="flex items-center text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-700 p-1"

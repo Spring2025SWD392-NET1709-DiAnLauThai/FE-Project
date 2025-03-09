@@ -10,13 +10,13 @@ import TaskMenuAction from "@/components/assign-task/task-menu-action";
 const getStatusBadge = (status: TaskStatus) => {
   switch (status) {
     case TaskStatus.ASSIGNED:
-      return "secondary";
+      return "bg-blue-500 hover:bg-blue-600 text-white";
     case TaskStatus.COMPLETED:
-      return "default";
+      return "bg-green-500 hover:bg-green-600 text-white";
     case TaskStatus.DENIED:
-      return "destructive";
+      return "bg-red-500 hover:bg-red-600 text-white";
     default:
-      return "outline";
+      return "bg-gray-500 hover:bg-gray-600 text-white";
   }
 };
 
@@ -54,7 +54,7 @@ export const taskColumns: ColumnDef<Task>[] = [
     cell: ({ row }) => {
       const status = row.original.taskStatus as TaskStatus;
       return (
-        <Badge variant={getStatusBadge(status)}>{status || "Unknown"}</Badge>
+        <Badge className={getStatusBadge(status)}>{status || "Unknown"}</Badge>
       );
     },
   },

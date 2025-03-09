@@ -24,6 +24,14 @@ export const columns: ColumnDef<BookingResponse>[] = [
     header: "Quantity",
   },
   {
+    accessorKey: "assignedDesigner",
+    header: "Assigned to",
+    cell: ({ row }) => {
+      const designer = row.getValue("assignedDesigner");
+      return designer ? designer : "N/A";
+    },
+  },
+  {
     accessorKey: "totalPrice",
     header: "Total Price",
     cell: ({ row }) => {

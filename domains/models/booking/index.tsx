@@ -21,6 +21,7 @@ export interface BookingResponse {
   endDate: Date;
   code: string;
   title: string;
+  assignedDesigner: string;
 }
 
 export interface BookingDetailGetParams {
@@ -63,6 +64,7 @@ export interface BookingDetail {
   designFile: string;
   description: string;
   unitPrice: number;
+  assignedDesigner: string;
 }
 
 
