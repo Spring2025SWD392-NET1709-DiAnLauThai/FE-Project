@@ -27,6 +27,9 @@ export const useAuthStore = create<AuthState>()(
 
           const response = await userService.get.detail(decoded.sub);
 
+          localStorage.setItem("accessToken", accessToken);
+          localStorage.setItem("refreshToken", refreshToken);
+
           set({
             accessToken,
             refreshToken,

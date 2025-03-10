@@ -37,7 +37,6 @@ import { cn } from "@/lib/utils";
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
-import { Textarea } from "../ui/textarea";
 
 const BookingForm = () => {
   const { toast } = useToast();

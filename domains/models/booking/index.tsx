@@ -13,6 +13,13 @@ export interface BookingResponse {
   title: string;
 }
 
+export interface BookingDetailResponse {
+  bookingDetailId: string;
+  designFile: string;
+  description: string;
+  unitPrice: number;
+}
+
 export interface BookingPayload {
   title: string;
   startdate: Date;

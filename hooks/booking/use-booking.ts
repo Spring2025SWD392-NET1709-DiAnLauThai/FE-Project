@@ -6,7 +6,6 @@ import {
 import { BookingService } from "@/domains/services/booking";
 import { QueryKey } from "@/domains/stores/query-key";
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { useToast } from "../use-toast";
 
 interface BookingQuery {
   params: BookingParams;
@@ -35,20 +34,11 @@ export const useBookingsQuery = ({ params }: BookingQuery) => {
 export const useBookingDetailQuery = () => {};
 
 export const useBookingMutation = () => {
-  const { toast } = useToast();
   const queryClient = new QueryClient();
   const createBooking = useMutation({
     mutationKey: [QueryKey.BOOKING.CREATE],
     mutationFn: async (payload: BookingPayload) =>
       await BookingService.post.booking(payload),
-    onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: `${data.message}`,
-      });
-      window.location.href = data.data.vnpayurl;
-    },
-
     onError: (error) => {
       console.error("error", error);
     },

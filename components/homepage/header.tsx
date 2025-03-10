@@ -32,9 +32,9 @@ export function Header() {
           <Link href="/t-shirt" className="text-md font-semibold">
             T-Shirt
           </Link>
-          <Link href="/my-order" className="text-md font-semibold">
+          {/* <Link href="/my-order" className="text-md font-semibold">
             My Order
-          </Link>
+          </Link> */}
           <Link href="/reviews" className="text-md font-semibold">
             Reviews
           </Link>

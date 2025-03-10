@@ -2,15 +2,16 @@
 
 import { BookingResponse } from "@/domains/models/booking";
 import { ColumnDef } from "@tanstack/react-table";
-import BookingMenuAction from "./menu-action";
 import {
   formatFromISOString,
   formatPriceToVND,
   FormatType,
 } from "@/lib/format";
 import { Badge } from "../ui/badge";
+import BookingDashboardMenuAction from "./menu-action";
+import { SelectedDesigner } from "./selected-designer";
 
-export const BookingColumn: ColumnDef<BookingResponse>[] = [
+export const BookingDashboardColumn: ColumnDef<BookingResponse>[] = [
   {
     accessorKey: "code",
     header: "Code",
@@ -69,13 +70,12 @@ export const BookingColumn: ColumnDef<BookingResponse>[] = [
       return <Badge variant="default">{booking.status}</Badge>;
     },
   },
-
   {
     id: "action",
     cell: ({ row }) => {
       const booking = row.original;
 
-      return <BookingMenuAction booking={booking} />;
+      return <BookingDashboardMenuAction booking={booking} />;
     },
   },
 ];

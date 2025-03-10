@@ -4,8 +4,15 @@ import { FileService } from "@/domains/services/file";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useBookingMutation } from "./use-booking";
+import { QueryClient } from "@tanstack/react-query";
+import { QueryKey } from "@/domains/stores/query-key";
+import { useToast } from "../use-toast";
+import React from "react";
 
 export const useBookingForm = () => {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const queryClient = new QueryClient();
   const { createBooking } = useBookingMutation();
 
   const form = useForm<BookingSchema>({
@@ -29,7 +36,17 @@ export const useBookingForm = () => {
       data.bookingdetails.map(async (detail) => {
         const url = await FileService.post
           .upload(detail.designFile[0])
-          .then((data) => data.data);
+          .then((data) => {
+            setIsLoading(false);
+            return data.data;
+          })
+          .catch((error) => {
+            setIsLoading(false);
+            console.error("error", error);
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
 
         return {
           description: detail.description.toString(),
@@ -48,7 +65,12 @@ export const useBookingForm = () => {
 
     createBooking.mutate(value, {
       onSuccess: (data) => {
-        console.log("data", data);
+        toast({
+          title: "Success",
+          description: `${data.message}`,
+        });
+        queryClient.invalidateQueries({ queryKey: [QueryKey.BOOKING.LIST] });
+        window.location.href = data.data.vnpayurl;
       },
       onError: (error) => {
         console.error("error", error);
@@ -56,5 +78,5 @@ export const useBookingForm = () => {
     });
   });
 
-  return { form, onSubmit, isLoading: createBooking.isPending };
+  return { form, onSubmit, isLoading: createBooking.isPending || isLoading };
 };

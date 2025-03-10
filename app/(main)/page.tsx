@@ -7,6 +7,7 @@ import React from "react";
 import MalePic from "@/public/images/male.png";
 import FemalePic from "@/public/images/female.png";
 import { Layout } from "@/components/layout/layout-home";
+import Link from "next/link";
 
 const HomePage = () => {
   return (
@@ -22,7 +23,7 @@ const HomePage = () => {
           <div className="space-y-8">
             <SizeSelector />
             <Button className="bg-black text-white hover:bg-black/90">
-              Start designing
+              <Link href={"/login"}>Start designing</Link>
             </Button>
           </div>
         </div>

@@ -5,11 +5,11 @@ import SearchInput from "../plugins/search-input";
 import { useBookingsQuery } from "@/hooks/booking/use-booking";
 import PaginationTable from "../plugins/pagination";
 import { BookingResponse } from "@/domains/models/booking";
-import { BookingColumn } from "./columns";
 import { useParamStore } from "@/domains/stores/params-store";
 import { DataTable } from "../plugins/table";
+import { BookingDashboardColumn } from "./column";
 
-const BookingTable = () => {
+const BookingDashboardTable = () => {
   const { value } = useParamStore();
   const { bookingQuery } = useBookingsQuery({
     params: {
@@ -40,11 +40,11 @@ const BookingTable = () => {
       </div>
 
       <DataTable
-        columns={BookingColumn}
+        columns={BookingDashboardColumn}
         data={bookingQuery.data?.data?.content ?? []}
       />
     </div>
   );
 };
 
-export default BookingTable;
+export default BookingDashboardTable;
