@@ -84,7 +84,7 @@ export function ColorPickerNav() {
   const [colorNote, setColorNote] = useState("");
 
   const { form, handleSubmit, isSubmitting } = useColorsForm();
-  
+
   // Update form field when color changes
   const handleColorChange = (newColor: string) => {
     setColor(newColor);
@@ -110,27 +110,71 @@ export function ColorPickerNav() {
       }
     }
   };
-  
+
+  // Add this function to your ColorPickerNav component
+  const handleColorCodeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+
+    // Allow the input to be displayed as typed
+    form.setValue("colorForm.colorCode", input);
+
+    // Try to convert the input to a valid hex color
+    let hexColor = input;
+
+    // Add # if missing (for valid 6-digit hex)
+    if (/^[0-9A-Fa-f]{6}$/.test(input)) {
+      hexColor = `#${input}`;
+    }
+
+    // Add # if missing (for valid 3-digit hex)
+    if (/^[0-9A-Fa-f]{3}$/.test(input)) {
+      hexColor = `#${input}`;
+    }
+
+    // Check if it's a valid hex color with #
+    if (/^#[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/.test(hexColor)) {
+      // Update the color picker with the valid hex
+      setColor(hexColor);
+    }
+
+    // For RGB format - try to parse RGB values like rgb(255, 100, 50)
+    const rgbMatch = input.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
+    if (rgbMatch) {
+      const r = parseInt(rgbMatch[1]);
+      const g = parseInt(rgbMatch[2]);
+      const b = parseInt(rgbMatch[3]);
+
+      // Ensure values are in range
+      if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
+        // Convert to hex
+        const hex = `#${r.toString(16).padStart(2, "0")}${g
+          .toString(16)
+          .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+        setColor(hex);
+      }
+    }
+  };
+
   // Create a wrapper function that prevents default form submission
   const handleFormSubmit = (e: React.MouseEvent) => {
     e.preventDefault();
-    
+
     // Validate that we have a color name before submission
     if (!form.getValues("colorForm.colorName")) {
       form.setError("colorForm.colorName", {
         type: "required",
-        message: "Please enter a color name"
+        message: "Please enter a color name",
       });
       return;
     }
-    
+
     // Ensure colorCode is set properly before submission
     form.setValue("colorForm.colorCode", color);
-    
+
     // Now call the form submission
     handleSubmit();
   };
-  
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -170,36 +214,37 @@ export function ColorPickerNav() {
                     <FormItem>
                       <FormLabel>Color Name</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="Enter color name" 
-                          {...field} 
-                        />
+                        <Input placeholder="Enter color name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-              
+
               {/* Color format selector */}
               <div className="grid grid-cols-3 gap-2 mb-4">
                 <div className="col-span-1">
-                  <Label htmlFor="color-format">Format</Label>
-                  <Select
-                    value={colorFormat}
-                    onValueChange={(value) =>
-                      setColorFormat(value as ColorFormat)
-                    }
-                  >
-                    <SelectTrigger id="color-format">
-                      <SelectValue placeholder="Color format" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="hex">HEX</SelectItem>
-                      <SelectItem value="rgb">RGB</SelectItem>
-                      <SelectItem value="hsl">HSL</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormItem className="space-y-1.5">
+                    {" "}
+                    {/* Add consistent spacing */}
+                    <FormLabel htmlFor="color-format">Format</FormLabel>
+                    <Select
+                      value={colorFormat}
+                      onValueChange={(value) =>
+                        setColorFormat(value as ColorFormat)
+                      }
+                    >
+                      <SelectTrigger id="color-format">
+                        <SelectValue placeholder="Color format" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="hex">HEX</SelectItem>
+                        <SelectItem value="rgb">RGB</SelectItem>
+                        <SelectItem value="hsl">HSL</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
                 </div>
 
                 <div className="col-span-2">
@@ -207,17 +252,20 @@ export function ColorPickerNav() {
                     control={form.control}
                     name="colorForm.colorCode"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="space-y-1.5">
+                        {" "}
+                        {/* Add consistent spacing */}
                         <FormLabel>Color Code</FormLabel>
                         <FormControl>
                           <Input
                             id="color-value"
-                            value={getFormattedColor()}
+                            {...field}
+                            value={field.value || getFormattedColor()}
                             onChange={(e) => {
-                              // Set the form value correctly
-                              field.onChange(color);
+                              handleColorCodeInput(e);
                             }}
                             className="font-mono text-sm"
+                            placeholder="#RRGGBB or rgb(r,g,b)"
                           />
                         </FormControl>
                         <FormMessage />
@@ -227,13 +275,11 @@ export function ColorPickerNav() {
                 </div>
               </div>
 
-              
-
               {/* Save button */}
-              <Button 
+              <Button
                 type="button" // Change to button type
-                className="w-full" 
-                onClick={handleFormSubmit} 
+                className="w-full"
+                onClick={handleFormSubmit}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Saving..." : "Save Color"}
