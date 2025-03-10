@@ -10,6 +10,7 @@ import {
   Shirt,
   Archive,
   ClipboardList,
+  PaintBucket,
 } from "lucide-react";
 
 interface NavItem {
@@ -61,6 +62,12 @@ export default function Sidebar() {
           href: "/task-designer",
           icon: Shirt,
           label: "Task",
+          roles: [Role.DESIGNER],
+        },
+        {
+          href: "/saved-color",
+          icon: PaintBucket,
+          label: "Saved Color",
           roles: [Role.DESIGNER],
         },
         {

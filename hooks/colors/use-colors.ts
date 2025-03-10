@@ -1,7 +1,7 @@
 import { ColorPayload } from "@/domains/models/color";
 import { useToast } from "../use-toast";
 import { ColorService } from "@/domains/services/colors";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/domains/stores/query-key";
 
 export const useCreateColor = () => {
@@ -22,4 +22,11 @@ export const useCreateColor = () => {
   });
 
   return { createColorMutation };
+};
+
+export const useGetColor = () => {
+  return useQuery({
+    queryKey: [QueryKey.COLOR.GET],
+    queryFn: () => ColorService.get.getSavedColor(),
+  });
 };

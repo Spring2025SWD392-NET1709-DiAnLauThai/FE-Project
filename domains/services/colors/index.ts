@@ -1,5 +1,5 @@
 import axiosInstance from "@/configs/axios.config";
-import { ColorPayload } from "@/domains/models/color";
+import { ColorPayload, ColorResponse } from "@/domains/models/color";
 
 export const ColorService = {
     post: { 
@@ -12,7 +12,16 @@ export const ColorService = {
             }
         }
     },
-    get: { },
+    get: {
+        getSavedColor: async (): Promise<RootResponse<ColorResponse[]>> => {
+            try {
+                const response = await axiosInstance.get("color");
+                return response.data;
+            } catch (error) {
+                throw error;
+            }
+        },
+    },
     put: { },
     delete: { },
 };

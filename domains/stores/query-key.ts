@@ -33,5 +33,6 @@ export const QueryKey = {
   },
   COLOR: {
     CREATE: "create-color",
+    GET: "get-color",
   }
 };
