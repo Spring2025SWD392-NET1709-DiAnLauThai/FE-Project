@@ -1,5 +1,5 @@
 import axiosInstance from "@/configs/axios.config";
-import { UserParams, UserPayload, UserProfile, UserResponse } from "@/domains/models/user";
+import { UserParams, UserPayload, UserProfile, UserPutPayload, UserResponse } from "@/domains/models/user";
 
 export const userService = {
   get: {
@@ -57,12 +57,9 @@ export const userService = {
     },
   },
   put: {
-    account: async (
-      id: string,
-      data: UserPayload
-    ): Promise<RootResponse<UserResponse>> => {
+    account: async (data: UserPutPayload): Promise<RootResponse<string>> => {
       try {
-        const response = await axiosInstance.put(`/accounts/${id}`, data);
+        const response = await axiosInstance.put("/accounts", data);
         return response.data;
       } catch (error) {
         throw error;

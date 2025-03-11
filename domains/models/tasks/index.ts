@@ -1,28 +1,46 @@
+import {  UserRole } from "@/domains/models/user";
 // domains/models/task/index.ts
 export enum TaskStatus {
-  PENDING = "PENDING",
-  PROGRESSING = "PROGRESSING",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
+  ASSIGNED = "ASSIGNED",
+  COMPLETED = "COMPLETE",
+  DENIED = "DENIED",
+}
+
+export interface AssignDesignerPayload {
+  bookingId: string;
+  designerId: string;
 }
 
 export interface Designer {
   id: string;
   name: string;
+  email: string;
+  phone: number;
+  address: string;
+  dateOfBirth: Date;
+  role: UserRole.DESIGNER;
+  createdAt: Date;
+  status: string;
+  image_url: string;
 }
 
+
+export interface DesignersResponse {
+  content: Designer[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
+
 export interface Task {
-  id: string;
-  subject: string;
-  description: string;
-  orderId: string;
-  designerId: string;
-  designerName: string; // For display purposes
-  status: TaskStatus;
-  createdAt: string;
-  updatedAt: string;
-  footlineImage: string; // URL to the footline image
-  comments?: TaskComment[];
+  taskId: string;
+  designerName: string;
+  taskStatus: string;
+  bookingId: string;
+  startDate: Date;
+  endDate: Date;
 }
 
 export interface TaskComment {
@@ -37,7 +55,11 @@ export interface TaskComment {
 export interface TaskParams {
   page: number;
   size: number;
-  status?: TaskStatus;
+  designerName: string;
+  startDate?: Date;
+  endDate?: Date;
+  sortDir?: string;
+  taskStatus?: TaskStatus;
 }
 
 export interface PaginatedTaskResponse {
@@ -45,4 +67,8 @@ export interface PaginatedTaskResponse {
   totalPages: number;
   totalItems: number;
   currentPage: number;
+}
+
+export interface TaskDetail{
+  task: Task[];
 }

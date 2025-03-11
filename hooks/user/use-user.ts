@@ -1,7 +1,7 @@
 import { userService } from "@/domains/services/user";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useToast } from "../use-toast";
-import { UserProfile, UserPayload, UserParams } from "@/domains/models/user";
+import { UserProfile, UserPayload, UserParams, UserPutPayload } from "@/domains/models/user";
 import { QueryKey } from "@/domains/stores/query-key";
 
 export const useUser = (
@@ -53,15 +53,11 @@ export const useUpdateUser = () => {
 
   const updateUserMutation = useMutation({
     mutationKey: ["update-user"],
-    mutationFn: async (payload: UserPayload) => {
+    mutationFn: async (payload: UserPutPayload) => {
       console.log("Update mutation payload:", payload);
 
-      if (!payload.id) {
-        throw new Error("User ID is required");
-      }
-
       // Use the ID for the URL path but also keep it in the payload
-      return await userService.put.account(payload.id, payload);
+      return await userService.put.account(payload);
     },
     onSuccess: (data) => {
       toast.toast({

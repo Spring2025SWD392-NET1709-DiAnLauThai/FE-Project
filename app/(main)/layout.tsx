@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import Layout from "@/components/layout/dashboard-layout";
 import { useAuthStore } from "@/domains/stores/use-auth-store";

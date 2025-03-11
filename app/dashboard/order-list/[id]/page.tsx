@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -22,6 +24,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useBookingDetailsQuery } from "@/hooks/booking/use-booking";
+import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
+import { useParams } from "next/navigation";
+import { formatPriceToVND } from "@/lib/format";
+import { useUser } from "@/hooks/user/use-user";
+import { Role } from "@/domains/enums";
 
 // This would typically come from an API call using the ID from the route
 const bookingData = {
@@ -39,28 +47,37 @@ const bookingData = {
   bookingTime: "14:30",
 };
 
-export default function BookingDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function BookingDetailPage() {
+  const { id } = useParams();
+  const { data, isLoading } = useBookingDetailsQuery(id as string);
+  const { data: userData } = useUser({
+    page: 1,
+    size: 10,
+    role: Role.DESIGNER,
+  });
+  console.log("userData", userData);
+  // console.log("data", data);
+  if (isLoading || !data) {
+    return (
+      <div className="justify-center items-center ">
+        <div className="flex flex-col items-center justify-center h-96">
+          <LoadingDots />
+        </div>
+      </div>
+    );
+  }
+
   const {
     code,
     designFile,
     description,
-    unitPrice,
+    // unitPrice,
     status,
     customerName,
     customerEmail,
     bookingDate,
     bookingTime,
   } = bookingData;
-
-  // Format price as currency
-  const formattedPrice = new Intl.NumberFormat("en-US", {
-    style: "decimal",
-    minimumFractionDigits: 0,
-  }).format(unitPrice);
 
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -129,7 +146,9 @@ export default function BookingDetailPage({
                   </p>
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium">{formattedPrice}</span>
+                    <span className="font-medium">
+                      {formatPriceToVND(data?.data.content[0].unitPrice)}
+                    </span>
                   </div>
                 </div>
               </div>

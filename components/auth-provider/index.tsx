@@ -2,7 +2,7 @@
 
 import { useAuthStore } from "@/domains/stores/use-auth-store";
 import { useEffect, ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Role } from "@/domains/enums";
 
 interface AuthProviderProps {
@@ -11,14 +11,18 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { user, role } = useAuthStore();
+  const path = usePathname();
+
   const router = useRouter();
 
   useEffect(() => {
     if (!user) {
       router.replace("/");
-    } else if (user && role === Role.CUSTOMER) {
+    } else if (role === Role.CUSTOMER) {
       router.replace("/t-shirt");
-    } else if (user && role !== Role.CUSTOMER) {
+    } else if (role === Role.DESIGNER) {
+      router.replace("/task-designer");
+    } else if (role === Role.ADMIN || role === Role.MANAGER) {
       router.replace("/dashboard");
     }
   }, [role, user, router]);

@@ -11,10 +11,11 @@ import { BookingDashboardColumn } from "./column";
 
 const BookingDashboardTable = () => {
   const { value } = useParamStore();
+
   const { bookingQuery } = useBookingsQuery({
     params: {
-      page: value.page,
-      size: value.size,
+      page: value.page ?? 1,
+      size: value.size ?? 10,
     },
   });
 

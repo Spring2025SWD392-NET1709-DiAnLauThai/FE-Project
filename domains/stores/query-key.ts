@@ -18,5 +18,21 @@ export const QueryKey = {
     CREATE: "create-booking",
     UPDATE: "update-booking",
     DELETE: "delete-booking",
+    DETAIL: "detail-booking",
   },
+  TASK: {
+    LIST: "list-task",
+    ASSIGN_DESIGNER: "assign-designer",
+    
+  },
+  DESIGNER: {
+    LIST: "list-designer",
+  },
+  TRANSACTION: {
+    CALLBACK: "callback",
+  },
+  COLOR: {
+    CREATE: "create-color",
+    GET: "get-color",
+  }
 };

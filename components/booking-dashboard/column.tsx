@@ -9,7 +9,6 @@ import {
 } from "@/lib/format";
 import { Badge } from "../ui/badge";
 import BookingDashboardMenuAction from "./menu-action";
-import { SelectedDesigner } from "./selected-designer";
 
 export const BookingDashboardColumn: ColumnDef<BookingResponse>[] = [
   {

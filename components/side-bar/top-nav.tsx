@@ -13,8 +13,7 @@ import { useAuthStore } from "@/domains/stores/use-auth-store";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import Profile from "../homepage/profile";
 import { Role } from "@/domains/enums";
-
-// import Profile01 from "../profile";
+import { ColorPickerNav } from "@/components/color-picker/ColorPickerNav"; // Import ColorPickerNav
 
 export default function TopNav() {
   const { user, role } = useAuthStore();
@@ -37,6 +36,9 @@ export default function TopNav() {
 
   // Ghép mảng breadcrumb: cũ + dynamic
   const breadcrumbs = [staticBreadcrumb, ...dynamicBreadcrumbs];
+
+  // Kiểm tra xem người dùng có phải là Designer không
+  const isDesigner = role === Role.DESIGNER;
 
   return (
     <nav className="px-3 sm:px-6 flex items-center justify-between bg-white dark:bg-[#0F0F12] border-b border-gray-200 dark:border-[#1F1F23] h-full">
@@ -63,6 +65,9 @@ export default function TopNav() {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4 ml-auto sm:ml-0">
+        {/* Chỉ hiển thị ColorPicker cho Designer */}
+        {isDesigner && <ColorPickerNav />}
+
         <button
           type="button"
           className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-[#1F1F23] rounded-full transition-colors"

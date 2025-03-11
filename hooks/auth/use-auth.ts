@@ -29,7 +29,15 @@ export const useAuth = () => {
       if (decoded.role === "ADMIN") {
         push("/dashboard");
         return;
+      } else if (decoded.role === "DESIGNER") {
+        push("/task-designer");
+        return;
+      } else if (decoded.role === "MANAGER") {
+        push("/dashboard");
+        return;
       }
+
+      // Default for CUSTOMER
       push("/t-shirt");
     },
     onError: (error) => {

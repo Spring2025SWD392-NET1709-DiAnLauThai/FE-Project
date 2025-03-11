@@ -38,12 +38,16 @@ export interface UserProfile {
 }
 
 export interface UserPayload {
-  id: string;
   email: string;
   name: string;
   phone: number;
   address: string;
   role: UserRole;
-  dateOfBirth: Date;
+  status: UserStatus;
+}
+
+export interface UserPutPayload {
+  id: string;
+  role: UserRole;
   status: UserStatus;
 }

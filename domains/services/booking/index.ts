@@ -2,19 +2,43 @@ import axiosInstance from "@/configs/axios.config";
 import {
   BookingDetailResponse,
   BookingParams,
+  BookingDetailGetParams,
   BookingPayload,
   BookingPayloadResponse,
   BookingResponse,
-} from "@/domains/models/booking";
+  BookingDetail,
 
+} from "@/domains/models/booking";
 export const BookingService = {
   get: {
     list: async (
       params: BookingParams
     ): Promise<RootResponse<Pagination<BookingResponse>>> => {
       try {
-        const response = await axiosInstance.get("/bookings", { params });
-
+        const response = await axiosInstance.get("/bookings", {
+          params: {
+            page: params.page,
+            size: params.size,
+          },
+        });
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    getBookingDetails: async (
+      params: BookingDetailGetParams
+    ): Promise<RootResponse<Pagination<BookingDetail>>> => {
+      try {
+        const response = await axiosInstance.get(
+          `/bookingsdetails/bookings/${params.bookingId}/details`,
+          {
+            params: {
+              page: params.page,
+              size: params.size,
+            },
+          }
+        );
         return response.data;
       } catch (error) {
         throw error;

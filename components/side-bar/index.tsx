@@ -10,6 +10,8 @@ import {
   Shirt,
   Archive,
   ClipboardList,
+  PaintBucket,
+  ShirtIcon,
 } from "lucide-react";
 
 interface NavItem {
@@ -46,6 +48,12 @@ export default function Sidebar() {
           roles: [Role.ADMIN, Role.MANAGER],
         },
         {
+          href: "/dashboard/t-shirt",
+          icon: ShirtIcon,
+          label: "T-Shirt",
+          roles: [Role.ADMIN, Role.DESIGNER, Role.MANAGER],
+        },
+        {
           href: "/dashboard/users",
           icon: Users2,
           label: "User Account",
@@ -56,6 +64,18 @@ export default function Sidebar() {
           icon: Shirt,
           label: "T-Shirt",
           roles: [Role.CUSTOMER],
+        },
+        {
+          href: "/task-designer",
+          icon: Shirt,
+          label: "Task",
+          roles: [Role.DESIGNER],
+        },
+        {
+          href: "/saved-color",
+          icon: PaintBucket,
+          label: "Saved Color",
+          roles: [Role.DESIGNER],
         },
         {
           href: "/my-booking",
@@ -92,13 +112,13 @@ export default function Sidebar() {
           href: "/dashboard/tasks",
           icon: ClipboardList,
           label: "Task List",
-          roles: [Role.ADMIN, Role.DESIGNER],
+          roles: [Role.ADMIN],
         },
         {
           href: "/dashboard/order-list",
           icon: Archive,
           label: "Order List",
-          roles: [Role.ADMIN, Role.MANAGER, Role.DESIGNER],
+          roles: [Role.ADMIN, Role.MANAGER],
         },
       ],
     },
