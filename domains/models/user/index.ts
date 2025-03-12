@@ -11,20 +11,27 @@ export enum UserStatus {
   INACTIVE = "INACTIVE",
 }
 
+export type Role = "ADMIN" | "CUSTOMER" | "DESIGNER" | "MANAGER";
+
 // get all
-export type UserParams = RootRequest;
+export interface UserParams extends RootRequest {
+  role?: Role;
+  activationEnums?: UserStatus;
+}
 
 // response
 export interface UserResponse {
-  name: string;
+  id: string;
   email: string;
-  phone: number;
+  name: string;
   address: string;
+  phone: string;
   dateOfBirth: Date;
-  role: UserRole;
-  createdAt: Date;
   status: string;
-  image_url: string;
+  image_url: null;
+  role: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface UserProfile {

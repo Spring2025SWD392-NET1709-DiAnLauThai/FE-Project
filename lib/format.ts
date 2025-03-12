@@ -100,5 +100,5 @@ export function formatFromISOString(
 }
 
 export function formatPriceToVND(price: number): string {
-  return price.toLocaleString("vi-VN", { style: "decimal", currency: "VND" });
+  return price?.toLocaleString("vi-VN", { style: "decimal", currency: "VND" });
 }

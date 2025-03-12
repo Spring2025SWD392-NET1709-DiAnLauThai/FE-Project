@@ -2,12 +2,9 @@ import axiosInstance from "@/configs/axios.config";
 import {
   BookingDetailResponse,
   BookingParams,
-  BookingDetailGetParams,
   BookingPayload,
   BookingPayloadResponse,
   BookingResponse,
-  BookingDetail,
-
 } from "@/domains/models/booking";
 export const BookingService = {
   get: {
@@ -26,30 +23,30 @@ export const BookingService = {
         throw error;
       }
     },
-    getBookingDetails: async (
-      params: BookingDetailGetParams
-    ): Promise<RootResponse<Pagination<BookingDetail>>> => {
-      try {
-        const response = await axiosInstance.get(
-          `/bookingsdetails/bookings/${params.bookingId}/details`,
-          {
-            params: {
-              page: params.page,
-              size: params.size,
-            },
-          }
-        );
-        return response.data;
-      } catch (error) {
-        throw error;
-      }
-    },
+    // getBookingDetails: async (
+    //   params: BookingDetailGetParams
+    // ): Promise<RootResponse<Pagination<BookingDetail>>> => {
+    //   try {
+    //     const response = await axiosInstance.get(
+    //       `/bookingsdetails/bookings/${params.bookingId}/details`,
+    //       {
+    //         params: {
+    //           page: params.page,
+    //           size: params.size,
+    //         },
+    //       }
+    //     );
+    //     return response.data;
+    //   } catch (error) {
+    //     throw error;
+    //   }
+    // },
     detail: async (
-      id: string
-    ): Promise<RootResponse<Pagination<BookingDetailResponse>>> => {
+      bookingId: string
+    ): Promise<RootResponse<BookingDetailResponse>> => {
       try {
         const response = await axiosInstance.get(
-          `/bookingsdetails/bookings/${id}/details`
+          `/bookingsdetails/bookings/${bookingId}/details`
         );
 
         return response.data;

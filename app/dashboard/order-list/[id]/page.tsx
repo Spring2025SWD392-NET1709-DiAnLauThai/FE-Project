@@ -1,19 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import {
-  ArrowLeft,
-  Calendar,
-  Clock,
-  DollarSign,
-  Download,
-  Edit,
-  FileText,
-  User,
-} from "lucide-react";
+import { format } from "date-fns";
+import { CalendarIcon, Clock, DollarSign, User } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,197 +14,296 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useBookingDetailsQuery } from "@/hooks/booking/use-booking";
-import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
+import { Badge } from "@/components/ui/badge";
 import { useParams } from "next/navigation";
-import { formatPriceToVND } from "@/lib/format";
+import { useBookingDetailsQuery } from "@/hooks/booking/use-booking";
+import { formatFromISOStringVN, FormatType } from "@/lib/format";
 import { useUser } from "@/hooks/user/use-user";
 import { Role } from "@/domains/enums";
-
-// This would typically come from an API call using the ID from the route
-const bookingData = {
-  bookingDetailId: "56ace20c-20e7-4a71-a0b4-57311ac73aa6",
-  code: "1234567890",
-  designFile:
-    "http://res.cloudinary.com/dnkxutxce/image/upload/v1741430086/js9sj0ghbizbqvzihkpq.png",
-  description: "<p>ádasdasdasd</p>",
-  unitPrice: 100000,
-  // Additional mock data for the UI
-  status: "Pending",
-  customerName: "John Doe",
-  customerEmail: "john.doe@example.com",
-  bookingDate: "2023-06-15",
-  bookingTime: "14:30",
-};
+import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useAssignDesignerForm } from "@/hooks/assign-tasks/use-task-form";
 
 export default function BookingDetailPage() {
   const { id } = useParams();
-  const { data, isLoading } = useBookingDetailsQuery(id as string);
-  const { data: userData } = useUser({
-    page: 1,
-    size: 10,
+  const [selectedDesigner, setSelectedDesigner] = useState("");
+  // const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { data: users, isLoading: usersLoading } = useUser({
     role: Role.DESIGNER,
+    size: 100,
+    page: 1,
   });
-  console.log("userData", userData);
-  // console.log("data", data);
-  if (isLoading || !data) {
+  const { data: booking, isLoading: bookingLoading } = useBookingDetailsQuery(
+    id as string
+  );
+
+  const { form, onSubmit, isSubmitting } = useAssignDesignerForm(id as string);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "DEPOSIT_PAID":
+        return "bg-amber-500";
+      case "COMPLETED":
+        return "bg-green-500";
+      case "CANCELLED":
+        return "bg-red-500";
+      default:
+        return "bg-blue-500";
+    }
+  };
+
+  if (
+    bookingLoading ||
+    usersLoading ||
+    booking === undefined ||
+    users === undefined
+  ) {
     return (
-      <div className="justify-center items-center ">
-        <div className="flex flex-col items-center justify-center h-96">
-          <LoadingDots />
-        </div>
+      <div className="flex-1 flex justify-center items-center min-h-screen">
+        <LoadingDots />
       </div>
     );
   }
 
-  const {
-    code,
-    designFile,
-    description,
-    // unitPrice,
-    status,
-    customerName,
-    customerEmail,
-    bookingDate,
-    bookingTime,
-  } = bookingData;
-
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" asChild>
-            <Link href="/dashboard/order-list">
-              <ArrowLeft className="h-4 w-4" />
-              <span className="sr-only">Back to bookings</span>
-            </Link>
-          </Button>
-          <h1 className="text-2xl font-bold tracking-tight">Booking Details</h1>
-          <Badge
-            variant={
-              status === "Pending"
-                ? "outline"
-                : status === "Completed"
-                ? "success"
-                : "secondary"
-            }
-          >
-            {status}
+    <div className="container mx-auto py-6 px-4 md:px-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Booking Details</h1>
+          <p className="text-muted-foreground">
+            Manage booking {booking?.data.code}
+          </p>
+        </div>
+        <div className="mt-4 md:mt-0 flex items-center gap-2">
+          <Badge className={getStatusColor(booking?.data.bookingStatus || "")}>
+            {booking?.data.bookingStatus.replace("_", " ")}
           </Badge>
+          <Button variant="outline" onClick={() => window.history.back()}>
+            Back
+          </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Booking Information</CardTitle>
-              <CardDescription>Booking ID: {code}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Separator />
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Customer
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle>Booking Summary</CardTitle>
+            <CardDescription>
+              Created on{" "}
+              {formatFromISOStringVN(
+                booking?.data.datecreated || new Date(),
+                FormatType.DATETIME_VN
+              )}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Booking Code
+                </p>
+                <p className="font-medium">{booking?.data.code}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Title
+                </p>
+                <p className="font-medium">{booking?.data.title}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Start Date
+                </p>
+                <div className="flex items-center">
+                  <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <p>
+                    {formatFromISOStringVN(
+                      booking?.data.startdate || new Date(),
+                      FormatType.DATETIME_VN
+                    )}
                   </p>
-                  <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <p className="font-medium">{customerName}</p>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {customerEmail}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Booking Date & Time
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <p className="font-medium">{bookingDate}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <p className="font-medium">{bookingTime}</p>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Pricing
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium">
-                      {formatPriceToVND(data?.data.content[0].unitPrice)}
-                    </span>
-                  </div>
                 </div>
               </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  End Date
+                </p>
+                <div className="flex items-center">
+                  <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <p>
+                    {formatFromISOStringVN(
+                      booking?.data.enddate || new Date(),
+                      FormatType.DATETIME_VN
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Total Price
+                </p>
+                <div className="flex items-center">
+                  <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <p className="font-bold">
+                    {formatCurrency(booking?.data.totalPrice || 0)}
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Last Updated
+                </p>
+                <div className="flex items-center">
+                  <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <p>
+                    {formatFromISOStringVN(
+                      booking?.data.updateddate || new Date(),
+                      FormatType.DATETIME_VN
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
 
-              <Separator />
+            <Separator />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Description</CardTitle>
-                  </CardHeader>
-                  <CardContent>
+            <div>
+              <h3 className="text-lg font-medium mb-4">Booking Details</h3>
+              {booking?.data.bookingDetails.map((detail) => (
+                <div key={detail.bookingDetailId} className="space-y-4">
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Description
+                    </p>
                     <div
-                      className="p-3 bg-muted rounded-md text-sm"
-                      dangerouslySetInnerHTML={{ __html: description }}
+                      className="prose"
+                      dangerouslySetInnerHTML={{ __html: detail.description }}
                     />
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Design File</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex flex-col items-center">
-                    <div className="relative w-full aspect-square mb-4 border rounded-md overflow-hidden">
+                    {/* <p>{detail.description}</p> */}
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Unit Price
+                    </p>
+                    <p className="font-medium">
+                      {formatCurrency(detail.unitPrice)}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Design File
+                    </p>
+                    <div className="border rounded-md overflow-hidden max-w-md">
                       <Image
-                        src={designFile || "/placeholder.svg"}
+                        src={detail.designFile || "/placeholder.svg"}
                         alt="Design File"
-                        fill
-                        className="object-cover"
+                        width={400}
+                        height={300}
+                        className="w-full h-auto object-contain"
                       />
                     </div>
-                    <Button variant="outline" className="w-full">
-                      <Download className="mr-2 h-4 w-4" />
-                      Download Design
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-              <Separator />
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button className="w-full">
-                <FileText className="mr-2 h-4 w-4" />
-                Generate Invoice
-              </Button>
-              <Button variant="outline" className="w-full">
-                Send Reminder
-              </Button>
-            </CardContent>
-            <CardFooter>
-              <Button variant="destructive" className="w-full">
-                Cancel Booking
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
+        <Form {...form}>
+          <form onSubmit={onSubmit}>
+            <Card>
+              <CardHeader>
+                <CardTitle>Assign Designer</CardTitle>
+                <CardDescription>
+                  Select a designer to work on this booking
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="designerId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel> Designer</FormLabel>
+                      <Select
+                        defaultValue={field.value}
+                        {...field}
+                        onValueChange={(value) => {
+                          setSelectedDesigner(value);
+                          field.onChange(value);
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger id="designer">
+                            <SelectValue placeholder="Select a designer" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {users?.data.content.map((designer) => (
+                            <SelectItem key={designer.id} value={designer.id}>
+                              {designer.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        {selectedDesigner && (
+                          <section className="p-4 border rounded-md bg-muted/50">
+                            <section className="flex items-center gap-2 mb-2">
+                              <User className="h-4 w-4 text-muted-foreground" />
+                              <p className="font-medium">
+                                {
+                                  users.data.content.find(
+                                    (d) => d.id === selectedDesigner
+                                  )?.name
+                                }
+                              </p>
+                            </section>
+                            <p className="text-sm text-muted-foreground">
+                              This designer will be notified about the
+                              assignment and will have access to all booking
+                              details.
+                            </p>
+                          </section>
+                        )}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? "Submitting..." : "Assign & Submit"}
+                </Button>
+              </CardFooter>
+            </Card>
+          </form>
+        </Form>
       </div>
     </div>
   );

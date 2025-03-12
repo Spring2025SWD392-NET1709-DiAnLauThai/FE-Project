@@ -1,24 +1,28 @@
 import axiosInstance from "@/configs/axios.config";
-import { UserParams, UserPayload, UserProfile, UserPutPayload, UserResponse } from "@/domains/models/user";
+import {
+  UserParams,
+  UserPayload,
+  UserProfile,
+  UserPutPayload,
+  UserResponse,
+} from "@/domains/models/user";
 
 export const userService = {
   get: {
     list: async (
       params: UserParams = {}
-    ): Promise<RootResponse<Pagination<UserParams>>> => {
+    ): Promise<RootResponse<Pagination<UserResponse>>> => {
       try {
         // Make sure params is properly structured with defaults if needed
-        const defaultParams: UserParams = {
-          page: 1,
-          size: 10,
-          sortDir: "asc",
-          sortBy: "createdAt",
-          ...params,
-        };
+        // const defaultParams: UserParams = {
+        //   page: 1,
+        //   size: 10,
+        //   sortDir: "asc",
+        //   sortBy: "createdAt",
+        //   ...params,
+        // };
 
-        const response = await axiosInstance.get("/accounts", {
-          params: defaultParams,
-        });
+        const response = await axiosInstance.get("/accounts", { params });
         return response.data;
       } catch (error) {
         throw error;

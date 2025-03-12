@@ -12,13 +12,14 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { ClipboardList, ClipboardX, MoreHorizontal } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface BookingMenuActionProps {
   booking: BookingResponse;
 }
 
 const BookingMenuAction: React.FC<BookingMenuActionProps> = ({ booking }) => {
-  console.log("booking", booking);
+  const { replace } = useRouter();
 
   return (
     <DropdownMenu>
@@ -30,7 +31,7 @@ const BookingMenuAction: React.FC<BookingMenuActionProps> = ({ booking }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => replace(`/my-booking/${booking.id}`)}>
           <ClipboardList />
           <span>View Detail</span>
         </DropdownMenuItem>

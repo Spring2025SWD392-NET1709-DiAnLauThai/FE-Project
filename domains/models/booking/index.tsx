@@ -12,27 +12,40 @@ export enum BookingStatus {
   UNPAID = "UNPAID",
 }
 
-export interface BookingResponse {
-  id: string;
-  totalPrice: number;
-  totalQuantity: number;
-  status: BookingStatus;
-  startDate: Date;
-  endDate: Date;
-  createdDate: Date;
-  updateDate: Date;
-  code: string;
-  title: string;
-  assignedDesigner: string;
-}
-
 export interface BookingDetailGetParams {
   bookingId: string;
   page?: number;
   size?: number;
 }
 
+export interface BookingResponse {
+  id: string;
+  totalPrice: number;
+  totalQuantity: number;
+  status: string;
+  startDate: Date;
+  endDate: Date;
+  updateDate: Date;
+  createdDate: Date;
+  code: string;
+  title: string;
+  assignedDesigner: null;
+}
+
 export interface BookingDetailResponse {
+  totalPrice: number;
+  totalQuantity: number;
+  bookingStatus: string;
+  datecreated: Date;
+  updateddate: Date;
+  startdate: Date;
+  enddate: Date;
+  code: string;
+  title: string;
+  bookingDetails: BookingDetail[];
+}
+
+export interface BookingDetail {
   bookingDetailId: string;
   designFile: string;
   description: string;

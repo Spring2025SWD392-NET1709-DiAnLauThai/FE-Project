@@ -1,21 +1,12 @@
 import { userService } from "@/domains/services/user";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useToast } from "../use-toast";
-import { UserProfile, UserPayload, UserParams, UserPutPayload } from "@/domains/models/user";
+import { UserPayload, UserParams, UserPutPayload } from "@/domains/models/user";
 import { QueryKey } from "@/domains/stores/query-key";
 
-export const useUser = (
-  params: UserParams = {
-    page: 1,
-    size: 10,
-    keyword: "",
-    sortDir: "asc",
-    sortBy: "createdAt",
-    ...params,
-  }
-) => {
+export const useUser = (params: UserParams) => {
   return useQuery({
-    queryKey: [QueryKey.LIST_USER, params],
+    queryKey: [QueryKey.LIST_USER, params ? params : {}],
     queryFn: () => userService.get.list(params),
   });
 };
