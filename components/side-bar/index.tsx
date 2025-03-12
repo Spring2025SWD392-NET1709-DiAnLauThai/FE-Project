@@ -120,6 +120,12 @@ export default function Sidebar() {
           label: "Order List",
           roles: [Role.ADMIN, Role.MANAGER],
         },
+        {
+          href: "/dashboard/t-shirt/create",
+          icon: Shirt,
+          label: "Create T-shirt",
+          roles: [Role.ADMIN, Role.MANAGER, Role.DESIGNER],
+        },
       ],
     },
   ];

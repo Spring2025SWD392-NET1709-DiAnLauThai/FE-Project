@@ -83,7 +83,7 @@ export default function BookingDetailPage() {
     users === undefined
   ) {
     return (
-      <div className="flex-1 flex justify-center items-center min-h-screen">
+      <div className="h-full flex items-center justify-center">
         <LoadingDots />
       </div>
     );

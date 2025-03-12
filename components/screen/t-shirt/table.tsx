@@ -1,17 +1,16 @@
 "use client";
 
 import React from "react";
-import SearchInput from "../plugins/search-input";
-import { useBookingsQuery } from "@/hooks/booking/use-booking";
-import PaginationTable from "../plugins/pagination";
-import { BookingResponse } from "@/domains/models/booking";
-import { BookingColumn } from "./columns";
+import SearchInput from "../../plugins/search-input";
+import { useTShirtsQuery } from "@/hooks/t-shirt/use-tshirt";
+import PaginationTable from "../../plugins/pagination";
 import { useParamStore } from "@/domains/stores/params-store";
-import { DataTable } from "../plugins/table";
+import { DataTable } from "../../plugins/table";
+import { TShirtColumns } from "./columns";
 
-const BookingTable = () => {
+const TShirtTable = () => {
   const { value } = useParamStore();
-  const { bookingQuery } = useBookingsQuery({
+  const { queryTShirts } = useTShirtsQuery({
     params: {
       page: value.page ?? 1,
       size: value.size ?? 10,
@@ -21,30 +20,29 @@ const BookingTable = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center w-full">
-        <SearchInput keyValue="manufacture" />
+        <SearchInput keyValue="name" />
 
         <div className="flex items-center space-x-4">
           <PaginationTable
             value={
-              bookingQuery.data?.data ??
-              ({
+              queryTShirts.data?.data ?? {
                 content: [],
                 totalElements: 0,
                 totalPages: 0,
                 pageSize: 0,
                 pageNumber: 0,
-              } as Pagination<BookingResponse>)
+              }
             }
           />
         </div>
       </div>
 
       <DataTable
-        columns={BookingColumn}
-        data={bookingQuery.data?.data?.content ?? []}
+        columns={TShirtColumns}
+        data={queryTShirts.data?.data?.content ?? []}
       />
     </div>
   );
 };
 
-export default BookingTable;
+export default TShirtTable;

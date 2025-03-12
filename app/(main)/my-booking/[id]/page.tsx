@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, DollarSign, Package } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarIcon,
+  Clock,
+  DollarSign,
+  Package,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +25,7 @@ import { useParams } from "next/navigation";
 import { useBookingDetailsQuery } from "@/hooks/booking/use-booking";
 import { FormatType, formatFromISOStringVN } from "@/lib/format";
 import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function CustomerBookingDetailPage() {
   const { id } = useParams();
@@ -261,15 +268,38 @@ export default function CustomerBookingDetailPage() {
                     className="text-sm mb-3"
                     dangerouslySetInnerHTML={{ __html: detail.description }}
                   />
-                  <div className="border rounded-lg overflow-hidden">
-                    <Image
-                      src={detail.designFile || "/placeholder.svg"}
-                      alt={`Design ${index + 1}`}
-                      width={800}
-                      height={600}
-                      className="w-full h-auto object-contain"
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="border rounded-lg overflow-hidden">
+                      <Image
+                        src={detail.designFile || "/placeholder.svg"}
+                        alt={`Design ${index + 1}`}
+                        width={800}
+                        height={600}
+                        className="w-full h-auto object-contain"
+                      />
+                    </div>
+                    <div className="flex items-center justify-center">
+                      <ArrowRight className="size-10" />
+                    </div>
+                    <div className="border rounded-lg overflow-hidden">
+                      <Image
+                        src={detail.designFile || "/placeholder.svg"}
+                        alt={`Design ${index + 1}`}
+                        width={800}
+                        height={600}
+                        className="w-full h-auto object-contain"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <h2>Note</h2>
+                    <Textarea
+                      className="resize-none"
+                      // value={detail.note}
+                      // disabled
                     />
                   </div>
+
                   {index < booking?.data.bookingDetails.length - 1 && (
                     <Separator className="mt-6" />
                   )}

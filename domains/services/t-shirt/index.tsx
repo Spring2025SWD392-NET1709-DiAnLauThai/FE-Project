@@ -1,5 +1,9 @@
 import axiosInstance from "@/configs/axios.config";
-import { TShirtParams, TShirtResponse } from "@/domains/models/tshirt";
+import {
+  TShirtParams,
+  TShirtPayload,
+  TShirtResponse,
+} from "@/domains/models/tshirt";
 
 export const TShirtService = {
   get: {
@@ -13,8 +17,48 @@ export const TShirtService = {
         throw error;
       }
     },
+    detail: async (id: string): Promise<RootResponse<TShirtResponse>> => {
+      try {
+        const response = await axiosInstance.get(`/tshirts/${id}`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
-  post: {},
-  put: {},
-  delete: {},
+  post: {
+    create: async (
+      data: TShirtPayload
+    ): Promise<RootResponse<TShirtResponse>> => {
+      try {
+        const response = await axiosInstance.post("/tshirts", data);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+  },
+  put: {
+    update: async (
+      id: string,
+      data: TShirtPayload
+    ): Promise<RootResponse<TShirtResponse>> => {
+      try {
+        const response = await axiosInstance.put(`/tshirts/${id}`, data);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+  },
+  delete: {
+    delete: async (id: string): Promise<RootResponse<TShirtResponse>> => {
+      try {
+        const response = await axiosInstance.delete(`/tshirts/${id}`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+  },
 };

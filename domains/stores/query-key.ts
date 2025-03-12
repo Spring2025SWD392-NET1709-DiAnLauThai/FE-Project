@@ -11,7 +11,8 @@ export const QueryKey = {
     LIST: "list-tshirt",
     CREATE: "create-tshirt",
     UPDATE: "update-tshirt",
-    DELETE: "delete",
+    DELETE: "delete-tshirt",
+    DETAIL: "detail-tshirt",
   },
   BOOKING: {
     LIST: "list-booking",
@@ -23,16 +24,19 @@ export const QueryKey = {
   TASK: {
     LIST: "list-task",
     ASSIGN_DESIGNER: "assign-designer",
-    
   },
   DESIGNER: {
     LIST: "list-designer",
   },
+
   TRANSACTION: {
+    SYSTEM: "system-transaction",
+    LIST: "list-transaction",
+    DETAIL: "detail-transaction",
     CALLBACK: "callback",
   },
   COLOR: {
     CREATE: "create-color",
     GET: "get-color",
-  }
+  },
 };

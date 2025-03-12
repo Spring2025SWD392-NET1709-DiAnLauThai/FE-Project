@@ -1,21 +1,14 @@
-import { BarChart3, TrendingUp } from "lucide-react";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProtectedRoute from "@/components/auth-provider/protected-route";
 import { Role } from "@/domains/enums";
+import { LayoutDashboard } from "lucide-react";
 
 export default function DashboardPage() {
   return (
     <ProtectedRoute allowedRoles={[Role.ADMIN, Role.MANAGER]}>
-      <div className="space-y-6">
+      <div className="h-full w-full flex justify-center items-center">
+        <LayoutDashboard className="size-24 text-muted-foreground" />
+      </div>
+      {/* <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Dashboard</h1>
         </div>
@@ -127,7 +120,7 @@ export default function DashboardPage() {
             </Tabs>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
     </ProtectedRoute>
   );
 }
