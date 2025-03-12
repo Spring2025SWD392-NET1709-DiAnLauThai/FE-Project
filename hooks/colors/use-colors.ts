@@ -10,7 +10,7 @@ export const useCreateColor = () => {
     mutationKey: [QueryKey.COLOR.CREATE],
     mutationFn: async (payload: ColorPayload) =>
       await ColorService.post.addColor(payload),
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.toast({
         title: "Save color success",
         description: "Save success",

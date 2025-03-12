@@ -3,12 +3,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTshirtMutation } from "./use-tshirt";
 
-export const useTshirtForm = (id: string) => {
+export const useTshirtForm = (id?: string) => {
   const { createTshirt, updateTshirt } = useTshirtMutation();
   const form = useForm<TShirt>({
     resolver: zodResolver(TShirtSchema),
     defaultValues: {
-      bookingDetailId: "",
       description: "",
       imgurl: "",
       tshirtname: "",
@@ -17,11 +16,12 @@ export const useTshirtForm = (id: string) => {
   });
 
   const onSubmit = form.handleSubmit((data) => {
-    if (id) {
-      updateTshirt.mutate({ id, data });
-    } else {
-      createTshirt.mutate(data);
-    }
+    console.log("Saving design:", data);
+    // if (id) {
+    //   updateTshirt.mutate({ id, data });
+    // } else {
+    //   createTshirt.mutate(data);
+    // }
   });
 
   return {
