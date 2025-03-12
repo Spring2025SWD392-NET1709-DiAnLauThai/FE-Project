@@ -33,7 +33,7 @@ const TransactionMenuAction: React.FC<TransactionMenuActionProps> = ({
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuItem
-          onClick={() => replace(`/transactions/${transaction.id}`)}
+          onClick={() => replace(`/dashboard/transactions/${transaction.id}`)}
         >
           <Eye className="mr-2 h-4 w-4" />
           <span>View Detail</span>
