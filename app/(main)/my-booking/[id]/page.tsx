@@ -34,9 +34,9 @@ export default function CustomerBookingDetailPage() {
   );
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("vi-VN", {
       style: "currency",
-      currency: "USD",
+      currency: "VND",
     }).format(amount);
   };
 
@@ -198,7 +198,6 @@ export default function CustomerBookingDetailPage() {
                   Total Price
                 </h3>
                 <div className="flex items-center">
-                  <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />
                   <p className="font-bold">
                     {formatCurrency(booking?.data.totalPrice || 0)}
                   </p>

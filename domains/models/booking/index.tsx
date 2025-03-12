@@ -37,7 +37,7 @@ export interface BookingDetailResponse {
   totalQuantity: number;
   bookingStatus: string;
   datecreated: Date;
-  updateddate: Date;
+  updateddate: Date;  
   startdate: Date;
   enddate: Date;
   code: string;

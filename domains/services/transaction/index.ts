@@ -1,23 +1,38 @@
 import axiosInstance from "@/configs/axios.config";
-import { TransactionParams } from "@/domains/models/transaction";
+import { TransactionDetailResponse, TransactionParams, TransactionResponse } from "@/domains/models/transaction";
 
 export const TransactionService = {
   get: {
-    list: async (params: TransactionParams) => {
-      const response = await axiosInstance.get("/transcations", { params });
-      return response.data;
+    list: async (params: TransactionParams): Promise<RootResponse<TransactionResponse>> => {
+      try {
+        const response = await axiosInstance.get("/transcations/customer", { params });
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
     },
 
-    listSystem: async (params: TransactionParams) => {
-      const response = await axiosInstance.get("/transcations/system", {
-        params,
-      });
-      return response.data;
+    listSystem: async (params: TransactionParams): Promise<RootResponse<TransactionResponse>> => {
+      try {
+        const response = await axiosInstance.get("/transcations/system", {
+          params,
+        });
+        return response.data;
+        
+      } catch (error) {
+        throw error;
+      }
     },
 
-    detail: async (id: string) => {
-      const response = await axiosInstance.get(`/transcations/${id}`);
-      return response.data;
+    detail: async (id: string): Promise<RootResponse<TransactionDetailResponse>> => {
+      
+      try {
+        const response = await axiosInstance.get(`/transcations/detail/${id}`);
+        return response.data;
+        
+      } catch (error) {
+        throw error;
+      }
     },
   },
 };

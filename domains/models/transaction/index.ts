@@ -13,4 +13,21 @@ export interface TransactionResponse {
   transactionType: string;
 }
 
+export interface BookingDetailItem {
+  bookingId: string | null;
+  bookingDetailId: string;
+  designId: string | null;
+  designFile: string;
+  description: string;
+  unitPrice: number;
+}
+
+export interface TransactionDetailResponse{
+  transaction: TransactionResponse;
+  bookingDetail: BookingDetailItem[];
+}
+
+
+
+
 export interface TransactionParams extends RootRequest {}

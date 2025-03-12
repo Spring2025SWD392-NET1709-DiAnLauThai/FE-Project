@@ -24,3 +24,13 @@ export const useTransactionDetail = (id: string) => {
 
   return detailQuery;
 };
+
+export const useTransactionCustomer = (params: TransactionParams) => {
+  const listCustomerQuery = useQuery({
+    queryKey: [QueryKey.TRANSACTION.LIST, params],
+    queryFn: () => TransactionService.get.list(params),
+    retry: 2,
+  });
+
+  return listCustomerQuery;
+};
