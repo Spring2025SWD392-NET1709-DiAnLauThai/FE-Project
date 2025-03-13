@@ -11,9 +11,9 @@ import React from "react";
 
 export const useBookingForm = () => {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = React.useState(false);
   const queryClient = new QueryClient();
   const { createBooking } = useBookingMutation();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const form = useForm<BookingSchema>({
     resolver: zodResolver(bookingSchema),
@@ -32,6 +32,7 @@ export const useBookingForm = () => {
   });
 
   const onSubmit = form.handleSubmit(async (data) => {
+    setIsLoading(true);
     const newBookingDetails: Bookingdetail[] = await Promise.all<Bookingdetail>(
       data.bookingdetails.map(async (detail) => {
         const url = await FileService.post
@@ -42,12 +43,12 @@ export const useBookingForm = () => {
           })
           .catch((error) => {
             setIsLoading(false);
+
             console.error("error", error);
           })
           .finally(() => {
             setIsLoading(false);
           });
-
         return {
           description: detail.description.toString(),
           designFile: url,
@@ -63,7 +64,7 @@ export const useBookingForm = () => {
       bookingdetails: newBookingDetails,
     };
 
-    createBooking.mutate(value, {
+    await createBooking.mutate(value, {
       onSuccess: (data) => {
         toast({
           title: "Success",
@@ -78,5 +79,5 @@ export const useBookingForm = () => {
     });
   });
 
-  return { form, onSubmit, isLoading: createBooking.isPending || isLoading };
+  return { form, onSubmit, isLoading: createBooking.isPending };
 };
