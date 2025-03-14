@@ -23,7 +23,9 @@ export const TransactionColumns: ColumnDef<TransactionResponse>[] = [
       const transaction = row.original;
 
       return (
-        <Badge variant="outline">{formatPriceToVND(transaction.transactionAmount)}</Badge>
+        <Badge variant="outline">
+          {formatPriceToVND(transaction.transactionAmount)}
+        </Badge>
       );
     },
   },
@@ -35,7 +37,10 @@ export const TransactionColumns: ColumnDef<TransactionResponse>[] = [
 
       return (
         <Badge variant="outline">
-          {formatFromISOStringVN(transaction.transactionDate, FormatType.DATETIME)}
+          {formatFromISOStringVN(
+            transaction.transactionDate,
+            FormatType.DATETIME
+          )}
         </Badge>
       );
     },
@@ -47,6 +52,11 @@ export const TransactionColumns: ColumnDef<TransactionResponse>[] = [
   {
     accessorKey: "reason",
     header: "Reason",
+    cell: ({ row }) => {
+      const transaction = row.original;
+
+      return transaction.reason || "N/A";
+    },
   },
   {
     accessorKey: "transactionMethod",
@@ -55,6 +65,11 @@ export const TransactionColumns: ColumnDef<TransactionResponse>[] = [
   {
     accessorKey: "transactionType",
     header: "Type",
+    cell: ({ row }) => {
+      const transaction = row.original;
+
+      return transaction.transactionType || "N/A";
+    },
   },
   {
     accessorKey: "transactionStatus",
@@ -63,9 +78,15 @@ export const TransactionColumns: ColumnDef<TransactionResponse>[] = [
       const transaction = row.original;
       const status = transaction.transactionStatus;
 
-      // Define status color variants
-      let variant = "default";
-      
+      // Define status color variants with proper typing
+      let variant:
+        | "default"
+        | "secondary"
+        | "destructive"
+        | "outline"
+        | "success"
+        | "warning" = "default";
+
       switch (status?.toLowerCase()) {
         case "completed":
         case "success":
@@ -83,7 +104,7 @@ export const TransactionColumns: ColumnDef<TransactionResponse>[] = [
           variant = "secondary";
       }
 
-      return <Badge variant={variant}>{status}</Badge>;
+      return <Badge variant={variant}>{status || "Unknown"}</Badge>;
     },
   },
   {

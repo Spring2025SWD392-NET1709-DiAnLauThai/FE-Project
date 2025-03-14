@@ -31,7 +31,7 @@ export const TShirtService = {
       data: TShirtPayload
     ): Promise<RootResponse<TShirtResponse>> => {
       try {
-        const response = await axiosInstance.post("/tshirts", data);
+        const response = await axiosInstance.post("/tshirts/create", data);
         return response.data;
       } catch (error) {
         throw error;

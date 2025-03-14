@@ -5,6 +5,7 @@ export const TShirtSchema = z.object({
   imgurl: z.string().url(),
   tshirtname: z.string(),
   colorlist: z.array(z.string()).min(1),
+  imagefile: z.string(),
 });
 
 // Type inference

@@ -3,8 +3,16 @@ export interface TShirtResponse {
   name: string;
   description: string;
   imageUrl: string;
-  createdAt: Date;
-  
+  createdAt: Date; 
+}
+
+export interface TShirtPayload{
+  description: string,
+  imgurl: string,
+  tshirtname: string,
+  colorlist: [
+    string
+  ],
+  imagefile: string
 }
 export interface TShirtParams extends RootRequest {}
-export interface TShirtPayload {}

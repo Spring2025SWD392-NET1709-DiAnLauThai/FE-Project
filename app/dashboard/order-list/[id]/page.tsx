@@ -25,7 +25,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useParams } from "next/navigation";
 import { useBookingDetailsQuery } from "@/hooks/booking/use-booking";
-import { formatFromISOStringVN, FormatType } from "@/lib/format";
+import { formatFromISOStringVN, formatPriceToVND, FormatType } from "@/lib/format";
 import { useUser } from "@/hooks/user/use-user";
 import { Role } from "@/domains/enums";
 import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
@@ -167,9 +167,8 @@ export default function BookingDetailPage() {
                   Total Price
                 </p>
                 <div className="flex items-center">
-                  <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />
                   <p className="font-bold">
-                    {formatCurrency(booking?.data.totalPrice || 0)}
+                    {formatPriceToVND(booking?.data.totalPrice || 0)} VNĐ
                   </p>
                 </div>
               </div>
@@ -210,7 +209,7 @@ export default function BookingDetailPage() {
                       Unit Price
                     </p>
                     <p className="font-medium">
-                      {formatCurrency(detail.unitPrice)}
+                      {formatPriceToVND(detail.unitPrice)} VNĐ
                     </p>
                   </div>
                   <div className="space-y-2">

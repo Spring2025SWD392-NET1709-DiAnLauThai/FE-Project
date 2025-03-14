@@ -127,7 +127,7 @@ export default function CustomerTransactionDetailPage() {
                   Reason
                 </h3>
                 <div className="flex items-center">
-                  <p>{transaction.reason}</p>
+                  <p>{transaction.reason || "N/A"}</p>
                 </div>
               </div>
             </div>
@@ -147,11 +147,9 @@ export default function CustomerTransactionDetailPage() {
                   Type
                 </h3>
                 <div className="flex items-center">
-                  <p>{transaction.transactionType}</p>
+                  <p>{transaction.transactionType || "N/A"}</p>
                 </div>
               </div>
-
-              
             </div>
           </div>
 
@@ -204,10 +202,7 @@ export default function CustomerTransactionDetailPage() {
             </>
           )}
         </CardContent>
-        
       </Card>
-
-      
     </div>
   );
 }

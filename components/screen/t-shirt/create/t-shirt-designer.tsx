@@ -1,11 +1,9 @@
 "use client";
 
-import type React from "react";
-
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { useDropzone } from "react-dropzone";
-import { Save, Trash2, ImageIcon } from "lucide-react";
+import { Save, Trash2, ImageIcon, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,37 +21,69 @@ import {
 } from "@/components/ui/form";
 import { useTshirtForm } from "@/hooks/t-shirt/use-tshirt-form";
 import { useGetColor } from "@/hooks/colors/use-colors";
+import { useToast } from "@/hooks/use-toast";
+import { FileService } from "@/domains/services/file";
 
 export function TshirtDesigner({ id }: { id?: string }) {
-  const { data: colors, isLoading: colorsLoading } = useGetColor();
+  const { toast } = useToast();
+  const { data: colorsResponse, isLoading: colorsLoading } = useGetColor();
+  const colors = colorsResponse?.data || [];
 
-  // Use the custom form hook
+  // Use the custom form hook with the id parameter
   const { form, onSubmit, isLoading } = useTshirtForm(id);
 
   // Watch form values to use in the UI
   const watchedValues = form.watch();
 
+  // Local state
   const [selectedColor, setSelectedColor] = useState("#FFFFFF");
   const [imagePosition, setImagePosition] = useState({ x: 200, y: 225 });
   const [imageSize, setImageSize] = useState({ width: 200, height: 200 });
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  // Custom form submission handler
+
 
   // Handle image upload with react-dropzone
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
+    async (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const result = event.target?.result as string;
-          // Set the image URL in the form
-          form.setValue("imgurl", result, { shouldValidate: true });
-          // Center the image
-          setImagePosition({ x: 200, y: 225 });
-        };
-        reader.readAsDataURL(file);
+        try {
+          // Start upload right away
+          setUploadingImage(true);
+
+          // Upload file to server
+          const uploadResponse = await FileService.post.upload(file);
+
+          if (uploadResponse?.data) {
+            // Store uploaded file URL in the imgurl field
+            form.setValue("imgurl", uploadResponse.data, {
+              shouldValidate: true,
+            });
+
+            setUploadingImage(false);
+
+            toast({
+              title: "Upload successful",
+              description: "Your image has been uploaded",
+            });
+
+            console.log("Image uploaded successfully:", uploadResponse.data);
+          }
+        } catch (error) {
+          console.error("Upload error:", error);
+          setUploadingImage(false);
+
+          toast({
+            title: "Upload failed",
+            description: "Could not upload your image",
+            variant: "destructive",
+          });
+        }
       }
     },
-    [form]
+    [form, toast]
   );
 
   const {
@@ -70,25 +100,18 @@ export function TshirtDesigner({ id }: { id?: string }) {
     maxFiles: 1,
   });
 
-  const handleColorSelect = (color: string) => {
+  const handleColorSelect = (color: string, colorId: string) => {
     setSelectedColor(color);
 
-    // Update the colorlist in the form
-    const currentColors = form.getValues("colorlist");
-    if (!currentColors.includes(color)) {
-      form.setValue("colorlist", [...currentColors, color], {
-        shouldValidate: true,
-      });
-    }
+    // Set a single color ID for the API instead of the color code
+    const updatedColors = [colorId];
+    form.setValue("colorlist", updatedColors, { shouldValidate: true });
+    console.log("After setting color:", form.getValues("colorlist"));
   };
 
   const handleRemoveColor = (color: string) => {
-    const currentColors = form.getValues("colorlist");
-    form.setValue(
-      "colorlist",
-      currentColors.filter((c) => c !== color),
-      { shouldValidate: true }
-    );
+    form.setValue("colorlist", [], { shouldValidate: true });
+    setSelectedColor("#FFFFFF");
   };
 
   const handleDragImage = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -116,6 +139,19 @@ export function TshirtDesigner({ id }: { id?: string }) {
     setImagePosition({ x: 200, y: 225 });
   };
 
+  // For debugging
+  useEffect(() => {
+    console.log("Current form values:", form.getValues());
+    console.log(
+      "Button would be disabled:",
+      isLoading ||
+        uploadingImage ||
+        !form.getValues("imgurl") ||
+        !form.getValues("tshirtname") ||
+        (form.getValues("colorlist")?.length || 0) === 0
+    );
+  }, [watchedValues, isLoading, uploadingImage, form]);
+
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} className="space-y-8">
@@ -126,10 +162,10 @@ export function TshirtDesigner({ id }: { id?: string }) {
               {/* T-shirt mockup */}
               <div
                 className="relative w-[400px] h-[450px]"
-                // style={{ backgroundColor: selectedColor }}
+                style={{ backgroundColor: selectedColor }}
                 onClick={handleDragImage}
               >
-                <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0 opacity-20">
                   <Image
                     src="/placeholder.svg?height=450&width=400"
                     alt="T-shirt outline"
@@ -139,7 +175,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
                   />
                 </div>
 
-                {/* Uploaded design */}
+                {/* Uploaded design - use watchedValues.imgurl */}
                 {watchedValues.imgurl && (
                   <div
                     className="absolute cursor-move"
@@ -151,7 +187,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
                     }}
                   >
                     <Image
-                      src={watchedValues.imgurl || "/placeholder.svg"}
+                      src={watchedValues.imgurl}
                       alt="Uploaded design"
                       fill
                       className="object-contain"
@@ -215,16 +251,23 @@ export function TshirtDesigner({ id }: { id?: string }) {
                                   ? "border-green-500 bg-green-50"
                                   : "",
                                 isDragReject ? "border-red-500 bg-red-50" : "",
-                                form.formState.errors.imgurl
+                                form.formState.errors.imagefile
                                   ? "border-red-500"
                                   : ""
                               )}
                             >
                               <input {...getInputProps()} />
                               <div className="flex flex-col items-center gap-2">
-                                <ImageIcon className="h-10 w-10 text-muted-foreground" />
+                                {uploadingImage ? (
+                                  <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                                ) : (
+                                  <ImageIcon className="h-10 w-10 text-muted-foreground" />
+                                )}
+
                                 {isDragActive ? (
                                   <p>Drop the image here...</p>
+                                ) : uploadingImage ? (
+                                  <p>Uploading image...</p>
                                 ) : (
                                   <div className="space-y-1">
                                     <p className="font-medium">
@@ -244,17 +287,16 @@ export function TshirtDesigner({ id }: { id?: string }) {
                                 <div className="flex items-center gap-2">
                                   <div className="w-12 h-12 relative rounded overflow-hidden">
                                     <Image
-                                      src={
-                                        watchedValues.imgurl ||
-                                        "/placeholder.svg"
-                                      }
+                                      src={watchedValues.imgurl}
                                       alt="Preview"
                                       fill
                                       className="object-cover"
                                     />
                                   </div>
                                   <span className="text-sm truncate max-w-[150px]">
-                                    Image uploaded
+                                    {uploadingImage
+                                      ? "Uploading..."
+                                      : "Image uploaded"}
                                   </span>
                                 </div>
                                 <Button
@@ -284,8 +326,8 @@ export function TshirtDesigner({ id }: { id?: string }) {
                               <div className="col-span-7 py-2 text-center text-muted-foreground">
                                 Loading colors...
                               </div>
-                            ) : (colors?.data?.length ?? 0) > 0 ? (
-                              colors?.data.map((color) => (
+                            ) : (colors?.length ?? 0) > 0 ? (
+                              colors.map((color) => (
                                 <div
                                   key={color.colorId}
                                   className={`w-10 h-10 rounded-full cursor-pointer border-2 ${
@@ -295,7 +337,10 @@ export function TshirtDesigner({ id }: { id?: string }) {
                                   }`}
                                   style={{ backgroundColor: color.colorCode }}
                                   onClick={() =>
-                                    handleColorSelect(color.colorCode)
+                                    handleColorSelect(
+                                      color.colorCode,
+                                      color.colorId
+                                    )
                                   }
                                   title={color.colorName}
                                 />
@@ -321,28 +366,40 @@ export function TshirtDesigner({ id }: { id?: string }) {
                       render={() => (
                         <FormItem>
                           <FormLabel>Selected Colors</FormLabel>
-                          {watchedValues.colorlist.length > 0 ? (
+                          {watchedValues.colorlist?.length > 0 ? (
                             <div className="flex flex-wrap gap-2">
-                              {watchedValues.colorlist.map((color) => (
-                                <div
-                                  key={color}
-                                  className="flex items-center gap-1 bg-muted p-1 rounded"
-                                >
+                              {watchedValues.colorlist.map((colorId) => {
+                                // Find the color object by ID to get its code for display
+                                const selectedColor = colors.find(
+                                  (c) => c.colorId === colorId
+                                );
+                                return (
                                   <div
-                                    className="w-5 h-5 rounded-full"
-                                    style={{ backgroundColor: color }}
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-5 w-5"
-                                    onClick={() => handleRemoveColor(color)}
+                                    key={colorId}
+                                    className="flex items-center gap-1 bg-muted p-1 rounded"
                                   >
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              ))}
+                                    <div
+                                      className="w-5 h-5 rounded-full"
+                                      style={{
+                                        backgroundColor:
+                                          selectedColor?.colorCode || "#FFFFFF",
+                                      }}
+                                    />
+                                    <span className="text-xs">
+                                      {selectedColor?.colorName || "Unknown"}
+                                    </span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-5 w-5"
+                                      onClick={handleRemoveColor}
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                );
+                              })}
                             </div>
                           ) : (
                             <div className="text-muted-foreground text-sm">
@@ -405,13 +462,23 @@ export function TshirtDesigner({ id }: { id?: string }) {
               type="submit"
               disabled={
                 isLoading ||
+                uploadingImage ||
                 !watchedValues.imgurl ||
                 !watchedValues.tshirtname ||
                 watchedValues.colorlist.length === 0
               }
             >
-              <Save className="mr-2 h-4 w-4" />
-              {isLoading ? "Saving..." : "Save Design"}
+              {isLoading || uploadingImage ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {uploadingImage ? "Uploading..." : "Saving..."}
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Design
+                </>
+              )}
             </Button>
           </div>
         </div>

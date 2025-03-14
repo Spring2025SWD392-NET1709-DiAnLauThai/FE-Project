@@ -1,4 +1,4 @@
-import TransactionTable from "@/components/transaction-customer/table";
+import TransactionCustomerTable from "@/components/transaction-customer/table";
 import React from "react";
 
 const TransactionPage = () => {
@@ -9,7 +9,7 @@ const TransactionPage = () => {
       </section>
       
       <section className="mt-10">
-        <TransactionTable />
+        <TransactionCustomerTable />
       </section>
     </main>
   );

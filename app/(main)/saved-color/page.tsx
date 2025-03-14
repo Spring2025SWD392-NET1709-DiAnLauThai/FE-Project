@@ -30,14 +30,47 @@ export default function ColorSavedPage() {
 
   // Copy color code to clipboard
   const copyToClipboard = (code: string, id: string) => {
-    navigator.clipboard.writeText(code);
-    setCopiedId(id);
-    toast({
-      title: "Copied!",
-      description: `Color code ${code} copied to clipboard`,
-    });
+    // Make sure we're copying the actual color code
+    if (!code) {
+      toast({
+        title: "Copy failed",
+        description: "No color code available",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    setTimeout(() => setCopiedId(null), 2000);
+    try {
+      // Use the clipboard API to copy the color code
+      navigator.clipboard.writeText(code).then(
+        () => {
+          // Set the copied ID to show visual feedback
+          setCopiedId(id);
+          toast({
+            title: "Copied!",
+            description: `Color code ${code} copied to clipboard`,
+          });
+
+          // Reset the copied state after 2 seconds
+          setTimeout(() => setCopiedId(null), 2000);
+        },
+        (err) => {
+          console.error("Failed to copy:", err);
+          toast({
+            title: "Copy failed",
+            description: "Could not copy to clipboard",
+            variant: "destructive",
+          });
+        }
+      );
+    } catch (err) {
+      console.error("Copy error:", err);
+      toast({
+        title: "Copy failed",
+        description: "Could not copy to clipboard",
+        variant: "destructive",
+      });
+    }
   };
 
   // Select a color
@@ -51,8 +84,23 @@ export default function ColorSavedPage() {
 
   // Calculate text color based on background for better contrast
   const getTextColor = (hexColor: string) => {
+    // Handle invalid color codes or empty strings
+    if (!hexColor || typeof hexColor !== "string" || !hexColor.trim()) {
+      return "#000000"; // Default to black
+    }
+
     // Remove # if present
-    const hex = hexColor.replace("#", "");
+    let hex = hexColor.replace("#", "");
+
+    // Handle shortened hex codes (e.g., #fff)
+    if (hex.length === 3) {
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+
+    // Check for valid hex format
+    if (!/^[0-9A-Fa-f]{6}$/.test(hex)) {
+      return "#000000"; // Default to black for invalid formats
+    }
 
     // Convert hex to RGB
     const r = parseInt(hex.substring(0, 2), 16);
@@ -64,6 +112,14 @@ export default function ColorSavedPage() {
 
     // Return white for dark backgrounds, black for light backgrounds
     return brightness < 128 ? "#FFFFFF" : "#000000";
+  };
+
+  // Ensure color code includes # prefix
+  const formatColorCode = (code: string): string => {
+    if (!code) return "#e2e2e2"; // Default light gray
+
+    // Add # prefix if missing
+    return code.startsWith("#") ? code : `#${code}`;
   };
 
   // Handle error state
@@ -101,60 +157,65 @@ export default function ColorSavedPage() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {filteredColors.length > 0 ? (
-              filteredColors.map((color) => (
-                <Card
-                  key={color.colorId}
-                  className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
-                >
-                  <div
-                    className="h-40 flex items-center justify-center group-hover:opacity-90 transition-opacity"
-                    style={{
-                      backgroundColor: color.colorCode,
-                      color: getTextColor(color.colorCode),
-                    }}
-                    onClick={() => selectColor(color)}
+              filteredColors.map((color) => {
+                // Format the color code to ensure it's valid
+                const formattedColorCode = formatColorCode(color.colorCode);
+
+                return (
+                  <Card
+                    key={color.colorId}
+                    className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
                   >
-                    <span className="font-mono text-lg opacity-80 group-hover:opacity-100">
-                      {color.colorCode}
-                    </span>
-                  </div>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-center">
-                      <Label
-                        className="font-medium truncate"
-                        title={color.colorName}
-                      >
-                        {color.colorName}
-                      </Label>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            copyToClipboard(color.colorCode, color.id);
-                          }}
-                        >
-                          {copiedId === color.id ? (
-                            <Check className="h-4 w-4" />
-                          ) : (
-                            <Copy className="h-4 w-4" />
-                          )}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-8"
-                          onClick={() => selectColor(color)}
-                        >
-                          Use
-                        </Button>
-                      </div>
+                    <div
+                      className="h-40 flex items-center justify-center group-hover:opacity-90 transition-opacity"
+                      style={{
+                        backgroundColor: formattedColorCode, // Use formatted color code
+                        color: getTextColor(color.colorCode),
+                      }}
+                      onClick={() => selectColor(color)}
+                    >
+                      <span className="font-mono text-lg opacity-80 group-hover:opacity-100">
+                        {color.colorCode}
+                      </span>
                     </div>
-                  </CardContent>
-                </Card>
-              ))
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-center">
+                        <Label
+                          className="font-medium truncate"
+                          title={color.colorName}
+                        >
+                          {color.colorName}
+                        </Label>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copyToClipboard(color.colorCode, color.colorId);
+                            }}
+                          >
+                            {copiedId === color.colorId ? (
+                              <Check className="h-4 w-4" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8"
+                            onClick={() => selectColor(color)}
+                          >
+                            Use
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })
             ) : (
               <div className="col-span-full text-center py-12 text-gray-500">
                 No colors found.{" "}

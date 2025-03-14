@@ -2,6 +2,7 @@ import { TShirtParams, TShirtPayload } from "@/domains/models/tshirt";
 import { TShirtService } from "@/domains/services/t-shirt";
 import { QueryKey } from "@/domains/stores/query-key";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "../use-toast";
 
 interface TShirtQuery {
   params: TShirtParams;
@@ -29,6 +30,28 @@ export const useTshirtMutation = () => {
   const createTshirt = useMutation({
     mutationKey: [QueryKey.TSHIRT.CREATE],
     mutationFn: (data: TShirtPayload) => TShirtService.post.create(data),
+    onSuccess: (data) => {
+      const message =
+        data.message || "Add T-Shirt success";
+
+      toast({
+        title: "Create T-Shirt",
+        description: message,
+      });
+    },
+    onError: (error: any) => {
+      console.error("T-shirt add failed:", error);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        "There was a problem create T-Shirt";
+
+      toast({
+        title: "Create Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    },
   });
 
   const updateTshirt = useMutation({

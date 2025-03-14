@@ -9,7 +9,7 @@ import { DataTable } from "../plugins/table";
 import { TransactionResponse } from "@/domains/models/transaction";
 import { useTransactionCustomer } from "@/hooks/transaction/use-transaction";
 
-const TransactionTable = () => {
+const TransactionCustomerTable = () => {
   const { value } = useParamStore();
 
   const transactionQuery = useTransactionCustomer({
@@ -46,4 +46,4 @@ const TransactionTable = () => {
   );
 };
 
-export default TransactionTable;
+export default TransactionCustomerTable;
