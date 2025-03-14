@@ -25,7 +25,7 @@ import { useTshirtForm } from "@/hooks/t-shirt/use-tshirt-form";
 import { useGetColor } from "@/hooks/colors/use-colors";
 
 export function TshirtDesigner({ id }: { id?: string }) {
-  const { data: colors } = useGetColor();
+  const { data: colors, isLoading: colorsLoading } = useGetColor();
 
   // Use the custom form hook
   const { form, onSubmit, isLoading } = useTshirtForm(id);
@@ -280,21 +280,31 @@ export function TshirtDesigner({ id }: { id?: string }) {
                         <FormItem>
                           <FormLabel>T-shirt Color</FormLabel>
                           <div className="grid grid-cols-7 gap-2">
-                            {colors?.data.map((color) => (
-                              <div
-                                key={color.colorCode}
-                                className={`w-10 h-10 rounded-full cursor-pointer border-2 ${
-                                  selectedColor === color.colorCode
-                                    ? "border-primary"
-                                    : "border-transparent"
-                                }`}
-                                style={{ backgroundColor: color.colorCode }}
-                                onClick={() =>
-                                  handleColorSelect(color.colorCode)
-                                }
-                                title={color.colorName}
-                              />
-                            ))}
+                            {colorsLoading ? (
+                              <div className="col-span-7 py-2 text-center text-muted-foreground">
+                                Loading colors...
+                              </div>
+                            ) : (colors?.data?.length ?? 0) > 0 ? (
+                              colors?.data.map((color) => (
+                                <div
+                                  key={color.colorId}
+                                  className={`w-10 h-10 rounded-full cursor-pointer border-2 ${
+                                    selectedColor === color.colorCode
+                                      ? "border-primary"
+                                      : "border-transparent"
+                                  }`}
+                                  style={{ backgroundColor: color.colorCode }}
+                                  onClick={() =>
+                                    handleColorSelect(color.colorCode)
+                                  }
+                                  title={color.colorName}
+                                />
+                              ))
+                            ) : (
+                              <div className="col-span-7 py-2 text-center text-muted-foreground">
+                                No colors available
+                              </div>
+                            )}
                           </div>
                           <FormMessage />
                         </FormItem>

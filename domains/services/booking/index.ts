@@ -61,7 +61,8 @@ export const BookingService = {
     ): Promise<RootResponse<BookingPayloadResponse>> => {
       try {
         const response = await axiosInstance.post("/bookings", payload);
-
+        console.log("response", response.data);
+        
         return response.data;
       } catch (error) {
         throw error;

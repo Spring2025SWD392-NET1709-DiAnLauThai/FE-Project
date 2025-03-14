@@ -103,7 +103,7 @@ export default function ColorSavedPage() {
             {filteredColors.length > 0 ? (
               filteredColors.map((color) => (
                 <Card
-                  key={color.id}
+                  key={color.colorId}
                   className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
                 >
                   <div

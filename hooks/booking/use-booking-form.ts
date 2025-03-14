@@ -15,6 +15,12 @@ export const useBookingForm = () => {
   const { createBooking } = useBookingMutation();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
+  const addDays = (date: Date, days: number): Date => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  };
+
   const form = useForm<BookingSchema>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
@@ -33,6 +39,10 @@ export const useBookingForm = () => {
 
   const onSubmit = form.handleSubmit(async (data) => {
     setIsLoading(true);
+    const adjustedStartDate = new Date(data.startdate);
+    adjustedStartDate.setHours(adjustedStartDate.getHours() + 7);
+    adjustedStartDate.setDate(adjustedStartDate.getDate() + 1);
+
     const newBookingDetails: Bookingdetail[] = await Promise.all<Bookingdetail>(
       data.bookingdetails.map(async (detail) => {
         const url = await FileService.post
@@ -59,7 +69,7 @@ export const useBookingForm = () => {
 
     const value: BookingPayload = {
       title: data.title,
-      startdate: data.startdate,
+      startdate: adjustedStartDate,
       enddate: data.enddate,
       bookingdetails: newBookingDetails,
     };

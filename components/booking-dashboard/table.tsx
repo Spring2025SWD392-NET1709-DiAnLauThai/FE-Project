@@ -19,8 +19,14 @@ const BookingDashboardTable = () => {
     },
   });
 
+  const hasNoBookings =
+    bookingQuery.isSuccess &&
+    (!bookingQuery.data?.data?.content ||
+      bookingQuery.data.data.content.length === 0);
+
   return (
     <div className="space-y-4">
+        <div className="text-3xl font-bold">Booking Management</div>
       <div className="flex justify-between items-center w-full">
         <SearchInput keyValue="manufacture" />
 
@@ -40,10 +46,16 @@ const BookingDashboardTable = () => {
         </div>
       </div>
 
-      <DataTable
-        columns={BookingDashboardColumn}
-        data={bookingQuery.data?.data?.content ?? []}
-      />
+      {hasNoBookings ? (
+        <div className="py-10 text-center">
+          <p className="text-lg text-gray-500">No orders found</p>
+        </div>
+      ) : (
+        <DataTable
+          columns={BookingDashboardColumn}
+          data={bookingQuery.data?.data?.content ?? []}
+        />
+      )}
     </div>
   );
 };

@@ -8,7 +8,7 @@ export const FileService = {
         formData.append("file", file);
 
         const response = await axiosInstance.post(
-          "/tshirts/tshirt/upload",
+          "/tshirts/upload/image",
           formData,
           {
             headers: {
