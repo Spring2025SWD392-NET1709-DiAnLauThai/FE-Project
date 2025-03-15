@@ -5,6 +5,7 @@ import {
   BookingPayload,
   BookingPayloadResponse,
   BookingResponse,
+  DescriptionPayload,
 } from "@/domains/models/booking";
 export const BookingService = {
   get: {
@@ -69,6 +70,15 @@ export const BookingService = {
       }
     },
   },
-  put: {},
+  put: {
+    noteDescription: async ( data: DescriptionPayload): Promise<RootResponse<string>> => {
+      try {
+        const response = await axiosInstance.put(`/bookingsdetails`, data);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    }
+  },
   delete: {},
 };

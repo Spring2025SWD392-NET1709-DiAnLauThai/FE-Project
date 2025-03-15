@@ -40,6 +40,14 @@ export const bookingSchema = z
         "End date must be at least (number of booking details + 1) days after start date",
       path: ["enddate"],
     }
+);
+  
+export const descriptionSchema = z
+  .object({
+    id: z.string(),
+    description: z.string(),
+    }
   );
+export type DescriptionSchema = z.infer<typeof descriptionSchema>;
 
 export type BookingSchema = z.infer<typeof bookingSchema>;

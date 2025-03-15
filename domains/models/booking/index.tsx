@@ -32,6 +32,11 @@ export interface BookingResponse {
   assignedDesigner: null;
 }
 
+export interface DescriptionPayload {
+  id: string;
+  description: string;
+}
+
 export interface BookingDetailResponse {
   designerName: string;
   totalPrice: number;
@@ -51,6 +56,8 @@ export interface BookingDetail {
   designFile: string;
   description: string;
   unitPrice: number;
+  imageUrl: string;
+  imageFile: string;
 }
 
 export interface BookingPayload {

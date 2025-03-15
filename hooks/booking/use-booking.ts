@@ -2,6 +2,7 @@ import {
   BookingParams,
   BookingPayload,
   BookingResponse,
+  DescriptionPayload,
 } from "@/domains/models/booking";
 import { BookingService } from "@/domains/services/booking";
 import { QueryKey } from "@/domains/stores/query-key";
@@ -63,4 +64,27 @@ export const useBookingMutation = () => {
   });
 
   return { createBooking };
+};
+
+export const useDescriptionMutation = () => {
+  const { toast } = useToast();
+  const queryClient = new QueryClient();
+  const updateDescription = useMutation({
+    mutationKey: [QueryKey.BOOKING.UPDATE_DESCRIPTION],
+    mutationFn: async (payload: DescriptionPayload) =>
+      await BookingService.put.noteDescription(payload),
+    onError: (error) => {
+      console.error("error", error);
+      toast({
+        title: "Error",
+        description: "Failed to create booking. Please try again.",
+        variant: "destructive",
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKey.BOOKING.LIST] });
+    },
+  });
+
+  return { updateDescription };
 };
