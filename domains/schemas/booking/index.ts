@@ -47,7 +47,14 @@ export const descriptionSchema = z
     id: z.string(),
     description: z.string(),
     }
-  );
+);
+  
+export const cancelSchema = z.object({
+  note: z.string().min(1, "Reason is required"),
+});
+
+export type CancelSchema = z.infer<typeof cancelSchema>;
+
 export type DescriptionSchema = z.infer<typeof descriptionSchema>;
 
 export type BookingSchema = z.infer<typeof bookingSchema>;

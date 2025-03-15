@@ -2,6 +2,7 @@ import {
   BookingParams,
   BookingPayload,
   BookingResponse,
+  CancelBookingPayload,
   DescriptionPayload,
 } from "@/domains/models/booking";
 import { BookingService } from "@/domains/services/booking";
@@ -77,7 +78,7 @@ export const useDescriptionMutation = () => {
       console.error("error", error);
       toast({
         title: "Error",
-        description: "Failed to create booking. Please try again.",
+        description: "Failed to update booking. Please try again.",
         variant: "destructive",
       });
     },
@@ -87,4 +88,23 @@ export const useDescriptionMutation = () => {
   });
 
   return { updateDescription };
+};
+
+export const useCancelBookingMutation = (bookingId: string) => {
+  const { toast } = useToast();
+  const cancelBooking = useMutation({
+    mutationKey: [QueryKey.BOOKING.CANCEL, bookingId],
+    mutationFn: async (payload: CancelBookingPayload) =>
+      await BookingService.put.cancelBooking(bookingId, payload),
+    onError: (error) => {
+      console.error("error", error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel booking. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  return { cancelBooking };
 };

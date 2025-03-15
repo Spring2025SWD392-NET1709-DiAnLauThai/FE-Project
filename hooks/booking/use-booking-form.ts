@@ -1,12 +1,12 @@
 import { Bookingdetail, BookingPayload } from "@/domains/models/booking";
-import { BookingSchema, bookingSchema, descriptionSchema, DescriptionSchema } from "@/domains/schemas/booking";
+import { BookingSchema, bookingSchema, cancelSchema, CancelSchema, descriptionSchema, DescriptionSchema } from "@/domains/schemas/booking";
 import { FileService } from "@/domains/services/file";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useBookingMutation, useDescriptionMutation } from "./use-booking";
-import { QueryClient } from "@tanstack/react-query";
+import { useBookingMutation, useCancelBookingMutation, useDescriptionMutation } from "./use-booking";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@/domains/stores/query-key";
-import { useToast } from "../use-toast";
+import { toast, useToast } from "../use-toast";
 import React, { useEffect } from "react";
 
 export const useBookingForm = () => {
@@ -159,5 +159,59 @@ export const useUpdateDescription = (bookingDetailId: string) => {
         id: bookingDetailId,
         description: "",
       }),
+  };
+
+
+};
+
+export const useCancelBooking = (bookingId: string) => {
+  const queryClient = useQueryClient();
+  const { cancelBooking } = useCancelBookingMutation(bookingId);
+
+  const form = useForm<CancelSchema>({
+    resolver: zodResolver(cancelSchema),
+    defaultValues: {
+      note: "",
+    },
+  });
+
+  const onSubmit = form.handleSubmit(async (data) => {
+    // Prepare the payload for the API call
+    const payload = {
+      bookingId: bookingId,
+      note: data.note,
+    };
+
+    await cancelBooking.mutate(payload, {
+      onSuccess: (response) => {
+        toast({
+          title: "Success",
+          description: response.message || "Cancelled successfully",
+        });
+
+        // Invalidate relevant queries to refresh data
+        queryClient.invalidateQueries({ queryKey: [QueryKey.BOOKING.LIST] });
+        queryClient.invalidateQueries({
+          queryKey: [QueryKey.BOOKING.DETAIL, bookingId],
+        });
+
+        // Reset the form
+        form.reset();
+      },
+      onError: (error) => {
+        console.error("Error cancelling booking:", error);
+        toast({
+          title: "Error",
+          description: "Failed to cancel. Please try again.",
+          variant: "destructive",
+        });
+      },
+    });
+  });
+
+  return {
+    form,
+    onSubmit,
+    isLoading: cancelBooking.isPending,
   };
 };

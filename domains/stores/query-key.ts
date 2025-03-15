@@ -22,6 +22,7 @@ export const QueryKey = {
     DELETE: "delete-booking",
     DETAIL: "detail-booking",
     UPDATE_DESCRIPTION: "update-description",
+    CANCEL: "cancel-booking",
   },
   TASK: {
     LIST: "list-task",

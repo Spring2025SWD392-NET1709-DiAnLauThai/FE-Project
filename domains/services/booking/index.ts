@@ -5,8 +5,10 @@ import {
   BookingPayload,
   BookingPayloadResponse,
   BookingResponse,
+  CancelBookingPayload,
   DescriptionPayload,
 } from "@/domains/models/booking";
+import { Cancel } from "axios";
 export const BookingService = {
   get: {
     list: async (
@@ -78,7 +80,15 @@ export const BookingService = {
       } catch (error) {
         throw error;
       }
-    }
+    },
+    cancelBooking: async (bookingId: string ,data: CancelBookingPayload): Promise<RootResponse<string>> => {
+      try {
+        const response = await axiosInstance.put(`/bookings/${bookingId}/cancel`, data);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
   delete: {},
 };

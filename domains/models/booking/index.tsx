@@ -73,6 +73,11 @@ export interface Bookingdetail {
   unitprice: number;
 }
 
+export interface CancelBookingPayload { 
+  note: string;
+  bookingId: string;
+}
+
 export interface BookingPayloadResponse {
   bookingId: string;
   totalPrice: number;

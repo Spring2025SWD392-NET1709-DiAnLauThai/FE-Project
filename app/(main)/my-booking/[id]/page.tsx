@@ -28,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useUpdateDescription } from "@/hooks/booking/use-booking-form";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { CancelBookingButton } from "@/components/cancel-booking-modal/page";
 
 export default function CustomerBookingDetailPage() {
   const { id } = useParams();
@@ -325,11 +326,9 @@ export default function CustomerBookingDetailPage() {
                           onSubmit={(e) => {
                             e.preventDefault();
                             setSendingDetailId(detail.bookingDetailId);
-                            onSubmit()
-                              
-                              .finally(() => {
-                                setSendingDetailId(null);
-                              });
+                            onSubmit().finally(() => {
+                              setSendingDetailId(null);
+                            });
                           }}
                           className="space-y-2"
                         >
@@ -390,6 +389,11 @@ export default function CustomerBookingDetailPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row gap-3 pt-6 justify-end">
+          {/* Only show Cancel button if the booking is not already cancelled */}
+          {booking?.data.bookingStatus === "DEPOSITED" && (
+              <CancelBookingButton bookingId={id as string} />
+            )}
+
           <Button
             variant="default"
             className="w-full sm:w-auto"
@@ -402,6 +406,7 @@ export default function CustomerBookingDetailPage() {
               "Pay Booking"
             )}
           </Button>
+
           <Button variant="outline" className="w-full sm:w-auto">
             Download Details
           </Button>
