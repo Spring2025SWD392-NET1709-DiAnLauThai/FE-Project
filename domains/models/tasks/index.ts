@@ -4,14 +4,14 @@ import { TShirtResponse } from "../tshirt";
 export enum TaskStatus {
   ASSIGNED = "ASSIGNED",
   COMPLETED = "COMPLETE",
-  DENIED = "DENIED",
+  CANCEL = "DENIED",
 }
 
-export enum BookingStatus{
+export enum BookingStatus {
   DEPOSITED = "DEPOSITED",
-  CONFIRMED = "CONFIRMED",
+  UNPAID = "UNPAID",
   CANCELLED = "CANCELLED",
-  COMPLETED = "COMPLETED"
+  COMPLETED = "COMPLETED",
 }
 
 
@@ -104,4 +104,6 @@ export interface TaskDetail {
   bookingDetails: BookingDetail[];
 }
 
-
+export interface TaskConfirm {
+  bookingId: string;
+}

@@ -20,7 +20,14 @@ interface TaskMenuActionProps {
 
 export default function TaskMenuAction({ task }: TaskMenuActionProps) {
   const { replace } = useRouter();
+  const router = useRouter();
+  const handleViewTaskDetail = () => {
+    // Save the bookingId to localStorage before navigating
+    localStorage.setItem("currentBookingId", JSON.stringify(task.bookingId));
 
+    // Navigate to task detail page
+    router.push(`/task-designer/${task.taskId}`);
+  };
   return (
     <>
       <DropdownMenu>
@@ -33,15 +40,12 @@ export default function TaskMenuAction({ task }: TaskMenuActionProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => replace(`/task-designer/${task.taskId}`)}>
-                    <ClipboardList
-                     />
-                    <span>View Detail</span>
-                  </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleViewTaskDetail()}>
+            <ClipboardList />
+            <span>View Detail</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      
     </>
   );
 }

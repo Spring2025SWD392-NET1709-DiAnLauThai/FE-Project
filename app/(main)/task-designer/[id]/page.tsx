@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
 import {
+  AlertCircle,
   Check,
   Clock,
   DollarSign,
@@ -27,21 +28,43 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { TaskDetail, BookingDetail } from "@/domains/models/tasks";
-import { useParams } from "next/navigation";
+import {
+  TaskDetail,
+  BookingDetail,
+  BookingStatus,
+} from "@/domains/models/tasks";
+import { useParams, useRouter } from "next/navigation";
 import { useTaskDetail } from "@/hooks/tasks/use-task";
 import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
 import AssignTShirtModal from "@/components/assign-tshirt/page";
 import { toast } from "sonner";
 import { TShirtResponse } from "@/domains/models/tshirt";
 import { formatFromISOStringVN, FormatType } from "@/lib/format";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useAuth } from "@/hooks/auth/use-auth"; // Import auth hook - adjust path as needed
+import { UserRole } from "@/domains/models/user";
+import { Role } from "@/domains/enums";
+import { useAuthStore } from "@/domains/stores/use-auth-store";
 
 export default function TaskDetailPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [selectedBookingDetail, setSelectedBookingDetail] =
     useState<BookingDetail | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAssigning, setIsAssigning] = useState(false);
+  const [isDesigner, setIsDesigner] = useState(false);
+
+  // Get auth information - adjust according to your actual auth implementation
+  const { user } = useAuthStore();
+  // Check if user is a designer
+  useEffect(() => {
+    if (user?.role === UserRole.DESIGNER) {
+      setIsDesigner(true);
+    } else {
+      setIsDesigner(false);
+    }
+  }, [user]);
 
   // Get task details from API
   const { data, isLoading, isError, refetch } = useTaskDetail(id as string);
@@ -49,7 +72,23 @@ export default function TaskDetailPage() {
   // We need to access the actual task data from the response
   const taskData: TaskDetail = data;
 
+  // Check if task is editable (not COMPLETED or CANCELLED)
+  const isTaskEditable =
+    taskData &&
+    taskData.bookingStatus !== BookingStatus.COMPLETED &&
+    taskData.bookingStatus !== BookingStatus.CANCELLED;
+
+  // Check if current user can edit this task (must be designer AND task must be editable)
+  const canEditTask = isDesigner && isTaskEditable;
+
   const handleAssignTShirt = async (tshirtId: string) => {
+    // Don't allow assignment if user can't edit
+    if (!canEditTask) {
+      toast.error("You don't have permission to modify this task");
+      setIsModalOpen(false);
+      return;
+    }
+
     console.log("Attempting to assign T-shirt:", {
       tshirtId,
       bookingDetailId: selectedBookingDetail?.bookingDetailId,
@@ -70,12 +109,11 @@ export default function TaskDetailPage() {
         tshirtId: tshirtId,
       });
 
-      // After assignment is complete
       toast.success(
         `T-shirt ${tshirtId} assigned to booking detail ${selectedBookingDetail.bookingDetailId}`
       );
 
-      // Refresh task data
+      // Manually refresh the data
       await refetch();
 
       // Close the modal
@@ -85,15 +123,6 @@ export default function TaskDetailPage() {
       toast.error("Failed to assign T-shirt");
     } finally {
       setIsAssigning(false);
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "N/A";
-    try {
-      return format(new Date(dateString), "PPP");
-    } catch (e) {
-      return dateString || "N/A";
     }
   };
 
@@ -114,6 +143,12 @@ export default function TaskDetailPage() {
 
   // Handle opening the T-shirt assignment modal
   const handleOpenAssignModal = (bookingDetail: BookingDetail) => {
+    // Don't open modal if user can't edit
+    if (!canEditTask) {
+      toast.error("You don't have permission to modify this task");
+      return;
+    }
+
     console.log("Opening modal for booking detail:", bookingDetail);
     setSelectedBookingDetail(bookingDetail);
     setIsModalOpen(true);
@@ -158,6 +193,28 @@ export default function TaskDetailPage() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Task Details Section (2/3) */}
         <div className="w-full space-y-6">
+          {/* Status alert for completed or cancelled tasks */}
+          {!isTaskEditable && (
+            <Alert
+              variant={
+                taskData.bookingStatus === BookingStatus.COMPLETED
+                  ? "success"
+                  : "destructive"
+              }
+            >
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>
+                {taskData.bookingStatus === BookingStatus.COMPLETED
+                  ? "Task Completed"
+                  : "Task Cancelled"}
+              </AlertTitle>
+              <AlertDescription>
+                This task is {taskData.bookingStatus.toLowerCase()} and cannot
+                be modified.
+              </AlertDescription>
+            </Alert>
+          )}
+
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold">
@@ -300,7 +357,8 @@ export default function TaskDetailPage() {
                     <div>
                       <p className="text-sm font-medium mb-2 flex items-center justify-between">
                         <span>Assigned T-Shirt</span>
-                        {!detail.tshirt && (
+                        {/* Only show assign button for designers */}
+                        {!detail.tshirt && canEditTask && (
                           <Button
                             variant="outline"
                             size="sm"
@@ -326,14 +384,17 @@ export default function TaskDetailPage() {
                           />
                           <div>
                             <p className="font-medium">{detail.tshirt.name}</p>
-                            <Button
-                              variant="primary"
-                              size="sm"
-                              onClick={() => handleOpenAssignModal(detail)}
-                              className="text-xs mt-2 text-muted-foreground hover:text-foreground"
-                            >
-                              Change
-                            </Button>
+                            {/* Only show change button for designers */}
+                            {canEditTask && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleOpenAssignModal(detail)}
+                                className="text-xs mt-2 text-muted-foreground hover:text-foreground"
+                              >
+                                Change
+                              </Button>
+                            )}
                           </div>
                         </div>
                       ) : (
@@ -362,14 +423,30 @@ export default function TaskDetailPage() {
         </div>
       </div>
 
-      {/* T-Shirt Assignment Modal */}
-      <AssignTShirtModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAssign={handleAssignTShirt}
-        bookingDetail={selectedBookingDetail}
-        isAssigning={isAssigning}
-      />
+      {/* Only show the Confirm button if task is editable AND user is a designer */}
+      {canEditTask && (
+        <div className="mt-8 flex justify-center">
+          <Button
+            className="w-full max-w-md"
+            onClick={() => {
+              router.push(`/task-designer/${id}/confirm`);
+            }}
+          >
+            Confirm Task
+          </Button>
+        </div>
+      )}
+
+      {/* T-Shirt Assignment Modal - only for designers */}
+      {isDesigner && (
+        <AssignTShirtModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onAssign={handleAssignTShirt}
+          bookingDetail={selectedBookingDetail}
+          isAssigning={isAssigning}
+        />
+      )}
     </div>
   );
 }

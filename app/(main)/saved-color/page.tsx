@@ -10,6 +10,83 @@ import { useToast } from "@/hooks/use-toast";
 import { useGetColor } from "@/hooks/colors/use-colors";
 import { ColorResponse } from "@/domains/models/color";
 
+
+const detectColorFormat = (colorCode: string): "hex" | "rgb" | "hsl" => {
+  if (colorCode.startsWith("#")) {
+    return "hex";
+  } else if (colorCode.startsWith("rgb")) {
+    return "rgb";
+  } else if (colorCode.startsWith("hsl")) {
+    return "hsl";
+  }
+  return "hex"; // default to hex
+};
+
+// Function to extract hex color for background, regardless of format
+const extractHexColor = (colorCode: string): string => {
+  const format = detectColorFormat(colorCode);
+
+  if (format === "hex") {
+    return colorCode;
+  } else if (format === "rgb") {
+    // Parse RGB values from string like "rgb(255, 100, 50)"
+    const rgbMatch = colorCode.match(
+      /rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i
+    );
+    if (rgbMatch) {
+      const r = parseInt(rgbMatch[1]);
+      const g = parseInt(rgbMatch[2]);
+      const b = parseInt(rgbMatch[3]);
+
+      // Convert to hex
+      return `#${r.toString(16).padStart(2, "0")}${g
+        .toString(16)
+        .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+    }
+  } else if (format === "hsl") {
+    const hslMatch = colorCode.match(
+      /hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i
+    );
+    if (hslMatch) {
+      // This is a simplified conversion and might not be perfect
+      const h = parseInt(hslMatch[1]) / 360;
+      const s = parseInt(hslMatch[2]) / 100;
+      const l = parseInt(hslMatch[3]) / 100;
+
+      let r, g, b;
+
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const hue2rgb = (p: number, q: number, t: number) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1 / 6) return p + (q - p) * 6 * t;
+          if (t < 1 / 2) return q;
+          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+          return p;
+        };
+
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+
+        r = hue2rgb(p, q, h + 1 / 3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1 / 3);
+      }
+
+      const toHex = (x: number) => {
+        const hex = Math.round(x * 255).toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+      };
+
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    }
+  }
+
+  return "#e2e2e2"; // Default fallback color
+};
+
 export default function ColorSavedPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -114,12 +191,12 @@ export default function ColorSavedPage() {
     return brightness < 128 ? "#FFFFFF" : "#000000";
   };
 
-  // Ensure color code includes # prefix
+  // Update formatColorCode to work with any format
   const formatColorCode = (code: string): string => {
     if (!code) return "#e2e2e2"; // Default light gray
 
-    // Add # prefix if missing
-    return code.startsWith("#") ? code : `#${code}`;
+    // For background color, we need a hex code
+    return extractHexColor(code);
   };
 
   // Handle error state
@@ -169,13 +246,13 @@ export default function ColorSavedPage() {
                     <div
                       className="h-40 flex items-center justify-center group-hover:opacity-90 transition-opacity"
                       style={{
-                        backgroundColor: formattedColorCode, // Use formatted color code
-                        color: getTextColor(color.colorCode),
+                        backgroundColor: formatColorCode(color.colorCode), // This converts to hex for background
+                        color: getTextColor(extractHexColor(color.colorCode)), // Use hex for contrast calculation
                       }}
                       onClick={() => selectColor(color)}
                     >
                       <span className="font-mono text-lg opacity-80 group-hover:opacity-100">
-                        {color.colorCode}
+                        {color.colorCode} {/* Display original format */}
                       </span>
                     </div>
                     <CardContent className="p-4">

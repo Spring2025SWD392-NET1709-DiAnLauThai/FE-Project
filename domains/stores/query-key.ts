@@ -26,6 +26,7 @@ export const QueryKey = {
     LIST: "list-task",
     DETAIL : "detail-task",
     ASSIGN_DESIGNER: "assign-designer",
+    CONFIRM_TASK: "confirm-task",
   },
   DESIGNER: {
     LIST: "list-designer",

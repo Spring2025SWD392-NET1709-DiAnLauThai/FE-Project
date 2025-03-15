@@ -145,7 +145,7 @@ export const useAssignTshirtForm = ({
         console.error("Assignment error:", error);
         toast({
           title: "Error",
-          description: "Failed to assign T-shirt",
+          description: "T-Shirt is already assigned to another booking or failed to assign",
           variant: "destructive",
         });
       },

@@ -76,28 +76,89 @@ const hexToHsl = (hex: string): { h: number; s: number; l: number } | null => {
   };
 };
 
+// Hàm chuyển đổi từ HSL sang HEX
+const hslToHex = (h: number, s: number, l: number): string => {
+  s /= 100;
+  l /= 100;
+
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  let r = 0, g = 0, b = 0;
+
+  if (0 <= h && h < 60) {
+    r = c; g = x; b = 0;
+  } else if (60 <= h && h < 120) {
+    r = x; g = c; b = 0;
+  } else if (120 <= h && h < 180) {
+    r = 0; g = c; b = x;
+  } else if (180 <= h && h < 240) {
+    r = 0; g = x; b = c;
+  } else if (240 <= h && h < 300) {
+    r = x; g = 0; b = c;
+  } else if (300 <= h && h < 360) {
+    r = c; g = 0; b = x;
+  }
+
+  r = Math.round((r + m) * 255);
+  g = Math.round((g + m) * 255);
+  b = Math.round((b + m) * 255);
+
+  const toHex = (c: number) => {
+    const hex = c.toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  };
+
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+};
+
 type ColorFormat = "hex" | "rgb" | "hsl";
 
 export function ColorPickerNav() {
   const [color, setColor] = useState("#3b82f6");
   const [colorFormat, setColorFormat] = useState<ColorFormat>("hex");
-  const [colorNote, setColorNote] = useState("");
 
   const { form, handleSubmit, isSubmitting } = useColorsForm();
 
   // Update form field when color changes
   const handleColorChange = (newColor: string) => {
     setColor(newColor);
-    form.setValue("colorForm.colorCode", newColor);
+
+    // Update the form value according to the currently selected format
+    form.setValue(
+      "colorForm.colorCode",
+      getFormattedColorByFormat(newColor, colorFormat)
+    );
   };
 
   // Set initial color value when component mounts
   useEffect(() => {
-    form.setValue("colorForm.colorCode", color);
-  }, [form, color]); // Add proper dependency array
+    form.setValue(
+      "colorForm.colorCode",
+      getFormattedColorByFormat(color, colorFormat)
+    );
+  }, [form, color, colorFormat]); // Add colorFormat to dependency array
 
   const getFormattedColor = (): string => {
     switch (colorFormat) {
+      case "hex":
+        return color;
+      case "rgb": {
+        const rgb = hexToRgb(color);
+        return rgb ? `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` : color;
+      }
+      case "hsl": {
+        const hsl = hexToHsl(color);
+        return hsl ? `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)` : color;
+      }
+    }
+  };
+
+  const getFormattedColorByFormat = (
+    color: string,
+    format: ColorFormat
+  ): string => {
+    switch (format) {
       case "hex":
         return color;
       case "rgb": {
@@ -153,6 +214,23 @@ export function ColorPickerNav() {
         setColor(hex);
       }
     }
+
+    // For HSL format - try to parse HSL values like hsl(120, 50%, 50%)
+    const hslMatch = input.match(
+      /hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i
+    );
+    if (hslMatch) {
+      const h = parseInt(hslMatch[1]);
+      const s = parseInt(hslMatch[2]);
+      const l = parseInt(hslMatch[3]);
+
+      // Ensure values are in range
+      if (h >= 0 && h <= 360 && s >= 0 && s <= 100 && l >= 0 && l <= 100) {
+        // Convert HSL to RGB to HEX
+        const hex = hslToHex(h, s, l);
+        setColor(hex);
+      }
+    }
   };
 
   // Create a wrapper function that prevents default form submission
@@ -169,7 +247,10 @@ export function ColorPickerNav() {
     }
 
     // Ensure colorCode is set properly before submission
-    form.setValue("colorForm.colorCode", color);
+  form.setValue(
+    "colorForm.colorCode",
+    getFormattedColorByFormat(color, colorFormat)
+  );
 
     // Now call the form submission
     handleSubmit();
@@ -231,9 +312,16 @@ export function ColorPickerNav() {
                     <FormLabel htmlFor="color-format">Format</FormLabel>
                     <Select
                       value={colorFormat}
-                      onValueChange={(value) =>
-                        setColorFormat(value as ColorFormat)
-                      }
+                      onValueChange={(value) => {
+                        const newFormat = value as ColorFormat;
+                        setColorFormat(newFormat);
+
+                        // Update the color code field with the formatted value
+                        form.setValue(
+                          "colorForm.colorCode",
+                          getFormattedColorByFormat(color, newFormat)
+                        );
+                      }}
                     >
                       <SelectTrigger id="color-format">
                         <SelectValue placeholder="Color format" />

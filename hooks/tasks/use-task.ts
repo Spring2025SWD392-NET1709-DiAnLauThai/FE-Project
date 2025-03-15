@@ -1,4 +1,4 @@
-import { AssignDesignerPayload, PaginatedTaskResponse, Task, TaskParams } from "@/domains/models/tasks";
+import { AssignDesignerPayload, PaginatedTaskResponse, Task, TaskConfirm, TaskParams } from "@/domains/models/tasks";
 
 import { QueryKey } from "@/domains/stores/query-key";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -15,11 +15,13 @@ export function useDesigners() {
 }
 
 export function useTaskDetail(id: string) {
-  return useQuery({
+  const queryResult = useQuery({
     queryKey: [QueryKey.TASK.DETAIL, id],
     queryFn: async () => await taskServices.get.taskDetail(id),
     select: (data) => data.data,
   });
+
+  return queryResult; // This returns the full query result including refetch
 }
 
 export const useTasksQuery = (
@@ -107,4 +109,23 @@ export const useAssignDesignerMutation = () => {
     },
   });
   return { assignDesigner };
+};
+
+export const useConfirmTaskMutation = () => {
+  const { toast } = useToast();
+  const confirmTask = useMutation({
+    mutationKey: [QueryKey.TASK.CONFIRM_TASK],
+    mutationFn: async (bookingId: string) =>
+      await taskServices.put.confirmTask(bookingId),
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: `${data.message}`,
+      });
+    },
+    onError: (error) => {
+      console.error("error", error);
+    },
+  });
+  return { confirmTask };
 };

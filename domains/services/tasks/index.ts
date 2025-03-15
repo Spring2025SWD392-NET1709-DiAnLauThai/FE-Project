@@ -3,6 +3,7 @@ import {
   AssignDesignerPayload,
   DesignersResponse,
   PaginatedTaskResponse,
+  TaskConfirm,
   TaskDetail,
   TaskParams,
 } from "../../models/tasks/index";
@@ -75,8 +76,19 @@ export const taskServices = {
       } catch (error) {
         throw error;
       }
-     },
+    },
   },
-  put: {},
+  put: {
+    confirmTask: async (
+      bookingId: string
+    ): Promise<RootResponse<string>> => {
+      try {
+        const response = await axiosInstance.put(`/task/confirm/${bookingId}`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+  },
   delete: {},
 };
