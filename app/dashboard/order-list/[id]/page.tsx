@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
 import { CalendarIcon, Clock, DollarSign, User } from "lucide-react";
@@ -25,7 +25,11 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useParams } from "next/navigation";
 import { useBookingDetailsQuery } from "@/hooks/booking/use-booking";
-import { formatFromISOStringVN, formatPriceToVND, FormatType } from "@/lib/format";
+import {
+  formatFromISOStringVN,
+  formatPriceToVND,
+  FormatType,
+} from "@/lib/format";
 import { useUser } from "@/hooks/user/use-user";
 import { Role } from "@/domains/enums";
 import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
@@ -43,7 +47,11 @@ import { useAssignDesignerForm } from "@/hooks/tasks/use-task-form";
 export default function BookingDetailPage() {
   const { id } = useParams();
   const [selectedDesigner, setSelectedDesigner] = useState("");
-  // const [isSubmitting, setIsSubmitting] = useState(false);
+  const [localDesignerName, setLocalDesignerName] = useState<string | null>(
+    null
+  );
+  const [updateSuccessful, setUpdateSuccessful] = useState(false);
+  const [assignmentComplete, setAssignmentComplete] = useState(false);
 
   const { data: users, isLoading: usersLoading } = useUser({
     role: Role.DESIGNER,
@@ -54,7 +62,11 @@ export default function BookingDetailPage() {
     id as string
   );
 
-  const { form, onSubmit, isSubmitting } = useAssignDesignerForm(id as string);
+  const {
+    form,
+    onSubmit: originalSubmit,
+    isSubmitting,
+  } = useAssignDesignerForm(id as string);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -62,6 +74,46 @@ export default function BookingDetailPage() {
       currency: "USD",
     }).format(amount);
   };
+
+  const onSubmit = async (data: any) => {
+    try {
+      // Reset states
+      setUpdateSuccessful(false);
+
+      // Wait for the API call to complete
+      await originalSubmit(data);
+
+      // Set successful state
+      setUpdateSuccessful(true);
+
+      // Find the designer name
+      if (selectedDesigner) {
+        const designerName =
+          users?.data.content.find((d) => d.id === selectedDesigner)?.name ||
+          "";
+
+        // Set the designer name
+        setLocalDesignerName(designerName);
+
+        // Delay the UI transition to ensure it's visible to user
+        setTimeout(() => {
+          // Set assignment complete to trigger the UI change
+          setAssignmentComplete(true);
+        }, 3000); // 2 second delay to show the success message
+      }
+    } catch (error) {
+      console.error("Error assigning designer:", error);
+    }
+  };
+
+  // Reset states when booking data changes
+  useEffect(() => {
+    if (booking?.data.designerName) {
+      setAssignmentComplete(true);
+    } else {
+      setAssignmentComplete(false);
+    }
+  }, [booking]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -233,7 +285,12 @@ export default function BookingDetailPage() {
         </Card>
 
         <Form {...form}>
-          <form onSubmit={onSubmit}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              onSubmit(form.getValues());
+            }}
+          >
             <Card>
               <CardHeader>
                 <CardTitle>Assign Designer</CardTitle>
@@ -242,63 +299,99 @@ export default function BookingDetailPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="designerId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel> Designer</FormLabel>
-                      <Select
-                        defaultValue={field.value}
-                        {...field}
-                        onValueChange={(value) => {
-                          setSelectedDesigner(value);
-                          field.onChange(value);
-                        }}
-                      >
-                        <FormControl>
-                          <SelectTrigger id="designer">
-                            <SelectValue placeholder="Select a designer" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {users?.data.content.map((designer) => (
-                            <SelectItem key={designer.id} value={designer.id}>
-                              {designer.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        {selectedDesigner && (
-                          <section className="p-4 border rounded-md bg-muted/50">
-                            <section className="flex items-center gap-2 mb-2">
-                              <User className="h-4 w-4 text-muted-foreground" />
-                              <p className="font-medium">
-                                {
-                                  users.data.content.find(
-                                    (d) => d.id === selectedDesigner
-                                  )?.name
-                                }
+                {booking?.data.designerName ||
+                (assignmentComplete && localDesignerName) ? (
+                  <div className="p-4 border rounded-md bg-muted">
+                    <div className="flex items-center gap-2 mb-2">
+                      <User className="h-5 w-5 text-primary" />
+                      <p className="font-medium text-lg">
+                        {localDesignerName || booking?.data.designerName}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="mt-2">
+                      Currently Assigned
+                    </Badge>
+                    <p className="text-sm text-muted-foreground mt-4">
+                      This booking is already assigned to the designer above. To
+                      change the assignment, you need to remove the current
+                      assignment first.
+                    </p>
+                  </div>
+                ) : (
+                  <FormField
+                    control={form.control}
+                    name="designerId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Designer</FormLabel>
+                        <Select
+                          defaultValue={field.value}
+                          {...field}
+                          onValueChange={(value) => {
+                            setSelectedDesigner(value);
+                            field.onChange(value);
+                          }}
+                        >
+                          <FormControl>
+                            <SelectTrigger id="designer">
+                              <SelectValue placeholder="Select a designer" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {users?.data.content.map((designer) => (
+                              <SelectItem key={designer.id} value={designer.id}>
+                                {designer.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          {selectedDesigner && (
+                            <section className="p-4 border rounded-md bg-muted/50">
+                              <section className="flex items-center gap-2 mb-2">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <p className="font-medium">
+                                  {
+                                    users.data.content.find(
+                                      (d) => d.id === selectedDesigner
+                                    )?.name
+                                  }
+                                </p>
+                              </section>
+                              <p className="text-sm text-muted-foreground">
+                                This designer will be notified about the
+                                assignment and will have access to all booking
+                                details.
                               </p>
                             </section>
-                            <p className="text-sm text-muted-foreground">
-                              This designer will be notified about the
-                              assignment and will have access to all booking
-                              details.
-                            </p>
-                          </section>
-                        )}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                          )}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </CardContent>
               <CardFooter>
-                <Button className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Submitting..." : "Assign & Submit"}
-                </Button>
+                {booking?.data.designerName ||
+                (assignmentComplete && localDesignerName) ? (
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    type="button"
+                    disabled
+                  >
+                    Already Assigned
+                  </Button>
+                ) : (
+                  <Button className="w-full" disabled={isSubmitting}>
+                    {isSubmitting
+                      ? "Submitting..."
+                      : updateSuccessful
+                      ? "Successfully Assigned!"
+                      : "Assign & Submit"}
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           </form>

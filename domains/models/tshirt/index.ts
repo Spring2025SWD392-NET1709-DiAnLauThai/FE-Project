@@ -1,9 +1,9 @@
 export interface TShirtResponse {
-  id: string;
+  tshirtId: string;
   name: string;
   description: string;
   imageUrl: string;
-  createdAt: Date; 
+  createdAt: Date;
 }
 
 export interface TShirtPayload{
@@ -15,4 +15,10 @@ export interface TShirtPayload{
   ],
   imagefile: string
 }
+
+export interface AssignTshirt{
+  tshirtId: string,
+  bookingDetailId: string
+}
+
 export interface TShirtParams extends RootRequest {}

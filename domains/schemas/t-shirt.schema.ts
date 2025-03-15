@@ -8,5 +8,11 @@ export const TShirtSchema = z.object({
   imagefile: z.string(),
 });
 
+export const AssignTshirtSchema = z.object({
+  tshirtId: z.string(),
+  bookingDetailId: z.string(),
+});
+
 // Type inference
 export type TShirt = z.infer<typeof TShirtSchema>;
+export type AssignTshirt = z.infer<typeof AssignTshirtSchema>;

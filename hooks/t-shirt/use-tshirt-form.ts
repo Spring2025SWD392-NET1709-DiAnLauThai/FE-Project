@@ -1,11 +1,13 @@
 import { TShirtPayload } from "@/domains/models/tshirt";
-import { TShirt, TShirtSchema } from "@/domains/schemas/t-shirt.schema";
+import { AssignTshirt, AssignTshirtSchema, TShirt, TShirtSchema } from "@/domains/schemas/t-shirt.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useTshirtMutation } from "./use-tshirt";
+import { useAssignTshirtMutation, useTshirtMutation } from "./use-tshirt";
 import { useToast } from "../use-toast";
 import { QueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@/domains/stores/query-key";
+import { useEffect } from "react";
+import { BookingDetail } from "@/domains/models/tasks";
 
 export const useTshirtForm = (id?: string) => {
   const { toast } = useToast();
@@ -91,5 +93,68 @@ export const useTshirtForm = (id?: string) => {
     form,
     onSubmit,
     isLoading: createTshirt.isPending || updateTshirt.isPending,
+  };
+};
+
+export const useAssignTshirtForm = ({ 
+  bookingDetail, 
+  selectedShirt 
+}: { 
+  bookingDetail: BookingDetail | null;
+  selectedShirt: string | null;
+}) => {
+  const { toast } = useToast();
+  const { assignTshirt } = useAssignTshirtMutation();
+  const queryClient = new QueryClient();
+  
+  const form = useForm<AssignTshirt>({
+    resolver: zodResolver(AssignTshirtSchema),
+    defaultValues: {
+      bookingDetailId: bookingDetail?.bookingDetailId || "",
+      tshirtId: selectedShirt || "",
+    },
+  });
+
+  // Update form values when props change
+  useEffect(() => {
+    if (bookingDetail?.bookingDetailId) {
+      form.setValue("bookingDetailId", bookingDetail.bookingDetailId);
+    }
+    if (selectedShirt) {
+      form.setValue("tshirtId", selectedShirt);
+    }
+  }, [bookingDetail, selectedShirt, form]);
+
+  const onSubmit = form.handleSubmit(async (data) => {
+    const value: AssignTshirt = {
+      bookingDetailId: data.bookingDetailId,
+      tshirtId: data.tshirtId,
+    };
+
+    console.log("Assigning T-shirt:", value);
+
+    await assignTshirt.mutate(value, {
+      onSuccess: (response) => {
+        toast({
+          title: "Success",
+          description: `${response.message || "T-shirt assigned successfully"}`,
+        });
+        queryClient.invalidateQueries({ queryKey: [QueryKey.TSHIRT.LIST] });
+      },
+      onError: (error) => {
+        console.error("Assignment error:", error);
+        toast({
+          title: "Error",
+          description: "Failed to assign T-shirt",
+          variant: "destructive",
+        });
+      },
+    });
+  });
+
+  return {
+    form,
+    onSubmit,
+    isLoading: assignTshirt.isPending,
   };
 };

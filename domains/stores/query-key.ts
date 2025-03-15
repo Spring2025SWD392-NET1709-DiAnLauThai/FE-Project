@@ -13,6 +13,7 @@ export const QueryKey = {
     UPDATE: "update-tshirt",
     DELETE: "delete-tshirt",
     DETAIL: "detail-tshirt",
+    ASSIGN_TSHIRT: "assign-tshirt",
   },
   BOOKING: {
     LIST: "list-booking",

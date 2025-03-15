@@ -33,6 +33,7 @@ export interface BookingResponse {
 }
 
 export interface BookingDetailResponse {
+  designerName: string;
   totalPrice: number;
   totalQuantity: number;
   bookingStatus: string;

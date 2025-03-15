@@ -1,4 +1,5 @@
 import {  UserRole } from "@/domains/models/user";
+import { TShirtResponse } from "../tshirt";
 // domains/models/task/index.ts
 export enum TaskStatus {
   ASSIGNED = "ASSIGNED",
@@ -86,7 +87,7 @@ export interface BookingDetail {
   description: string;
   unitPrice: number;
   design: Design;
-  tshirt: string | null;
+  tshirt: TShirtResponse | null;
 }
 
 export interface TaskDetail {

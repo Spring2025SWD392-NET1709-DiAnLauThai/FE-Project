@@ -1,4 +1,4 @@
-import { TShirtParams, TShirtPayload } from "@/domains/models/tshirt";
+import { AssignTshirt, TShirtParams, TShirtPayload } from "@/domains/models/tshirt";
 import { TShirtService } from "@/domains/services/t-shirt";
 import { QueryKey } from "@/domains/stores/query-key";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -26,6 +26,34 @@ export const useTShirtDetailQuery = ({ id }: { id: string }) => {
   return queryTShirtDetail;
 };
 
+
+export const useAssignTshirtMutation = () => {
+  const assignTshirt = useMutation({
+    mutationKey: [QueryKey.TSHIRT.ASSIGN_TSHIRT],
+    mutationFn: (data: AssignTshirt) => TShirtService.put.assignTshirt(data),
+    onSuccess: (data) => {
+      const message = data.message || "Assign T-Shirt success";
+
+      toast({
+        title: "Assign T-Shirt",
+        description: message,
+      });
+    },
+    onError: (error: any) => {
+      console.error("T-shirt assign failed:", error);
+
+      const errorMessage =
+        error.response?.data?.message || "There was a problem assign T-Shirt";
+
+      toast({
+        title: "Assign Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    },
+  });
+  return { assignTshirt };
+};
 export const useTshirtMutation = () => {
   const createTshirt = useMutation({
     mutationKey: [QueryKey.TSHIRT.CREATE],

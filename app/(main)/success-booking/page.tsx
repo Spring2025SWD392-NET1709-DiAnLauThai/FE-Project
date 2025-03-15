@@ -96,7 +96,7 @@ export default function SuccessBookingPage() {
                   Try Payment Again
                 </Button>
               </Link>
-              <Link href="/my-bookings" className="w-full">
+              <Link href="/my-booking" className="w-full">
                 <Button className="w-full" size="lg" variant="outline">
                   View My Bookings
                 </Button>
@@ -109,7 +109,7 @@ export default function SuccessBookingPage() {
                   Return to Homepage
                 </Button>
               </Link>
-              <Link href="/my-bookings" className="w-full">
+              <Link href="/my-booking" className="w-full">
                 <Button className="w-full" size="lg" variant="outline">
                   View My Bookings
                 </Button>
