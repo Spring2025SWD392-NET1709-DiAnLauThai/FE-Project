@@ -3,13 +3,21 @@ import { AssignDesignerPayload, PaginatedTaskResponse, Task, TaskParams } from "
 import { QueryKey } from "@/domains/stores/query-key";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "../use-toast";
-import { taskServices } from "@/domains/services/assign-tasks";
+import { taskServices } from "@/domains/services/tasks";
 import { useState } from "react";
 
 export function useDesigners() {
   return useQuery({
     queryKey: [QueryKey.DESIGNER.LIST],
     queryFn: async () => await taskServices.get.listDesigner(),
+    select: (data) => data.data,
+  });
+}
+
+export function useTaskDetail(id: string) {
+  return useQuery({
+    queryKey: [QueryKey.TASK.DETAIL, id],
+    queryFn: async () => await taskServices.get.taskDetail(id),
     select: (data) => data.data,
   });
 }

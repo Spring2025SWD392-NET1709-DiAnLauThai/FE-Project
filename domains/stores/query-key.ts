@@ -23,6 +23,7 @@ export const QueryKey = {
   },
   TASK: {
     LIST: "list-task",
+    DETAIL : "detail-task",
     ASSIGN_DESIGNER: "assign-designer",
   },
   DESIGNER: {

@@ -38,7 +38,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useAssignDesignerForm } from "@/hooks/assign-tasks/use-task-form";
+import { useAssignDesignerForm } from "@/hooks/tasks/use-task-form";
 
 export default function BookingDetailPage() {
   const { id } = useParams();

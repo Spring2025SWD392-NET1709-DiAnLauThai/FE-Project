@@ -6,6 +6,14 @@ export enum TaskStatus {
   DENIED = "DENIED",
 }
 
+export enum BookingStatus{
+  DEPOSITED = "DEPOSITED",
+  CONFIRMED = "CONFIRMED",
+  CANCELLED = "CANCELLED",
+  COMPLETED = "COMPLETED"
+}
+
+
 export interface AssignDesignerPayload {
   bookingId: string;
   designerId: string;
@@ -69,6 +77,30 @@ export interface PaginatedTaskResponse {
   currentPage: number;
 }
 
-export interface TaskDetail{
-  task: Task[];
+interface Design {
+  designFile: string;
 }
+
+export interface BookingDetail {
+  bookingDetailId: string;
+  description: string;
+  unitPrice: number;
+  design: Design;
+  tshirt: string | null;
+}
+
+export interface TaskDetail {
+  designerName: string;
+  totalPrice: number;
+  totalQuantity: number;
+  bookingStatus: BookingStatus
+  datecreated: string;
+  updateddate: string;
+  startdate: string;
+  enddate: string;
+  code: string;
+  title: string;
+  bookingDetails: BookingDetail[];
+}
+
+

@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useDesigners } from "@/hooks/assign-tasks/use-task";
+import { useDesigners } from "@/hooks/tasks/use-task";
 import {
   Form,
   FormControl,
@@ -19,7 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useAssignDesignerForm } from "@/hooks/assign-tasks/use-task-form";
+import { useAssignDesignerForm } from "@/hooks/tasks/use-task-form";
 import { BookingResponse } from "@/domains/models/booking";
 
 interface AssignDesignerFormProps {

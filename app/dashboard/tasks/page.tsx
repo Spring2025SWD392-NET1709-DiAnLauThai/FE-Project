@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { TaskStatus } from "@/domains/models/tasks";
-import { useTasksQuery } from "@/hooks/assign-tasks/use-task";
+import { useTasksQuery } from "@/hooks/tasks/use-task";
 import { DataTable } from "@/components/table/Table";
 import { taskColumns } from "./columns";
 import PaginationTable from "@/components/plugins/pagination";

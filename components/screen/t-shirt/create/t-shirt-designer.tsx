@@ -43,7 +43,6 @@ export function TshirtDesigner({ id }: { id?: string }) {
 
   // Custom form submission handler
 
-
   // Handle image upload with react-dropzone
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -100,18 +99,40 @@ export function TshirtDesigner({ id }: { id?: string }) {
     maxFiles: 1,
   });
 
+  // Update this function to allow multiple color selection
   const handleColorSelect = (color: string, colorId: string) => {
+    // Keep the visual indicator of which color is currently selected
     setSelectedColor(color);
 
-    // Set a single color ID for the API instead of the color code
-    const updatedColors = [colorId];
+    // Get current color list
+    const currentColors = form.getValues("colorlist") || [];
+
+    // Check if the color is already selected
+    const colorIndex = currentColors.indexOf(colorId);
+
+    // Toggle color selection
+    let updatedColors = [...currentColors];
+    if (colorIndex >= 0) {
+      // If color is already selected, remove it
+      updatedColors.splice(colorIndex, 1);
+    } else {
+      // If color is not selected, add it
+      updatedColors.push(colorId);
+    }
+
+    // Update form value
     form.setValue("colorlist", updatedColors, { shouldValidate: true });
-    console.log("After setting color:", form.getValues("colorlist"));
+    console.log("After setting colors:", form.getValues("colorlist"));
   };
 
-  const handleRemoveColor = (color: string) => {
-    form.setValue("colorlist", [], { shouldValidate: true });
-    setSelectedColor("#FFFFFF");
+  // Update to remove a specific color by ID
+  const handleRemoveColor = (colorId: string) => {
+    const currentColors = form.getValues("colorlist") || [];
+    const updatedColors = currentColors.filter((id) => id !== colorId);
+    form.setValue("colorlist", updatedColors, { shouldValidate: true });
+
+    // Reset selected color visual indicator if removing the currently selected color
+    const selectedColorObj = colors.find((c) => c.colorId === colorId);
   };
 
   const handleDragImage = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -162,7 +183,6 @@ export function TshirtDesigner({ id }: { id?: string }) {
               {/* T-shirt mockup */}
               <div
                 className="relative w-[400px] h-[450px]"
-                style={{ backgroundColor: selectedColor }}
                 onClick={handleDragImage}
               >
                 <div className="absolute inset-0 opacity-20">
@@ -327,24 +347,30 @@ export function TshirtDesigner({ id }: { id?: string }) {
                                 Loading colors...
                               </div>
                             ) : (colors?.length ?? 0) > 0 ? (
-                              colors.map((color) => (
-                                <div
-                                  key={color.colorId}
-                                  className={`w-10 h-10 rounded-full cursor-pointer border-2 ${
-                                    selectedColor === color.colorCode
-                                      ? "border-primary"
-                                      : "border-transparent"
-                                  }`}
-                                  style={{ backgroundColor: color.colorCode }}
-                                  onClick={() =>
-                                    handleColorSelect(
-                                      color.colorCode,
-                                      color.colorId
-                                    )
-                                  }
-                                  title={color.colorName}
-                                />
-                              ))
+                              colors.map((color) => {
+                                const isSelected =
+                                  watchedValues.colorlist?.includes(
+                                    color.colorId
+                                  );
+                                return (
+                                  <div
+                                    key={color.colorId}
+                                    className={`w-10 h-10 rounded-full cursor-pointer border-2 ${
+                                      isSelected
+                                        ? "border-primary"
+                                        : "border-transparent"
+                                    }`}
+                                    style={{ backgroundColor: color.colorCode }}
+                                    onClick={() =>
+                                      handleColorSelect(
+                                        color.colorCode,
+                                        color.colorId
+                                      )
+                                    }
+                                    title={color.colorName}
+                                  />
+                                );
+                              })
                             ) : (
                               <div className="col-span-7 py-2 text-center text-muted-foreground">
                                 No colors available
@@ -393,7 +419,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
                                       variant="ghost"
                                       size="icon"
                                       className="h-5 w-5"
-                                      onClick={handleRemoveColor}
+                                      onClick={() => handleRemoveColor(colorId)}
                                     >
                                       <Trash2 className="h-3 w-3" />
                                     </Button>

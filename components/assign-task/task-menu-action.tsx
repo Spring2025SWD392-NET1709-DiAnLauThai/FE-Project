@@ -11,15 +11,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Eye } from "lucide-react";
-import { TaskDetailModal } from "./task-detail";
+import { MoreHorizontal, Eye, ClipboardList } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface TaskMenuActionProps {
   task: Task;
 }
 
 export default function TaskMenuAction({ task }: TaskMenuActionProps) {
-  const [showDetailModal, setShowDetailModal] = useState(false);
+  const { replace } = useRouter();
 
   return (
     <>
@@ -33,21 +33,15 @@ export default function TaskMenuAction({ task }: TaskMenuActionProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setShowDetailModal(true)}>
-            <Eye className="mr-2 h-4 w-4" />
-            <span>View Details</span>
-          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => replace(`/task-designer/${task.taskId}`)}>
+                    <ClipboardList
+                     />
+                    <span>View Detail</span>
+                  </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Task detail modal */}
-      {showDetailModal && (
-        <TaskDetailModal
-          task={task}
-          isOpen={showDetailModal}
-          onClose={() => setShowDetailModal(false)}
-        />
-      )}
+      
     </>
   );
 }
