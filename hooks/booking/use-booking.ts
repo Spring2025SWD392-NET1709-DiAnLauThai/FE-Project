@@ -108,3 +108,22 @@ export const useCancelBookingMutation = (bookingId: string) => {
 
   return { cancelBooking };
 };
+
+export const usePayBookingMutation = (bookingId: string) => {
+  const { toast } = useToast();
+  const payBooking = useMutation({
+    mutationKey: [QueryKey.BOOKING.PAY, bookingId],
+    mutationFn: async () =>
+      await BookingService.put.payBooking(bookingId),
+    onError: (error) => {
+      console.error("error", error);
+      toast({
+        title: "Error",
+        description: "Failed to pay booking. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  return { payBooking };
+};

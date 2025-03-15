@@ -26,7 +26,7 @@ import { FormatType, formatFromISOStringVN } from "@/lib/format";
 import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { useUpdateDescription } from "@/hooks/booking/use-booking-form";
+import { usePayBooking, useUpdateDescription } from "@/hooks/booking/use-booking-form";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { CancelBookingButton } from "@/components/cancel-booking-modal/page";
 
@@ -35,6 +35,12 @@ export default function CustomerBookingDetailPage() {
   const { data: booking, isLoading: bookingLoading } = useBookingDetailsQuery(
     id as string
   );
+
+    const {
+      form,
+      onSubmit,
+      isLoading,
+    } = usePayBooking(id as string);
 
   const [sendingDetailId, setSendingDetailId] = useState<string | null>(null);
 
@@ -391,21 +397,27 @@ export default function CustomerBookingDetailPage() {
         <CardFooter className="flex flex-col sm:flex-row gap-3 pt-6 justify-end">
           {/* Only show Cancel button if the booking is not already cancelled */}
           {booking?.data.bookingStatus === "DEPOSITED" && (
-              <CancelBookingButton bookingId={id as string} />
-            )}
+            <CancelBookingButton bookingId={id as string} />
+          )}
 
-          <Button
-            variant="default"
-            className="w-full sm:w-auto"
-            disabled={booking?.data.bookingStatus !== "COMPLETED"}
-            onClick={() => booking?.data.bookingStatus === "COMPLETED"}
-          >
-            {booking?.data.bookingStatus === "COMPLETED" ? (
-              <>Pay Booking</>
-            ) : (
-              "Pay Booking"
-            )}
-          </Button>
+          <Form {...form}>
+            <form onSubmit={onSubmit} className="flex gap-3">
+              <Button
+                type="submit"
+                variant="default"
+                className="w-full sm:w-auto"
+                disabled={
+                  booking?.data.bookingStatus !== "COMPLETED" || isLoading
+                }
+              >
+                {isLoading
+                  ? "Processing Payment..."
+                  : booking?.data.bookingStatus === "COMPLETED"
+                  ? "Pay Booking"
+                  : "Pay Booking"}
+              </Button>
+            </form>
+          </Form>
 
           <Button variant="outline" className="w-full sm:w-auto">
             Download Details

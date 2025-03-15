@@ -65,7 +65,7 @@ export const BookingService = {
       try {
         const response = await axiosInstance.post("/bookings", payload);
         console.log("response", response.data);
-        
+
         return response.data;
       } catch (error) {
         throw error;
@@ -73,7 +73,19 @@ export const BookingService = {
     },
   },
   put: {
-    noteDescription: async ( data: DescriptionPayload): Promise<RootResponse<string>> => {
+    payBooking: async (
+      bookingId: string
+    ): Promise<RootResponse<string>> => {
+      try {
+        const response = await axiosInstance.put(`/bookings/${bookingId}/payment`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    noteDescription: async (
+      data: DescriptionPayload
+    ): Promise<RootResponse<string>> => {
       try {
         const response = await axiosInstance.put(`/bookingsdetails`, data);
         return response.data;
@@ -81,9 +93,15 @@ export const BookingService = {
         throw error;
       }
     },
-    cancelBooking: async (bookingId: string ,data: CancelBookingPayload): Promise<RootResponse<string>> => {
+    cancelBooking: async (
+      bookingId: string,
+      data: CancelBookingPayload
+    ): Promise<RootResponse<string>> => {
       try {
-        const response = await axiosInstance.put(`/bookings/${bookingId}/cancel`, data);
+        const response = await axiosInstance.put(
+          `/bookings/${bookingId}/cancel`,
+          data
+        );
         return response.data;
       } catch (error) {
         throw error;

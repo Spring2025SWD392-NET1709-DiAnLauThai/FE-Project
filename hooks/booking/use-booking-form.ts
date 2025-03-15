@@ -3,7 +3,7 @@ import { BookingSchema, bookingSchema, cancelSchema, CancelSchema, descriptionSc
 import { FileService } from "@/domains/services/file";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useBookingMutation, useCancelBookingMutation, useDescriptionMutation } from "./use-booking";
+import { useBookingMutation, useCancelBookingMutation, useDescriptionMutation, usePayBookingMutation } from "./use-booking";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@/domains/stores/query-key";
 import { toast, useToast } from "../use-toast";
@@ -213,5 +213,64 @@ export const useCancelBooking = (bookingId: string) => {
     form,
     onSubmit,
     isLoading: cancelBooking.isPending,
+  };
+};
+
+export const usePayBooking = (bookingId: string) => {
+  const queryClient = useQueryClient();
+  const { payBooking } = usePayBookingMutation(bookingId);
+  const { toast } = useToast();
+
+  // No need for a complex form since this is just a payment submission
+  // We'll keep a simple form structure in case you want to add notes or other fields later
+  const form = useForm({
+    defaultValues: {
+      bookingId: bookingId,
+    },
+  });
+
+  // Set booking ID when it changes
+  const onSubmit = form.handleSubmit(async () => {
+    await payBooking.mutate(void 0, {
+      onSuccess: (response) => {
+        toast({
+          title: "Success",
+          description: response.message,
+        });
+
+        // Check if there's a payment URL in the response and redirect
+        if (
+          response.data &&
+          typeof response.data === "string" &&
+          response.data.includes("vnpayment.vn")
+        ) {
+          // Redirect to payment gateway
+          window.location.href = response.data;
+        } else {
+          // Invalidate relevant queries to refresh data
+          queryClient.invalidateQueries({ queryKey: [QueryKey.BOOKING.LIST] });
+          queryClient.invalidateQueries({
+            queryKey: [QueryKey.BOOKING.DETAIL, bookingId],
+          });
+        }
+
+        // Reset the form
+        form.reset();
+      },
+      onError: (error) => {
+        console.error("Error processing payment:", error);
+        toast({
+          title: "Error",
+          description: "Failed to process payment. Please try again.",
+          variant: "destructive",
+        });
+      },
+    });
+  });
+
+  return {
+    form,
+    onSubmit,
+    isLoading: payBooking.isPending,
   };
 };
