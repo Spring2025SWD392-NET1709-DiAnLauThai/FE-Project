@@ -29,6 +29,7 @@ import { useState } from "react";
 import { usePayBooking, useUpdateDescription } from "@/hooks/booking/use-booking-form";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { CancelBookingButton } from "@/components/cancel-booking-modal/page";
+import { DetailNoteForm } from "@/components/booking-note/page";
 
 export default function CustomerBookingDetailPage() {
   const { id } = useParams();
@@ -283,9 +284,7 @@ export default function CustomerBookingDetailPage() {
             <div className="grid gap-8">
               {booking?.data.bookingDetails.map((detail, index) => {
                 // Create a form instance for each booking detail
-                const { form, onSubmit, isLoading } = useUpdateDescription(
-                  detail.bookingDetailId
-                );
+                
 
                 return (
                   <div
@@ -327,62 +326,11 @@ export default function CustomerBookingDetailPage() {
                     </div>
                     <div>
                       <h2 className="text-sm font-medium mb-2">Note</h2>
-                      <Form {...form}>
-                        <form
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            setSendingDetailId(detail.bookingDetailId);
-                            onSubmit().finally(() => {
-                              setSendingDetailId(null);
-                            });
-                          }}
-                          className="space-y-2"
-                        >
-                          <div className="flex gap-2">
-                            <FormField
-                              control={form.control}
-                              name="description"
-                              render={({ field }) => (
-                                <FormItem className="flex-1">
-                                  <FormControl>
-                                    <Textarea
-                                      className="resize-none"
-                                      placeholder={
-                                        isNoteEditable(detail)
-                                          ? "Enter your note here..."
-                                          : "Notes can only be added during the first half of the booking period."
-                                      }
-                                      disabled={
-                                        !isNoteEditable(detail) ||
-                                        isLoading ||
-                                        sendingDetailId ===
-                                          detail.bookingDetailId
-                                      }
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-
-                            {isNoteEditable(detail) && (
-                              <Button
-                                type="submit"
-                                size="sm"
-                                className="self-end"
-                                disabled={
-                                  isLoading ||
-                                  sendingDetailId === detail.bookingDetailId
-                                }
-                              >
-                                {sendingDetailId === detail.bookingDetailId
-                                  ? "Sending..."
-                                  : "Send Note"}
-                              </Button>
-                            )}
-                          </div>
-                        </form>
-                      </Form>
+                      <DetailNoteForm
+                        detailId={detail.bookingDetailId}
+                        isEditable={isNoteEditable(detail)}
+                        initialDescription={detail.description}
+                      />
                     </div>
 
                     {index < booking?.data.bookingDetails.length - 1 && (

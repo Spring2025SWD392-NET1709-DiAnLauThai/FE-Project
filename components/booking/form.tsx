@@ -2,7 +2,7 @@
 
 import { useBookingForm } from "@/hooks/booking/use-booking-form";
 import { useToast } from "@/hooks/use-toast";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Controller, useFieldArray } from "react-hook-form";
 import {
   Card,
@@ -19,6 +19,7 @@ import {
   Upload,
   Image,
   CalendarIcon,
+  Loader2,
 } from "lucide-react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -37,26 +38,32 @@ import { cn } from "@/lib/utils";
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
+import { Progress } from "@/components/ui/progress";
 
 const BookingForm = () => {
   const { toast } = useToast();
   const [imagePreviewUrls, setImagePreviewUrls] = React.useState<{
     [key: number]: string[];
   }>({});
-  const { form, onSubmit, isLoading } = useBookingForm();
+  const [uploadingItemIndex, setUploadingItemIndex] = useState<number | null>(
+    null
+  );
+  const { form, onSubmit, isLoading, isUploading, uploadProgress } =
+    useBookingForm();
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "bookingdetails",
   });
 
-  const handleImageChange = (
+  const handleImageChange = async (
     index: number,
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     if (e.target.files && e.target.files.length > 0) {
-      // Check if adding these files would exceed the limit
+      // Set the start date if not already set
       form.setValue("startdate", new Date());
+
       const currentFiles =
         form.watch(`bookingdetails.${index}.designFile`) || [];
       const newFilesArray = Array.from(e.target.files);
@@ -90,22 +97,40 @@ const BookingForm = () => {
         return;
       }
 
-      // Update form value with new files
-      const combinedFiles = [...currentFiles, ...newFilesArray];
-      form.setValue(`bookingdetails.${index}.designFile`, combinedFiles);
-      form.setValue(`bookingdetails.${index}.unitprice`, 100000);
+      // Set uploading item index
+      setUploadingItemIndex(index);
 
-      // Create preview URLs
-      const urls = newFilesArray.map((file) => URL.createObjectURL(file));
-      setImagePreviewUrls((prev) => ({
-        ...prev,
-        [index]: [...(prev[index] || []), ...urls],
-      }));
+      try {
+        // Update form value with new files
+        const combinedFiles = [...currentFiles, ...newFilesArray];
+        form.setValue(`bookingdetails.${index}.designFile`, combinedFiles);
+        form.setValue(`bookingdetails.${index}.unitprice`, 100000);
+
+        // Create preview URLs
+        const urls = newFilesArray.map((file) => URL.createObjectURL(file));
+        setImagePreviewUrls((prev) => ({
+          ...prev,
+          [index]: [...(prev[index] || []), ...urls],
+        }));
+
+        // Simulate waiting for file upload to complete
+        // In a real implementation, you'd wait for the upload promise to resolve
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      } catch (error) {
+        toast({
+          title: "Upload failed",
+          description: "There was a problem uploading your images.",
+          variant: "destructive",
+        });
+      } finally {
+        // Clear uploading state
+        setUploadingItemIndex(null);
+      }
     }
   };
 
   return (
-    <div className=" mx">
+    <div className="mx">
       <Card className="shadow-lg border-primary/20">
         <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5">
           <CardTitle className="text-2xl font-bold text-primary">
@@ -138,7 +163,7 @@ const BookingForm = () => {
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel className="text-lg font-medium">
-                        Dealine
+                        Deadline
                       </FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -163,8 +188,19 @@ const BookingForm = () => {
                           <Calendar
                             mode="single"
                             selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) => date < new Date()}
+                            onSelect={(date) => {
+                              field.onChange(date);
+
+                              // Check if date is valid (in the future)
+                              if (date && date < new Date()) {
+                                toast({
+                                  title: "Warning: Past date selected",
+                                  description:
+                                    "The deadline should be in the future.",
+                                  variant: "destructive",
+                                });
+                              }
+                            }}
                             initialFocus
                           />
                         </PopoverContent>
@@ -188,14 +224,19 @@ const BookingForm = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() =>
+                    onClick={() => {
                       append({
                         description: "",
                         designFile: [],
                         unitprice: 100000,
-                      })
-                    }
+                      });
+                      toast({
+                        title: "Item added",
+                        description: "A new booking item has been added.",
+                      });
+                    }}
                     className="flex items-center gap-2 border-primary/30 hover:bg-primary/10"
+                    disabled={isUploading || isLoading}
                   >
                     <Plus className="h-4 w-4" />
                     Add Item
@@ -223,8 +264,26 @@ const BookingForm = () => {
                             type="button"
                             variant="destructive"
                             size="sm"
-                            onClick={() => remove(index)}
+                            onClick={() => {
+                              remove(index);
+                              setImagePreviewUrls((prev) => {
+                                const newUrls = { ...prev };
+                                delete newUrls[index];
+                                return newUrls;
+                              });
+                              toast({
+                                title: "Item removed",
+                                description: `Item ${
+                                  index + 1
+                                } has been removed.`,
+                              });
+                            }}
                             className="h-8"
+                            disabled={
+                              isUploading ||
+                              isLoading ||
+                              uploadingItemIndex === index
+                            }
                           >
                             <Trash2 className="h-4 w-4 mr-1" />
                             Remove
@@ -250,7 +309,6 @@ const BookingForm = () => {
                                 value={field.value}
                                 onChange={field.onChange}
                                 placeholder="Enter detailed description..."
-                                // {...field}
                               />
                             )}
                           />
@@ -287,22 +345,41 @@ const BookingForm = () => {
                             control={form.control}
                             name={`bookingdetails.${index}.designFile`}
                             render={({
-                              // eslint-disable-next-line @typescript-eslint/no-unused-vars
                               field: { onChange, value, ...field },
                             }) => (
                               <div className="space-y-3">
                                 <div className="border-2 border-dashed border-primary/20 rounded-lg p-4 text-center hover:bg-primary/5 transition-colors">
                                   <div className="flex flex-col items-center gap-2">
-                                    <Upload className="h-8 w-8 text-primary/60" />
+                                    {uploadingItemIndex === index ? (
+                                      <Loader2 className="h-8 w-8 text-primary/60 animate-spin" />
+                                    ) : (
+                                      <Upload className="h-8 w-8 text-primary/60" />
+                                    )}
                                     <div className="space-y-1">
                                       <p className="text-sm font-medium">
-                                        Drag & drop images here or click to
-                                        browse
+                                        {uploadingItemIndex === index
+                                          ? "Uploading images..."
+                                          : "Drag & drop images here or click to browse"}
                                       </p>
                                       <p className="text-xs text-muted-foreground">
                                         PNG, JPEG only (max 8 images)
                                       </p>
                                     </div>
+
+                                    {/* Upload progress bar */}
+                                    {uploadingItemIndex === index &&
+                                      uploadProgress[index] > 0 && (
+                                        <div className="w-full mt-2">
+                                          <Progress
+                                            value={uploadProgress[index]}
+                                            className="h-2"
+                                          />
+                                          <p className="text-xs text-muted-foreground mt-1">
+                                            {uploadProgress[index]}% complete
+                                          </p>
+                                        </div>
+                                      )}
+
                                     <Input
                                       id={`items.${index}.image`}
                                       type="file"
@@ -311,6 +388,10 @@ const BookingForm = () => {
                                       className="hidden"
                                       onChange={(e) =>
                                         handleImageChange(index, e)
+                                      }
+                                      disabled={
+                                        isUploading ||
+                                        uploadingItemIndex !== null
                                       }
                                       {...field}
                                     />
@@ -326,8 +407,19 @@ const BookingForm = () => {
                                           )
                                           ?.click()
                                       }
+                                      disabled={
+                                        isUploading ||
+                                        uploadingItemIndex !== null
+                                      }
                                     >
-                                      Select Images
+                                      {uploadingItemIndex === index ? (
+                                        <>
+                                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                          Uploading...
+                                        </>
+                                      ) : (
+                                        "Select Images"
+                                      )}
                                     </Button>
                                   </div>
                                 </div>
@@ -367,7 +459,18 @@ const BookingForm = () => {
                                         ...prev,
                                         [index]: [],
                                       }));
+                                      toast({
+                                        title: "Images cleared",
+                                        description: `All images for item ${
+                                          index + 1
+                                        } have been removed.`,
+                                      });
                                     }}
+                                    disabled={
+                                      isUploading ||
+                                      isLoading ||
+                                      uploadingItemIndex === index
+                                    }
                                   >
                                     <Trash2 className="h-3.5 w-3.5 mr-1" />
                                     Clear all
@@ -414,7 +517,21 @@ const BookingForm = () => {
                                               ...prev,
                                               [index]: newUrls,
                                             }));
+
+                                            toast({
+                                              title: "Image removed",
+                                              description: `Image ${
+                                                imgIndex + 1
+                                              } for item ${
+                                                index + 1
+                                              } has been removed.`,
+                                            });
                                           }}
+                                          disabled={
+                                            isUploading ||
+                                            isLoading ||
+                                            uploadingItemIndex === index
+                                          }
                                         >
                                           <Trash2 className="h-3 w-3" />
                                         </Button>
@@ -438,16 +555,37 @@ const BookingForm = () => {
                 onClick={() => {
                   form.reset();
                   setImagePreviewUrls({});
+                  toast({
+                    title: "Form reset",
+                    description: "All form data has been cleared.",
+                  });
                 }}
+                disabled={
+                  isLoading || isUploading || uploadingItemIndex !== null
+                }
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={
+                  isLoading || isUploading || uploadingItemIndex !== null
+                }
                 className="bg-primary hover:bg-primary/90"
               >
-                {isLoading ? "Submitting..." : "Submit Booking"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : isUploading || uploadingItemIndex !== null ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Uploading Images...
+                  </>
+                ) : (
+                  "Submit Booking"
+                )}
               </Button>
             </CardFooter>
           </form>
