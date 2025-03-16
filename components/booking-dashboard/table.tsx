@@ -9,11 +9,12 @@ import { useParamStore } from "@/domains/stores/params-store";
 import { DataTable } from "../plugins/table";
 import { BookingDashboardColumn } from "./column";
 import { Loader2 } from "lucide-react"; // Import loader icon
+import { LoadingDots } from "../plugins/ui-loading/loading-dots";
 
 const BookingDashboardTable = () => {
   const { value } = useParamStore();
 
-  const { bookingQuery } = useBookingsQuery({
+  const { bookingQuery, isLoading } = useBookingsQuery({
     params: {
       page: value.page ?? 1,
       size: value.size ?? 10,
@@ -49,12 +50,9 @@ const BookingDashboardTable = () => {
         </div>
       </div>
 
-      {bookingQuery.isLoading ? (
+      {isLoading ? (
         <div className="py-20 flex flex-col items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="mt-2 text-sm text-muted-foreground">
-            Loading orders...
-          </p>
+          <LoadingDots/>
         </div>
       ) : hasNoBookings ? (
         <div className="py-10 text-center">

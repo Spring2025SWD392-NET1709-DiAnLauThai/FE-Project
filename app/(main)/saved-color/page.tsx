@@ -9,6 +9,7 @@ import { Copy, Check, Search, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useGetColor } from "@/hooks/colors/use-colors";
 import { ColorResponse } from "@/domains/models/color";
+import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
 
 
 const detectColorFormat = (colorCode: string): "hex" | "rgb" | "hsl" => {
@@ -229,7 +230,7 @@ export default function ColorSavedPage() {
 
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-12 w-12 text-primary animate-spin" />
+            <LoadingDots/>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">

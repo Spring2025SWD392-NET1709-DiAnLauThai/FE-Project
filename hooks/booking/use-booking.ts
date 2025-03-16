@@ -31,8 +31,9 @@ export const useBookingsQuery = ({ params }: BookingQuery) => {
       code: 0,
     } as RootResponse<Pagination<BookingResponse>>,
   });
+  const isLoading = bookingQuery.isLoading || bookingQuery.isFetching;
 
-  return { bookingQuery };
+  return { bookingQuery, isLoading };
 };
 
 export const useBookingDetailsQuery = (id: string) => {

@@ -14,7 +14,9 @@ export const useTShirtsQuery = ({ params }: TShirtQuery) => {
     queryFn: () => TShirtService.get.list(params),
   });
 
-  return { queryTShirts };
+  const isLoading = queryTShirts.isLoading || queryTShirts.isFetching;
+
+  return { queryTShirts, isLoading };
 };
 
 export const useTShirtDetailQuery = ({ id }: { id: string }) => {

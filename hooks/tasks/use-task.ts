@@ -19,9 +19,10 @@ export function useTaskDetail(id: string) {
     queryKey: [QueryKey.TASK.DETAIL, id],
     queryFn: async () => await taskServices.get.taskDetail(id),
     select: (data) => data.data,
+    
   });
 
-  return queryResult; // This returns the full query result including refetch
+  return queryResult; 
 }
 
 export const useTasksQuery = (
@@ -55,7 +56,9 @@ export const useTasksQuery = (
     }));
   };
 
-  return { tasksQuery, params, updateFilters };
+  const isLoading = tasksQuery.isLoading || tasksQuery.isFetching;
+
+  return { tasksQuery, params, updateFilters, isLoading };
 };
 
 export const useTasksDesignerQuery = (
@@ -89,7 +92,9 @@ export const useTasksDesignerQuery = (
     }));
   };
 
-  return { tasksQuery, params, updateFilters };
+  const isLoading = tasksQuery.isLoading || tasksQuery.isFetching;
+
+  return { tasksQuery, params, updateFilters, isLoading };
 };
 
 export const useAssignDesignerMutation = () => {

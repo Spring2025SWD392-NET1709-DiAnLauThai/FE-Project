@@ -14,10 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
 
 export default function TasksPage() {
   // Using our task query hook with default params
-  const { tasksQuery, params, updateFilters } = useTasksQuery();
+  const { tasksQuery, params, updateFilters, isLoading } = useTasksQuery();
 
   // Handle search input
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,9 +34,7 @@ export default function TasksPage() {
     });
   };
 
-  // Check if data is empty
-  const isDataEmpty = !tasksQuery.data?.data?.content?.length;
-
+  const hasData = tasksQuery.data?.data?.content && tasksQuery.data.data.content.length > 0;
   return (
     <div className="container mx-auto py-8">
       {/* Added headline */}
@@ -85,19 +84,25 @@ export default function TasksPage() {
           </div>
         </div>
 
-        {isDataEmpty && !tasksQuery.isLoading ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center h-60">
+            <LoadingDots size="lg" color="primary" />
+          </div>
+        ) : hasData ? (
+          <DataTable
+            columns={taskColumns}
+            data={tasksQuery.data?.data?.content ?? []}
+          />
+        ) : (
           <div className="text-center py-10 bg-gray-50 rounded-md">
             <p className="text-muted-foreground text-lg">No tasks found</p>
             <p className="text-sm text-muted-foreground mt-1">
               Try adjusting your filters or adding new tasks
             </p>
           </div>
-        ) : (
-          <DataTable
-            columns={taskColumns}
-            data={tasksQuery.data?.data?.content ?? []}
-          />
+          
         )}
+
       </div>
     </div>
   );

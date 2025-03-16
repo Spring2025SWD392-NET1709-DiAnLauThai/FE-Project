@@ -12,7 +12,7 @@ import { useTransactionCustomer } from "@/hooks/transaction/use-transaction";
 const TransactionCustomerTable = () => {
   const { value } = useParamStore();
 
-  const transactionQuery = useTransactionCustomer({
+  const { listCustomerQuery } = useTransactionCustomer({
     page: value.page ?? 1,
     size: value.size ?? 10,
   });
@@ -25,7 +25,7 @@ const TransactionCustomerTable = () => {
         <div className="flex items-center space-x-4">
           <PaginationTable
             value={
-              transactionQuery.data?.data ??
+              listCustomerQuery.data?.data ??
               ({
                 content: [],
                 totalElements: 0,
@@ -40,7 +40,7 @@ const TransactionCustomerTable = () => {
 
       <DataTable
         columns={TransactionColumns}
-        data={transactionQuery.data?.data?.content ?? []}
+        data={listCustomerQuery.data?.data?.content ?? []}
       />
     </div>
   );
