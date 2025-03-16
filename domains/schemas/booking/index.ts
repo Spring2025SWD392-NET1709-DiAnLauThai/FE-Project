@@ -26,21 +26,7 @@ export const bookingSchema = z
         })
       )
       .min(1, "At least one item is required"),
-  })
-  .refine(
-    (data) =>
-      data.enddate >
-      new Date(
-        data.startdate.getTime() +
-          (data.bookingdetails.length + 1) * 24 * 60 * 60 * 1000
-      ),
-    {
-    
-      message:
-        "End date must be at least (number of booking details + 1) days after start date",
-      path: ["enddate"],
-    }
-);
+  });
   
 export const descriptionSchema = z
   .object({
