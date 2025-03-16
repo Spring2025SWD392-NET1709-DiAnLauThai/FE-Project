@@ -5,7 +5,7 @@ export const TShirtSchema = z.object({
   imgurl: z.string().url(),
   tshirtname: z.string(),
   colorlist: z.array(z.string()).min(1),
-  imagefile: z.string(),
+  imagefile: z.string().url()
 });
 
 export const AssignTshirtSchema = z.object({
@@ -18,7 +18,6 @@ export const AssignDesignerSchema = z.object({
     required_error: "Please select a designer",
   }),
 });
-
 
 export type AssignDesignerFormValues = z.infer<typeof AssignDesignerSchema>;
 

@@ -51,6 +51,21 @@ export interface BookingDetailResponse {
   bookingDetails: BookingDetail[];
 }
 
+export interface BookingCustomerDetailResponse {
+  designerName: string;
+  totalPrice: number;
+  totalQuantity: number;
+  bookingStatus: string;
+  datecreated: Date;
+  updateddate: Date;
+  startdate: Date;
+  enddate: Date;
+  code: string;
+  title: string;
+  bookingDetails: BookingDetail[];
+  fullyPaid: boolean;
+}
+
 export interface BookingDetail {
   bookingDetailId: string;
   designFile: string;

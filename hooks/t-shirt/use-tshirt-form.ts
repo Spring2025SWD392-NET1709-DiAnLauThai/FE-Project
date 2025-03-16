@@ -26,67 +26,68 @@ export const useTshirtForm = (id?: string) => {
   });
 
   const onSubmit = form.handleSubmit(async (data) => {
-    // Fix the array type mismatch by converting to the expected tuple format
-    const colorTuple = data.colorlist.length > 0 ? [data.colorlist[0]] : [""];
+      // Fix the array type mismatch by converting to the expected tuple format
+      const colorTuple = data.colorlist.length > 0 ? [data.colorlist[0]] : [""];
+      
+      
+      const value: TShirtPayload = {
+        description: data.description,
+        imgurl: data.imgurl,
+        tshirtname: data.tshirtname,
+        colorlist: colorTuple as [string], // Convert to tuple with exactly one element
+        imagefile: data.imagefile, // Use the URL from the upload response
+      };
 
-    const value: TShirtPayload = {
-      description: data.description,
-      imgurl: data.imgurl,
-      tshirtname: data.tshirtname,
-      colorlist: colorTuple as [string], // Convert to tuple with exactly one element
-      imagefile: "",
-    };
+      console.log("Saving design:", value);
 
-    console.log("Saving design:", value);
-
-    if (id) {
-      // Update existing t-shirt
-      await updateTshirt.mutate(
-        { id, data: value },
-        {
+      if (id) {
+        // Update existing t-shirt
+        await updateTshirt.mutate(
+          { id, data: value },
+          {
+            onSuccess: (response) => {
+              toast({
+                title: "Success",
+                description: `${
+                  response.message || "T-shirt design updated successfully"
+                }`,
+              });
+              queryClient.invalidateQueries({ queryKey: [QueryKey.TSHIRT.LIST] });
+            },
+            onError: (error) => {
+              console.error("Update error:", error);
+              toast({
+                title: "Error",
+                description: "Failed to update t-shirt design",
+                variant: "destructive",
+              });
+            },
+          }
+        );
+      } else {
+        // Create new t-shirt
+        await createTshirt.mutate(value, {
           onSuccess: (response) => {
             toast({
               title: "Success",
               description: `${
-                response.message || "T-shirt design updated successfully"
+                response.message || "T-shirt design created successfully"
               }`,
             });
             queryClient.invalidateQueries({ queryKey: [QueryKey.TSHIRT.LIST] });
+            form.reset(); // Reset form after successful creation
           },
           onError: (error) => {
-            console.error("Update error:", error);
+            console.error("Creation error:", error);
             toast({
               title: "Error",
-              description: "Failed to update t-shirt design",
+              description: "Failed to create t-shirt design",
               variant: "destructive",
             });
           },
-        }
-      );
-    } else {
-      // Create new t-shirt
-      await createTshirt.mutate(value, {
-        onSuccess: (response) => {
-          toast({
-            title: "Success",
-            description: `${
-              response.message || "T-shirt design created successfully"
-            }`,
-          });
-          queryClient.invalidateQueries({ queryKey: [QueryKey.TSHIRT.LIST] });
-
-          
-        },
-        onError: (error) => {
-          console.error("Creation error:", error);
-          toast({
-            title: "Error",
-            description: "Failed to create t-shirt design",
-            variant: "destructive",
-          });
-        },
-      });
-    }
+        });
+      }
+    
   });
 
   return {

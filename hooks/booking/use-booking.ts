@@ -44,6 +44,14 @@ export const useBookingDetailsQuery = (id: string) => {
   });
 };
 
+export const useCustomerBookingDetailsQuery = (id: string) => {
+  return useQuery({
+    queryKey: [QueryKey.BOOKING.DETAIL, id],
+    queryFn: () => BookingService.get.customerDetail(id),
+    enabled: !!id,
+  });
+};
+
 export const useBookingMutation = () => {
   const { toast } = useToast();
   // const router = useRouter();

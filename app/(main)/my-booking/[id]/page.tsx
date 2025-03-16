@@ -21,29 +21,28 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useParams } from "next/navigation";
-import { useBookingDetailsQuery } from "@/hooks/booking/use-booking";
+import {
+  useBookingDetailsQuery,
+  useCustomerBookingDetailsQuery,
+} from "@/hooks/booking/use-booking";
 import { FormatType, formatFromISOStringVN } from "@/lib/format";
 import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { usePayBooking, useUpdateDescription } from "@/hooks/booking/use-booking-form";
+import {
+  usePayBooking,
+  useUpdateDescription,
+} from "@/hooks/booking/use-booking-form";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { CancelBookingButton } from "@/components/cancel-booking-modal/page";
 import { DetailNoteForm } from "@/components/booking-note/page";
 
 export default function CustomerBookingDetailPage() {
   const { id } = useParams();
-  const { data: booking, isLoading: bookingLoading } = useBookingDetailsQuery(
-    id as string
-  );
+  const { data: booking, isLoading: bookingLoading } =
+    useCustomerBookingDetailsQuery(id as string);
 
-    const {
-      form,
-      onSubmit,
-      isLoading,
-    } = usePayBooking(id as string);
-
-  const [sendingDetailId, setSendingDetailId] = useState<string | null>(null);
+  const { form, onSubmit, isLoading } = usePayBooking(id as string);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -54,7 +53,7 @@ export default function CustomerBookingDetailPage() {
 
   const getStatusInfo = (status: string) => {
     switch (status) {
-      case "DEPOSIT_PAID":
+      case "DEPOSITED":
         return {
           color: "bg-amber-500",
           label: "Deposit Paid",
@@ -88,21 +87,24 @@ export default function CustomerBookingDetailPage() {
   };
 
   const isNoteEditable = (detail: any) => {
-    // if (booking?.data.bookingStatus !== "DEPOSIT_PAID") {
-    //   return false;
-    // }
+    // Only allow editing if the booking status is DEPOSITED
+    if (booking?.data.bookingStatus !== "DEPOSITED") {
+      return false;
+    }
 
-    // const startDate = new Date(booking?.data.startdate || new Date());
-    // const endDate = new Date(booking?.data.enddate || new Date());
-    // const today = new Date();
+    const startDate = new Date(booking?.data.startdate || new Date());
+    const endDate = new Date(booking?.data.enddate || new Date());
+    const today = new Date();
 
-    // const middleDate = new Date(
-    //   startDate.getTime() + (endDate.getTime() - startDate.getTime()) / 2
-    // );
+    // Calculate the middle point between start and end dates
+    const middleDate = new Date(
+      startDate.getTime() + (endDate.getTime() - startDate.getTime()) / 2
+    );
 
-    // if (today > middleDate) {
-    //   return false;
-    // }
+    // Allow editing only if today is after the start date but before the middle point
+    if (today < startDate || today > middleDate) {
+      return false;
+    }
 
     return true;
   };
@@ -143,7 +145,7 @@ export default function CustomerBookingDetailPage() {
           Your Booking Details
         </h1>
         <p className="text-muted-foreground">
-          Booking Reference: {booking?.data.code}
+          Booking Code: {booking?.data.code}
         </p>
       </div>
 
@@ -168,6 +170,20 @@ export default function CustomerBookingDetailPage() {
         <CardContent className="pb-2">
           <div className="bg-muted/40 rounded-lg p-4 mb-6">
             <p>{statusInfo.description}</p>
+            {booking?.data.bookingStatus === "COMPLETED" && (
+              <p className="mt-2 font-medium">
+                {booking?.data.fullyPaid
+                  ? "🎉 This booking has been fully paid. You can download your materials now."
+                  : "✅ Your design is complete! Please proceed with the final payment to access all materials."}
+              </p>
+            )}
+            {booking?.data.bookingStatus === "DEPOSITED" &&
+              !booking?.data.fullyPaid && (
+                <p className="mt-2 text-amber-600 font-medium">
+                  Please wait for your design to be completed before making the
+                  final payment.
+                </p>
+              )}
           </div>
 
           <div className="mb-6">
@@ -284,8 +300,6 @@ export default function CustomerBookingDetailPage() {
             <div className="grid gap-8">
               {booking?.data.bookingDetails.map((detail, index) => {
                 // Create a form instance for each booking detail
-                
-
                 return (
                   <div
                     key={detail.bookingDetailId + "-" + index}
@@ -355,20 +369,32 @@ export default function CustomerBookingDetailPage() {
                 variant="default"
                 className="w-full sm:w-auto"
                 disabled={
-                  booking?.data.bookingStatus !== "COMPLETED" || isLoading
+                  booking?.data.bookingStatus !== "COMPLETED" ||
+                  booking?.data.fullyPaid ||
+                  isLoading
                 }
               >
                 {isLoading
                   ? "Processing Payment..."
-                  : booking?.data.bookingStatus === "COMPLETED"
-                  ? "Pay Booking"
+                  : booking?.data.fullyPaid
+                  ? "Already Paid"
                   : "Pay Booking"}
               </Button>
             </form>
           </Form>
 
-          <Button variant="outline" className="w-full sm:w-auto">
-            Download Details
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            disabled={
+              booking?.data.bookingStatus === "COMPLETED" &&
+              !booking?.data.fullyPaid
+            }
+          >
+            {booking?.data.bookingStatus === "COMPLETED" &&
+            !booking?.data.fullyPaid
+              ? "Pay to Download"
+              : "Download Details"}
           </Button>
         </CardFooter>
       </Card>

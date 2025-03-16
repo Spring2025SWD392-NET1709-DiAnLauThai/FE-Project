@@ -1,5 +1,6 @@
 import axiosInstance from "@/configs/axios.config";
 import {
+  BookingCustomerDetailResponse,
   BookingDetailResponse,
   BookingParams,
   BookingPayload,
@@ -57,6 +58,19 @@ export const BookingService = {
         throw error;
       }
     },
+    customerDetail: async (
+      bookingId: string
+    ): Promise<RootResponse<BookingCustomerDetailResponse>> => {
+      try {
+        const response = await axiosInstance.get(
+          `/bookingsdetails/bookings/${bookingId}/details/customer`
+        );
+
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
   post: {
     booking: async (
@@ -73,11 +87,11 @@ export const BookingService = {
     },
   },
   put: {
-    payBooking: async (
-      bookingId: string
-    ): Promise<RootResponse<string>> => {
+    payBooking: async (bookingId: string): Promise<RootResponse<string>> => {
       try {
-        const response = await axiosInstance.put(`/bookings/${bookingId}/payment`);
+        const response = await axiosInstance.put(
+          `/bookings/${bookingId}/payment`
+        );
         return response.data;
       } catch (error) {
         throw error;

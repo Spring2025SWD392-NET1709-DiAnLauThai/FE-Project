@@ -40,6 +40,9 @@ export function TshirtDesigner({ id }: { id?: string }) {
   const [imagePosition, setImagePosition] = useState({ x: 200, y: 225 });
   const [imageSize, setImageSize] = useState({ width: 200, height: 200 });
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingZip, setUploadingZip] = useState(false);
+  const [zipUploaded, setZipUploaded] = useState(false);
+  const [zipFileName, setZipFileName] = useState<string | null>(null);
 
   // Custom form submission handler
 
@@ -84,6 +87,51 @@ export function TshirtDesigner({ id }: { id?: string }) {
     },
     [form, toast]
   );
+
+  // Cập nhật phần handleZipFileChange để lưu lại tên file
+  const handleZipFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+
+      try {
+        setUploadingZip(true);
+
+        // Lưu tên file vào state để hiển thị
+        setZipFileName(file.name);
+
+        // Upload ZIP file ngay lập tức
+        const response = await FileService.post.uploadZip(file);
+
+        // Lấy URL từ response
+        const fileUrl = response.data || "";
+        console.log("ZIP file uploaded:", fileUrl);
+
+        // Cập nhật form với fileUrl (để submission)
+        form.setValue("imagefile", fileUrl, { shouldValidate: true });
+
+        setZipUploaded(true);
+        setUploadingZip(false);
+
+        toast({
+          title: "Upload successful",
+          description: "Your source files have been uploaded",
+        });
+      } catch (error) {
+        console.error("ZIP file upload error:", error);
+        setUploadingZip(false);
+        setZipFileName(null);
+
+        toast({
+          title: "Upload failed",
+          description: "Could not upload your source files",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
   const {
     getRootProps,
@@ -477,6 +525,105 @@ export function TshirtDesigner({ id }: { id?: string }) {
                         </FormItem>
                       )}
                     />
+
+                    <FormField
+                      control={form.control}
+                      name="imagefile"
+                      render={({ field: { onChange, value, ...rest } }) => (
+                        <FormItem>
+                          <FormLabel>Source Files (ZIP, RAR, etc.)</FormLabel>
+                          <FormControl>
+                            <div className="border-2 border-dashed rounded-lg p-6 transition-colors cursor-pointer text-center">
+                              <Input
+                                {...rest}
+                                id="imagefile"
+                                type="file"
+                                onChange={(e) => {
+                                  handleZipFileChange(e);
+                                }}
+                                accept=".zip,.rar,.7z,.tar,.gz,.bz2"
+                                className="hidden"
+                              />
+                              <label
+                                htmlFor="imagefile"
+                                className="flex flex-col items-center gap-2 cursor-pointer"
+                              >
+                                <div className="h-10 w-10 text-muted-foreground">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="17 8 12 3 7 8" />
+                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                  </svg>
+                                </div>
+                                <div className="space-y-1">
+                                  <p className="font-medium">
+                                    Click to upload source files
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Upload ZIP, RAR, 7Z or other compressed
+                                    files
+                                  </p>
+                                </div>
+                              </label>
+                            </div>
+                          </FormControl>
+
+                          {/* Display selected file name */}
+                          {value && (
+                            <div className="flex items-center justify-between p-2 border rounded-md mt-2">
+                              <div className="flex items-center gap-2">
+                                <div className="w-10 h-10 flex items-center justify-center bg-muted rounded">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M5 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3" />
+                                    <path d="M19 16v3a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3" />
+                                    <rect
+                                      width="20"
+                                      height="8"
+                                      x="2"
+                                      y="8"
+                                      rx="2"
+                                    />
+                                  </svg>
+                                </div>
+                                <span className="text-sm truncate max-w-[150px]">
+                                  {value.name}
+                                </span>
+                              </div>
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => onChange(undefined)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
+
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -489,15 +636,21 @@ export function TshirtDesigner({ id }: { id?: string }) {
               disabled={
                 isLoading ||
                 uploadingImage ||
+                uploadingZip ||
                 !watchedValues.imgurl ||
                 !watchedValues.tshirtname ||
-                watchedValues.colorlist.length === 0
+                watchedValues.colorlist.length === 0 ||
+                !form.getValues("imagefile")
               }
             >
-              {isLoading || uploadingImage ? (
+              {isLoading || uploadingImage || uploadingZip ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {uploadingImage ? "Uploading..." : "Saving..."}
+                  {uploadingImage
+                    ? "Uploading image..."
+                    : uploadingZip
+                    ? "Uploading files..."
+                    : "Saving..."}
                 </>
               ) : (
                 <>
