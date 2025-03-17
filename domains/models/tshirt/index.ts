@@ -1,3 +1,24 @@
-export interface TShirtResponse {}
+export interface TShirtResponse {
+  tshirtId: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  createdAt: Date;
+}
+
+export interface TShirtPayload{
+  description: string,
+  imgurl: string,
+  tshirtname: string,
+  colorlist: [
+    string
+  ],
+  imagefile: string
+}
+
+export interface AssignTshirt{
+  tshirtId: string,
+  bookingDetailId: string
+}
+
 export interface TShirtParams extends RootRequest {}
-export interface TShirtPayload {}

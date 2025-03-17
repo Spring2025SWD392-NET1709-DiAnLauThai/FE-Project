@@ -11,12 +11,40 @@ export const QueryKey = {
     LIST: "list-tshirt",
     CREATE: "create-tshirt",
     UPDATE: "update-tshirt",
-    DELETE: "delete",
+    DELETE: "delete-tshirt",
+    DETAIL: "detail-tshirt",
+    ASSIGN_TSHIRT: "assign-tshirt",
   },
   BOOKING: {
     LIST: "list-booking",
     CREATE: "create-booking",
     UPDATE: "update-booking",
     DELETE: "delete-booking",
+    DETAIL: "detail-booking",
+    CUSTOMER_DETAIL: "customer-detail",
+    UPDATE_DESCRIPTION: "update-description",
+    CANCEL: "cancel-booking",
+    PAY: "pay-booking",
+    UPLOAD_ZIP: "upload-zip",
+  },
+  TASK: {
+    LIST: "list-task",
+    DETAIL : "detail-task",
+    ASSIGN_DESIGNER: "assign-designer",
+    CONFIRM_TASK: "confirm-task",
+  },
+  DESIGNER: {
+    LIST: "list-designer",
+  },
+
+  TRANSACTION: {
+    SYSTEM: "system-transaction",
+    LIST: "list-transaction",
+    DETAIL: "detail-transaction",
+    CALLBACK: "callback",
+  },
+  COLOR: {
+    CREATE: "create-color",
+    GET: "get-color",
   },
 };

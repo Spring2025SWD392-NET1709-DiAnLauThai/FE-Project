@@ -4,7 +4,7 @@ import { BookingResponse } from "@/domains/models/booking";
 import { ColumnDef } from "@tanstack/react-table";
 import BookingMenuAction from "./menu-action";
 import {
-  formatFromISOString,
+  formatFromISOStringVN,
   formatPriceToVND,
   FormatType,
 } from "@/lib/format";
@@ -14,6 +14,10 @@ export const BookingColumn: ColumnDef<BookingResponse>[] = [
   {
     accessorKey: "code",
     header: "Code",
+  },
+  {
+    accessorKey: "title",
+    header: "Title",
   },
   {
     accessorKey: "totalQuantity",
@@ -38,7 +42,7 @@ export const BookingColumn: ColumnDef<BookingResponse>[] = [
 
       return (
         <Badge variant="default">
-          {formatFromISOString(booking.startDate, FormatType.DATETIME)}
+          {formatFromISOStringVN(booking.startDate, FormatType.DATETIME)}
         </Badge>
       );
     },
@@ -51,7 +55,7 @@ export const BookingColumn: ColumnDef<BookingResponse>[] = [
 
       return (
         <Badge variant="default">
-          {formatFromISOString(booking.endDate, FormatType.DATETIME)}
+          {formatFromISOStringVN(booking.endDate, FormatType.DATETIME)}
         </Badge>
       );
     },

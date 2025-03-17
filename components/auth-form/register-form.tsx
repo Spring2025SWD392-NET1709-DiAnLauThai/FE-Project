@@ -145,7 +145,7 @@ export function RegisterForm() {
               variant="primary"
               disabled={isLoading}
             >
-              {isLoading ? "Loading..." : "Register"}
+              {isLoading ? "Loading..." : "Sign up"}
             </Button>
           </form>
         </Form>

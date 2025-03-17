@@ -19,6 +19,7 @@ import {
   Upload,
   Image,
   CalendarIcon,
+  Loader2,
 } from "lucide-react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -37,14 +38,13 @@ import { cn } from "@/lib/utils";
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
-import { Textarea } from "../ui/textarea";
 
 const BookingForm = () => {
   const { toast } = useToast();
   const [imagePreviewUrls, setImagePreviewUrls] = React.useState<{
     [key: number]: string[];
   }>({});
-  const { form, onSubmit, isLoading } = useBookingForm();
+  const { form, onSubmit, isLoading, isUploading } = useBookingForm();
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -105,6 +105,12 @@ const BookingForm = () => {
     }
   };
 
+  const getSubmitButtonText = () => {
+    if (isUploading) return "Uploading Images...";
+    if (isLoading) return "Submitting...";
+    return "Submit Booking";
+  };
+
   return (
     <div className=" mx">
       <Card className="shadow-lg border-primary/20">
@@ -139,7 +145,7 @@ const BookingForm = () => {
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel className="text-lg font-medium">
-                        Dealine
+                        Deadline
                       </FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -440,15 +446,28 @@ const BookingForm = () => {
                   form.reset();
                   setImagePreviewUrls({});
                 }}
+                disabled={isLoading || isUploading}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || isUploading}
                 className="bg-primary hover:bg-primary/90"
               >
-                {isLoading ? "Submitting..." : "Submit Booking"}
+                {isUploading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Uploading Images...
+                  </>
+                ) : isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit Booking"
+                )}
               </Button>
             </CardFooter>
           </form>

@@ -10,7 +10,6 @@ declare global {
     page?: number;
     size?: number;
     keyword?: string;
-    role?: string;
     status?: string;
     dateFrom?: string;
     dateTo?: string;
