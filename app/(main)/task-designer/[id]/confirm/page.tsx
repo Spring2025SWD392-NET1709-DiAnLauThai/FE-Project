@@ -9,8 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTaskDetail } from "@/hooks/tasks/use-task";
 import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
-import { toast } from "sonner";
-import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -28,7 +26,6 @@ export default function ConfirmTaskPage() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [bookingId, setBookingId] = useState<string>("");
 
-  // Safely extract bookingId from localStorage on component mount
   useEffect(() => {
     try {
       // Get the stored value
@@ -267,7 +264,7 @@ export default function ConfirmTaskPage() {
               Cancel
             </Button>
             <Button
-              onClick={handleConfirmTask}
+              type="submit"
               disabled={isSubmitting}
               className="flex items-center gap-2"
             >

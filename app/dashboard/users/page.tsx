@@ -27,7 +27,7 @@ export default function UserPage() {
   });
 
   // Combine pagination with filters
-  const { data, isLoading, error } = useUser({
+  const { data, isLoading } = useUser({
     page: currentPage,
     size: ITEMS_PER_PAGE,
     ...filters,

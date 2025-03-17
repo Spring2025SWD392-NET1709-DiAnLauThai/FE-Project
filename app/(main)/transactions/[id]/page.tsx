@@ -2,19 +2,9 @@
 
 import Image from "next/image";
 import {
-  ArrowRight,
-  CalendarIcon,
-  Clock,
-  DollarSign,
-  Package,
-} from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -27,7 +17,6 @@ import {
   formatPriceToVND,
 } from "@/lib/format";
 import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
-import { Textarea } from "@/components/ui/textarea";
 import { useTransactionDetail } from "@/hooks/transaction/use-transaction";
 
 export default function CustomerTransactionDetailPage() {

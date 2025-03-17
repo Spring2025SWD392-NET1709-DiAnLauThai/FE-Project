@@ -1,8 +1,6 @@
-// import { TShirtActions } from "@/components/t-shirt/t-shirt-action";
 import { TShirttDetails } from "@/components/t-shirt/t-shirt-detail";
 import { TShirtImageGallery } from "@/components/t-shirt/t-shirt-gallery";
 import { TShirtInfo } from "@/components/t-shirt/t-shirt-info";
-import TShirtSlider from "@/components/t-shirt/t-shirt-slider";
 import { Button } from "@/components/ui/button";
 import Female from "@/public/images/male.png";
 import Link from "next/link";

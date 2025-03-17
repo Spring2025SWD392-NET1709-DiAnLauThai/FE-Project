@@ -2,7 +2,6 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { MenuAction, MenuActions } from "@/components/table/Menu";
 import { format } from "date-fns";
 import { BookingResponse, BookingStatus } from "@/domains/models/booking";
 import { Eye } from "lucide-react";
@@ -114,28 +113,16 @@ export const columns: ColumnDef<BookingResponse>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const booking = row.original;
-      const [isDetailOpen, setIsDetailOpen] = useState(false);
-
       return (
         <div>
           <Button
             variant="ghost"
             size="sm"
             className="h-8 w-8 p-0"
-            onClick={() => setIsDetailOpen(true)}
           >
             <span className="sr-only">View details</span>
             <Eye className="h-4 w-4" />
-          </Button>
-
-          {isDetailOpen && (
-            <BookingDetailModal
-              booking={booking}
-              isOpen={isDetailOpen}
-              onClose={() => setIsDetailOpen(false)}
-            />
-          )}
+          </Button>          
         </div>
       );
     },

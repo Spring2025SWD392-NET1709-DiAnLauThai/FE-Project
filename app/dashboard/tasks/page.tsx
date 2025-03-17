@@ -63,7 +63,7 @@ export default function TasksPage() {
                 <SelectItem value="ALL">All Statuses</SelectItem>
                 <SelectItem value={TaskStatus.ASSIGNED}>Assigned</SelectItem>
                 <SelectItem value={TaskStatus.COMPLETED}>Completed</SelectItem>
-                <SelectItem value={TaskStatus.DENIED}>Denied</SelectItem>
+                <SelectItem value={TaskStatus.CANCEL}>Cancel</SelectItem>
               </SelectContent>
             </Select>
           </div>

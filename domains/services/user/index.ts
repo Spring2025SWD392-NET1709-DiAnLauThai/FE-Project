@@ -13,15 +13,6 @@ export const userService = {
       params: UserParams = {}
     ): Promise<RootResponse<Pagination<UserResponse>>> => {
       try {
-        // Make sure params is properly structured with defaults if needed
-        // const defaultParams: UserParams = {
-        //   page: 1,
-        //   size: 10,
-        //   sortDir: "asc",
-        //   sortBy: "createdAt",
-        //   ...params,
-        // };
-
         const response = await axiosInstance.get("/accounts", { params });
         return response.data;
       } catch (error) {
