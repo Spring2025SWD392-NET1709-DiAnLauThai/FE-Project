@@ -9,10 +9,10 @@ import { DataTable } from "../plugins/table";
 import { TransactionResponse } from "@/domains/models/transaction";
 import { useTransactionCustomer } from "@/hooks/transaction/use-transaction";
 
-const TransactionTable = () => {
+const TransactionCustomerTable = () => {
   const { value } = useParamStore();
 
-  const transactionQuery = useTransactionCustomer({
+  const { listCustomerQuery } = useTransactionCustomer({
     page: value.page ?? 1,
     size: value.size ?? 10,
   });
@@ -25,7 +25,7 @@ const TransactionTable = () => {
         <div className="flex items-center space-x-4">
           <PaginationTable
             value={
-              transactionQuery.data?.data ??
+              listCustomerQuery.data?.data ??
               ({
                 content: [],
                 totalElements: 0,
@@ -40,10 +40,10 @@ const TransactionTable = () => {
 
       <DataTable
         columns={TransactionColumns}
-        data={transactionQuery.data?.data?.content ?? []}
+        data={listCustomerQuery.data?.data?.content ?? []}
       />
     </div>
   );
 };
 
-export default TransactionTable;
+export default TransactionCustomerTable;

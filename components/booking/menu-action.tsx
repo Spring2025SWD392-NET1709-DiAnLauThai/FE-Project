@@ -36,10 +36,7 @@ const BookingMenuAction: React.FC<BookingMenuActionProps> = ({ booking }) => {
           <span>View Detail</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <ClipboardX />
-          <span>Cancel</span>
-        </DropdownMenuItem>
+        
       </DropdownMenuContent>
     </DropdownMenu>
   );

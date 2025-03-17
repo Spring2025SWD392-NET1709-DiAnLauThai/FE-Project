@@ -117,7 +117,7 @@ export default function Sidebar() {
         {
           href: "/dashboard/order-list",
           icon: Archive,
-          label: "Order List",
+          label: "Booking List",
           roles: [Role.ADMIN, Role.MANAGER],
         },
         {

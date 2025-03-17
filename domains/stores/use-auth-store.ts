@@ -26,7 +26,7 @@ export const useAuthStore = create<AuthState>()(
           const decoded: TokenResponse = jwtDecode(accessToken);
 
           const response = await userService.get.detail(decoded.sub);
-
+          
           localStorage.setItem("accessToken", accessToken);
           localStorage.setItem("refreshToken", refreshToken);
 

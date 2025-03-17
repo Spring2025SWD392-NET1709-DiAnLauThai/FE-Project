@@ -8,7 +8,27 @@ export const FileService = {
         formData.append("file", file);
 
         const response = await axiosInstance.post(
-          "/tshirts/tshirt/upload",
+          "/tshirts/upload/image",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    uploadZip: async (file: File) => {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await axiosInstance.post(
+          "/tshirts/upload/zip",
           formData,
           {
             headers: {

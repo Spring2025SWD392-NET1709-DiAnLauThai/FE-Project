@@ -1,5 +1,6 @@
 import axiosInstance from "@/configs/axios.config";
 import {
+  AssignTshirt,
   TShirtParams,
   TShirtPayload,
   TShirtResponse,
@@ -31,7 +32,7 @@ export const TShirtService = {
       data: TShirtPayload
     ): Promise<RootResponse<TShirtResponse>> => {
       try {
-        const response = await axiosInstance.post("/tshirts", data);
+        const response = await axiosInstance.post("/tshirts/create", data);
         return response.data;
       } catch (error) {
         throw error;
@@ -45,6 +46,16 @@ export const TShirtService = {
     ): Promise<RootResponse<TShirtResponse>> => {
       try {
         const response = await axiosInstance.put(`/tshirts/${id}`, data);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    assignTshirt: async (
+      data: AssignTshirt
+    ): Promise<RootResponse<TShirtResponse>> => {
+      try {
+        const response = await axiosInstance.put("/task/select/tshirt", data);
         return response.data;
       } catch (error) {
         throw error;

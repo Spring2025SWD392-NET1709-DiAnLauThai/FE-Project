@@ -1,7 +1,8 @@
-import { TShirtParams, TShirtPayload } from "@/domains/models/tshirt";
+import { AssignTshirt, TShirtParams, TShirtPayload } from "@/domains/models/tshirt";
 import { TShirtService } from "@/domains/services/t-shirt";
 import { QueryKey } from "@/domains/stores/query-key";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "../use-toast";
 
 interface TShirtQuery {
   params: TShirtParams;
@@ -13,7 +14,9 @@ export const useTShirtsQuery = ({ params }: TShirtQuery) => {
     queryFn: () => TShirtService.get.list(params),
   });
 
-  return { queryTShirts };
+  const isLoading = queryTShirts.isLoading || queryTShirts.isFetching;
+
+  return { queryTShirts, isLoading };
 };
 
 export const useTShirtDetailQuery = ({ id }: { id: string }) => {
@@ -25,10 +28,60 @@ export const useTShirtDetailQuery = ({ id }: { id: string }) => {
   return queryTShirtDetail;
 };
 
+
+export const useAssignTshirtMutation = () => {
+  const assignTshirt = useMutation({
+    mutationKey: [QueryKey.TSHIRT.ASSIGN_TSHIRT],
+    mutationFn: (data: AssignTshirt) => TShirtService.put.assignTshirt(data),
+    onSuccess: (data) => {
+      const message = data.message || "Assign T-Shirt success";
+
+      toast({
+        title: "Assign T-Shirt",
+        description: message,
+      });
+    },
+    onError: (error: any) => {
+      console.error("T-shirt assign failed:", error);
+
+      const errorMessage =
+        error.response?.data?.message || "There was a problem assign T-Shirt";
+
+      toast({
+        title: "Assign Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    },
+  });
+  return { assignTshirt };
+};
 export const useTshirtMutation = () => {
   const createTshirt = useMutation({
     mutationKey: [QueryKey.TSHIRT.CREATE],
     mutationFn: (data: TShirtPayload) => TShirtService.post.create(data),
+    onSuccess: (data) => {
+      const message =
+        data.message || "Add T-Shirt success";
+
+      toast({
+        title: "Create T-Shirt",
+        description: message,
+      });
+    },
+    onError: (error: any) => {
+      console.error("T-shirt add failed:", error);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        "There was a problem create T-Shirt";
+
+      toast({
+        title: "Create Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    },
   });
 
   const updateTshirt = useMutation({

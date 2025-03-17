@@ -3,7 +3,7 @@
 import { TShirtResponse } from "@/domains/models/tshirt";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "../../ui/badge";
-import { formatPriceToVND } from "@/lib/format";
+import { formatFromISOStringVN, formatPriceToVND, FormatType } from "@/lib/format";
 import TShirtMenuAction from "./menu-action";
 import Image from "next/image";
 import { ImageIcon } from "lucide-react";
@@ -32,8 +32,8 @@ export const TShirtColumns: ColumnDef<TShirtResponse>[] = [
     header: "Description",
   },
   {
-    accessorKey: "price",
-    header: "Price",
+    accessorKey: "imageUrl",
+    header: "Image Preview",
     cell: ({ row }) => {
       const tshirt = row.original;
       const isValidImage = tshirt.imageUrl && isValidUrl(tshirt.imageUrl);
@@ -64,15 +64,16 @@ export const TShirtColumns: ColumnDef<TShirtResponse>[] = [
     },
   },
   {
-    accessorKey: "quantity",
-    header: "Quantity",
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "createdAt",
+    header: "Created at",
     cell: ({ row }) => {
       const tshirt = row.original;
-      return <Badge variant="default">{tshirt.status}</Badge>;
+      // Use FormatType.DATETIME to get both date and time in Vietnamese format
+      const createdDate = formatFromISOStringVN(
+        tshirt.createdAt,
+        FormatType.DATETIME_VN
+      );
+      return <span className="whitespace-nowrap">{createdDate}</span>;
     },
   },
   {

@@ -13,6 +13,7 @@ export const QueryKey = {
     UPDATE: "update-tshirt",
     DELETE: "delete-tshirt",
     DETAIL: "detail-tshirt",
+    ASSIGN_TSHIRT: "assign-tshirt",
   },
   BOOKING: {
     LIST: "list-booking",
@@ -20,10 +21,17 @@ export const QueryKey = {
     UPDATE: "update-booking",
     DELETE: "delete-booking",
     DETAIL: "detail-booking",
+    CUSTOMER_DETAIL: "customer-detail",
+    UPDATE_DESCRIPTION: "update-description",
+    CANCEL: "cancel-booking",
+    PAY: "pay-booking",
+    UPLOAD_ZIP: "upload-zip",
   },
   TASK: {
     LIST: "list-task",
+    DETAIL : "detail-task",
     ASSIGN_DESIGNER: "assign-designer",
+    CONFIRM_TASK: "confirm-task",
   },
   DESIGNER: {
     LIST: "list-designer",

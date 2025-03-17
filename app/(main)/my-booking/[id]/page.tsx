@@ -6,7 +6,6 @@ import {
   ArrowRight,
   CalendarIcon,
   Clock,
-  DollarSign,
   Package,
 } from "lucide-react";
 
@@ -22,16 +21,28 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useParams } from "next/navigation";
-import { useBookingDetailsQuery } from "@/hooks/booking/use-booking";
+import {
+  useBookingDetailsQuery,
+  useCustomerBookingDetailsQuery,
+} from "@/hooks/booking/use-booking";
 import { FormatType, formatFromISOStringVN } from "@/lib/format";
 import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
 import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import {
+  usePayBooking,
+  useUpdateDescription,
+} from "@/hooks/booking/use-booking-form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { CancelBookingButton } from "@/components/cancel-booking-modal/page";
+import { DetailNoteForm } from "@/components/booking-note/page";
 
 export default function CustomerBookingDetailPage() {
   const { id } = useParams();
-  const { data: booking, isLoading: bookingLoading } = useBookingDetailsQuery(
-    id as string
-  );
+  const { data: booking, isLoading: bookingLoading } =
+    useCustomerBookingDetailsQuery(id as string);
+
+  const { form, onSubmit, isLoading } = usePayBooking(id as string);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -42,7 +53,7 @@ export default function CustomerBookingDetailPage() {
 
   const getStatusInfo = (status: string) => {
     switch (status) {
-      case "DEPOSIT_PAID":
+      case "DEPOSITED":
         return {
           color: "bg-amber-500",
           label: "Deposit Paid",
@@ -75,9 +86,31 @@ export default function CustomerBookingDetailPage() {
     }
   };
 
-  const statusInfo = getStatusInfo(booking?.data.bookingStatus || "UNKNOWN");
+  const isNoteEditable = (detail: any) => {
+    // Only allow editing if the booking status is DEPOSITED
+    if (booking?.data.bookingStatus !== "DEPOSITED") {
+      return false;
+    }
 
-  // Calculate days remaining
+    const startDate = new Date(booking?.data.startdate || new Date());
+    const endDate = new Date(booking?.data.enddate || new Date());
+    const today = new Date();
+
+    // Calculate the middle point between start and end dates
+    const middleDate = new Date(
+      startDate.getTime() + (endDate.getTime() - startDate.getTime()) / 2
+    );
+
+    // Allow editing only if today is after the start date but before the middle point
+    if (today < startDate || today > middleDate) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const statusInfo = getStatusInfo(booking?.data.bookingStatus || "");
+
   const endDate = new Date(booking?.data.enddate || new Date());
   const today = new Date();
   const daysRemaining = Math.max(
@@ -85,7 +118,6 @@ export default function CustomerBookingDetailPage() {
     Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
   );
 
-  // Calculate progress percentage
   const startDate = new Date(booking?.data.startdate || new Date());
   const totalDays = Math.ceil(
     (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
@@ -113,7 +145,7 @@ export default function CustomerBookingDetailPage() {
           Your Booking Details
         </h1>
         <p className="text-muted-foreground">
-          Booking Reference: {booking?.data.code}
+          Booking Code: {booking?.data.code}
         </p>
       </div>
 
@@ -138,6 +170,20 @@ export default function CustomerBookingDetailPage() {
         <CardContent className="pb-2">
           <div className="bg-muted/40 rounded-lg p-4 mb-6">
             <p>{statusInfo.description}</p>
+            {booking?.data.bookingStatus === "COMPLETED" && (
+              <p className="mt-2 font-medium">
+                {booking?.data.fullyPaid
+                  ? "🎉 This booking has been fully paid. You can download your materials now."
+                  : "✅ Your design is complete! Please proceed with the final payment to access all materials."}
+              </p>
+            )}
+            {booking?.data.bookingStatus === "DEPOSITED" &&
+              !booking?.data.fullyPaid && (
+                <p className="mt-2 text-amber-600 font-medium">
+                  Please wait for your design to be completed before making the
+                  final payment.
+                </p>
+              )}
           </div>
 
           <div className="mb-6">
@@ -252,65 +298,103 @@ export default function CustomerBookingDetailPage() {
               {booking?.data.bookingDetails?.length ?? 0 > 1 ? "s" : ""}
             </h3>
             <div className="grid gap-8">
-              {booking?.data.bookingDetails.map((detail, index) => (
-                <div
-                  key={detail.bookingDetailId + "-" + index}
-                  className="space-y-4"
-                >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                    <h4 className="font-medium">Item {index + 1}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {formatCurrency(detail.unitPrice)} per unit
-                    </p>
-                  </div>
+              {booking?.data.bookingDetails.map((detail, index) => {
+                // Create a form instance for each booking detail
+                return (
                   <div
-                    className="text-sm mb-3"
-                    dangerouslySetInnerHTML={{ __html: detail.description }}
-                  />
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="border rounded-lg overflow-hidden">
-                      <Image
-                        src={detail.designFile || "/placeholder.svg"}
-                        alt={`Design ${index + 1}`}
-                        width={800}
-                        height={600}
-                        className="w-full h-auto object-contain"
-                      />
+                    key={detail.bookingDetailId + "-" + index}
+                    className="space-y-4"
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                      <h4 className="font-medium">Item {index + 1}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {formatCurrency(detail.unitPrice)} per unit
+                      </p>
                     </div>
-                    <div className="flex items-center justify-center">
-                      <ArrowRight className="size-10" />
-                    </div>
-                    <div className="border rounded-lg overflow-hidden">
-                      <Image
-                        src={detail.designFile || "/placeholder.svg"}
-                        alt={`Design ${index + 1}`}
-                        width={800}
-                        height={600}
-                        className="w-full h-auto object-contain"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <h2>Note</h2>
-                    <Textarea
-                      className="resize-none"
-                      // value={detail.note}
-                      // disabled
+                    <div
+                      className="text-sm mb-3"
+                      dangerouslySetInnerHTML={{ __html: detail.description }}
                     />
-                  </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="border rounded-lg overflow-hidden">
+                        <Image
+                          src={detail.designFile || "/placeholder.svg"}
+                          alt={`Design ${index + 1}`}
+                          width={800}
+                          height={600}
+                          className="w-full h-auto object-contain"
+                        />
+                      </div>
+                      <div className="flex items-center justify-center">
+                        <ArrowRight className="size-10" />
+                      </div>
+                      <div className="border rounded-lg overflow-hidden">
+                        <Image
+                          src={detail.imageUrl || "/placeholder.svg"}
+                          alt={`Design ${index + 1}`}
+                          width={800}
+                          height={600}
+                          className="w-full h-auto object-contain"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-medium mb-2">Note</h2>
+                      <DetailNoteForm
+                        detailId={detail.bookingDetailId}
+                        isEditable={isNoteEditable(detail)}
+                        initialDescription={detail.description}
+                      />
+                    </div>
 
-                  {index < booking?.data.bookingDetails.length - 1 && (
-                    <Separator className="mt-6" />
-                  )}
-                </div>
-              ))}
+                    {index < booking?.data.bookingDetails.length - 1 && (
+                      <Separator className="mt-6" />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col sm:flex-row gap-3 pt-6">
-          <Button className="w-full sm:w-auto">Contact Support</Button>
-          <Button variant="outline" className="w-full sm:w-auto">
-            Download Details
+        <CardFooter className="flex flex-col sm:flex-row gap-3 pt-6 justify-end">
+          {/* Only show Cancel button if the booking is not already cancelled */}
+          {booking?.data.bookingStatus === "DEPOSITED" && (
+            <CancelBookingButton bookingId={id as string} />
+          )}
+
+          <Form {...form}>
+            <form onSubmit={onSubmit} className="flex gap-3">
+              <Button
+                type="submit"
+                variant="default"
+                className="w-full sm:w-auto"
+                disabled={
+                  booking?.data.bookingStatus !== "COMPLETED" ||
+                  booking?.data.fullyPaid ||
+                  isLoading
+                }
+              >
+                {isLoading
+                  ? "Processing Payment..."
+                  : booking?.data.fullyPaid
+                  ? "Already Paid"
+                  : "Pay Booking"}
+              </Button>
+            </form>
+          </Form>
+
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            disabled={
+              booking?.data.bookingStatus === "COMPLETED" &&
+              !booking?.data.fullyPaid
+            }
+          >
+            {booking?.data.bookingStatus === "COMPLETED" &&
+            !booking?.data.fullyPaid
+              ? "Pay to Download"
+              : "Download Details"}
           </Button>
         </CardFooter>
       </Card>

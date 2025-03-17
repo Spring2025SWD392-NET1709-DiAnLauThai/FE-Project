@@ -1,11 +1,15 @@
 import axiosInstance from "@/configs/axios.config";
 import {
+  BookingCustomerDetailResponse,
   BookingDetailResponse,
   BookingParams,
   BookingPayload,
   BookingPayloadResponse,
   BookingResponse,
+  CancelBookingPayload,
+  DescriptionPayload,
 } from "@/domains/models/booking";
+import { Cancel } from "axios";
 export const BookingService = {
   get: {
     list: async (
@@ -54,13 +58,13 @@ export const BookingService = {
         throw error;
       }
     },
-  },
-  post: {
-    booking: async (
-      payload: BookingPayload
-    ): Promise<RootResponse<BookingPayloadResponse>> => {
+    customerDetail: async (
+      bookingId: string
+    ): Promise<RootResponse<BookingCustomerDetailResponse>> => {
       try {
-        const response = await axiosInstance.post("/bookings", payload);
+        const response = await axiosInstance.get(
+          `/bookingsdetails/bookings/${bookingId}/details/customer`
+        );
 
         return response.data;
       } catch (error) {
@@ -68,6 +72,55 @@ export const BookingService = {
       }
     },
   },
-  put: {},
+  post: {
+    booking: async (
+      payload: BookingPayload
+    ): Promise<RootResponse<BookingPayloadResponse>> => {
+      try {
+        const response = await axiosInstance.post("/bookings", payload);
+        console.log("response", response.data);
+
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+  },
+  put: {
+    payBooking: async (bookingId: string): Promise<RootResponse<string>> => {
+      try {
+        const response = await axiosInstance.put(
+          `/bookings/${bookingId}/payment`
+        );
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    noteDescription: async (
+      data: DescriptionPayload
+    ): Promise<RootResponse<string>> => {
+      try {
+        const response = await axiosInstance.put(`/bookingsdetails`, data);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    cancelBooking: async (
+      bookingId: string,
+      data: CancelBookingPayload
+    ): Promise<RootResponse<string>> => {
+      try {
+        const response = await axiosInstance.put(
+          `/bookings/${bookingId}/cancel`,
+          data
+        );
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+  },
   delete: {},
 };

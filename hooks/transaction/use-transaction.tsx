@@ -32,5 +32,5 @@ export const useTransactionCustomer = (params: TransactionParams) => {
     retry: 2,
   });
 
-  return listCustomerQuery;
+  return { listCustomerQuery };
 };

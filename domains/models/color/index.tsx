@@ -4,8 +4,7 @@ export interface ColorPayload {
 }
 
 export interface ColorResponse {
-    id: string;
+    colorId: string;
     colorName: string;
     colorCode: string;
-    tshirtColors: any[];
 }

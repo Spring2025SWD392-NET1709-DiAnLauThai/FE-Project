@@ -59,7 +59,6 @@ export function useColorsForm() {
 
     return {
       form,
-      onCreateColor,
       handleSubmit,
       isSubmitting: createColorMutation.isPending,
     };

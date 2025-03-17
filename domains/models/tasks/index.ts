@@ -1,10 +1,19 @@
 import {  UserRole } from "@/domains/models/user";
+import { TShirtResponse } from "../tshirt";
 // domains/models/task/index.ts
 export enum TaskStatus {
   ASSIGNED = "ASSIGNED",
   COMPLETED = "COMPLETE",
-  DENIED = "DENIED",
+  CANCEL = "DENIED",
 }
+
+export enum BookingStatus {
+  DEPOSITED = "DEPOSITED",
+  UNPAID = "UNPAID",
+  CANCELLED = "CANCELLED",
+  COMPLETED = "COMPLETED",
+}
+
 
 export interface AssignDesignerPayload {
   bookingId: string;
@@ -69,6 +78,32 @@ export interface PaginatedTaskResponse {
   currentPage: number;
 }
 
-export interface TaskDetail{
-  task: Task[];
+interface Design {
+  designFile: string;
+}
+
+export interface BookingDetail {
+  bookingDetailId: string;
+  description: string;
+  unitPrice: number;
+  design: Design;
+  tshirt: TShirtResponse | null;
+}
+
+export interface TaskDetail {
+  designerName: string;
+  totalPrice: number;
+  totalQuantity: number;
+  bookingStatus: BookingStatus
+  datecreated: string;
+  updateddate: string;
+  startdate: string;
+  enddate: string;
+  code: string;
+  title: string;
+  bookingDetails: BookingDetail[];
+}
+
+export interface TaskConfirm {
+  bookingId: string;
 }

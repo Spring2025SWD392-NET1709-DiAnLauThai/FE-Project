@@ -1,9 +1,9 @@
-import { AssignDesignerPayload, PaginatedTaskResponse, Task, TaskParams } from "@/domains/models/tasks";
+import { AssignDesignerPayload, PaginatedTaskResponse, Task, TaskConfirm, TaskParams } from "@/domains/models/tasks";
 
 import { QueryKey } from "@/domains/stores/query-key";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "../use-toast";
-import { taskServices } from "@/domains/services/assign-tasks";
+import { taskServices } from "@/domains/services/tasks";
 import { useState } from "react";
 
 export function useDesigners() {
@@ -12,6 +12,17 @@ export function useDesigners() {
     queryFn: async () => await taskServices.get.listDesigner(),
     select: (data) => data.data,
   });
+}
+
+export function useTaskDetail(id: string) {
+  const queryResult = useQuery({
+    queryKey: [QueryKey.TASK.DETAIL, id],
+    queryFn: async () => await taskServices.get.taskDetail(id),
+    select: (data) => data.data,
+    
+  });
+
+  return queryResult; 
 }
 
 export const useTasksQuery = (
@@ -45,7 +56,9 @@ export const useTasksQuery = (
     }));
   };
 
-  return { tasksQuery, params, updateFilters };
+  const isLoading = tasksQuery.isLoading || tasksQuery.isFetching;
+
+  return { tasksQuery, params, updateFilters, isLoading };
 };
 
 export const useTasksDesignerQuery = (
@@ -79,7 +92,9 @@ export const useTasksDesignerQuery = (
     }));
   };
 
-  return { tasksQuery, params, updateFilters };
+  const isLoading = tasksQuery.isLoading || tasksQuery.isFetching;
+
+  return { tasksQuery, params, updateFilters, isLoading };
 };
 
 export const useAssignDesignerMutation = () => {
@@ -99,4 +114,23 @@ export const useAssignDesignerMutation = () => {
     },
   });
   return { assignDesigner };
+};
+
+export const useConfirmTaskMutation = () => {
+  const { toast } = useToast();
+  const confirmTask = useMutation({
+    mutationKey: [QueryKey.TASK.CONFIRM_TASK],
+    mutationFn: async (bookingId: string) =>
+      await taskServices.put.confirmTask(bookingId),
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: `${data.message}`,
+      });
+    },
+    onError: (error) => {
+      console.error("error", error);
+    },
+  });
+  return { confirmTask };
 };
