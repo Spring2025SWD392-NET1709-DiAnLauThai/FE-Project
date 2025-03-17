@@ -1,3 +1,4 @@
+import { AuthServices } from "@/domains/services/auth.services";
 import axios from "axios";
 
 const axiosInstance = axios.create({
@@ -33,7 +34,23 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error("Response error:", error);
+    // console.error("Response error:", error);
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (error.response.status === 401 && refreshToken) {
+      AuthServices.refreshToken(refreshToken)
+        .then((response) => {
+          localStorage.setItem("accessToken", response.data.accessToken);
+          localStorage.setItem("refreshToken", response.data.refreshToken);
+        })
+        .catch(() => {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+        });
+
+      // useAuthStore.getState().logout();
+    }
+
     return Promise.reject(error);
   }
 );
