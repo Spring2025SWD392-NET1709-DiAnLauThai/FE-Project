@@ -4,6 +4,9 @@ import Background from "@/public/images/background.png";
 import Image from "next/image";
 
 export default function LoginPage() {
+
+  
+
   return (
     <main className="flex min-h-screen">
       {/* Left section - Image */}

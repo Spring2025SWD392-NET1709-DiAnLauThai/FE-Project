@@ -5,7 +5,7 @@ interface Review {
     rating: number;
 }
 
-const initialReviewsData: Omit<Review, "id">[] = [
+const initialReviewsData: Omit<Review, "id">[] = [ 
     { name: "Tran Ngoc Yen Thao", content: "Good Design!", rating: 5 },
     { name: "Tran Hoang Trung Anh", content: "Thank you for Design!", rating: 4 },
     { name: "Bui Phuoc Loc", content: "Good but i don't like itit", rating: 3 },
