@@ -85,16 +85,14 @@ export function useTaskConfirm(id: string) {
     
     // Call the mutation with the string ID, not an object
     confirmTask.mutate(
-      
         bookingId,
-      
       {
         onSuccess: () => {
           toast({
             title: "Success",
             description: "Task confirmed successfully",
           });
-          queryClient.invalidateQueries({ queryKey: [QueryKey.TASK.LIST] });
+          queryClient.invalidateQueries({ queryKey: [QueryKey.TASK.DETAIL] });
         },
         onError: (error) => {
           console.error("Error confirm task:", error);

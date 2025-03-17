@@ -55,9 +55,7 @@ export default function TaskDetailPage() {
   const [isAssigning, setIsAssigning] = useState(false);
   const [isDesigner, setIsDesigner] = useState(false);
 
-  // Get auth information - adjust according to your actual auth implementation
   const { user } = useAuthStore();
-  // Check if user is a designer
   useEffect(() => {
     if (user?.role === UserRole.DESIGNER) {
       setIsDesigner(true);

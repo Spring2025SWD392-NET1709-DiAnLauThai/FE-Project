@@ -21,4 +21,14 @@ export interface AssignTshirt{
   bookingDetailId: string
 }
 
+export interface TShirtParams {
+  keyword?: string;
+  page?: number;
+  size?: number;
+  dateFrom?: string;
+  dateTo?: string;
+  sortDir?: "asc" | "desc";
+  sortBy?: string;
+}
+
 export interface TShirtParams extends RootRequest {}

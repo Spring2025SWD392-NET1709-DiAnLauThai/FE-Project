@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useTShirtsQuery } from "@/hooks/t-shirt/use-tshirt";
+import { useAvailableTShirtsQuery, useTShirtsQuery } from "@/hooks/t-shirt/use-tshirt";
 import { useParamStore } from "@/domains/stores/params-store";
 import { BookingDetail } from "@/domains/models/tasks";
 import { TShirtResponse } from "@/domains/models/tshirt";
@@ -37,7 +37,6 @@ export default function AssignTShirtModal({
   isAssigning: boolean;
 }) {
   const [selectedShirt, setSelectedShirt] = useState<string | null>(null);
-  const { value } = useParamStore();
 
   // Get the form from the hook
   const { form, onSubmit, isLoading } = useAssignTshirtForm({
@@ -46,15 +45,10 @@ export default function AssignTShirtModal({
   });
 
   // Query T-shirts from API
-  const { queryTShirts } = useTShirtsQuery({
-    params: {
-      page: value.page ?? 1,
-      size: value.size ?? 10,
-    },
-  });
+  const { queryAvailableTShirts } = useAvailableTShirtsQuery();
 
   // Extract T-shirts from the response
-  const availableTShirts = queryTShirts?.data?.data?.content || [];
+  const availableTShirts = queryAvailableTShirts?.data?.data?.content || [];
 
   // Reset selected shirt when modal opens
   useEffect(() => {

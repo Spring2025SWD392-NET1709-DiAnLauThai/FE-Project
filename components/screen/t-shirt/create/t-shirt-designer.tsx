@@ -606,7 +606,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
                                   </svg>
                                 </div>
                                 <span className="text-sm truncate max-w-[150px]">
-                                  {value.name}
+                                  {zipFileName}
                                 </span>
                               </div>
                               <Button
