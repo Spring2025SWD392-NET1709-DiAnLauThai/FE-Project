@@ -18,16 +18,6 @@ export const TShirtService = {
         throw error;
       }
     },
-    availableList: async (
-      
-    ): Promise<RootResponse<Pagination<TShirtResponse>>> => {
-      try {
-        const response = await axiosInstance.get("/tshirts/available");
-        return response.data;
-      } catch (error) {
-        throw error;
-      }
-    },
     detail: async (id: string): Promise<RootResponse<TShirtResponse>> => {
       try {
         const response = await axiosInstance.get(`/tshirts/${id}`);

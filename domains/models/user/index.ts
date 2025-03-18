@@ -1,3 +1,4 @@
+// create or update user model here
 export enum UserRole {
   ADMIN = "ADMIN",
   CUSTOMER = "CUSTOMER",

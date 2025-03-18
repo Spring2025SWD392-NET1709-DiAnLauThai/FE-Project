@@ -46,6 +46,7 @@ export const useBookingForm = () => {
 
   const onSubmit = form.handleSubmit(async (data) => {
     // Validate deadline date
+    const currentDate = new Date();
     const deadlineDate = new Date(data.enddate);
     const adjustedStartDate = new Date(data.startdate);
     adjustedStartDate.setHours(adjustedStartDate.getHours() + 7);

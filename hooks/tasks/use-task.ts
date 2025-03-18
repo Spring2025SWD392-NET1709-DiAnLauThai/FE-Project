@@ -46,10 +46,12 @@ export const useTasksQuery = (
     } as RootResponse<Pagination<PaginatedTaskResponse>>,
   });
 
+  // Update filters function
   const updateFilters = (newParams: Partial<TaskParams>) => {
     setParams((prev: any) => ({
       ...prev,
       ...newParams,
+      // Reset to page 1 when filters change (except when explicitly setting page)
       page: newParams.page !== undefined ? newParams.page : 1,
     }));
   };
@@ -85,6 +87,7 @@ export const useTasksDesignerQuery = (
     setParams((prev: any) => ({
       ...prev,
       ...newParams,
+      // Reset to page 1 when filters change (except when explicitly setting page)
       page: newParams.page !== undefined ? newParams.page : 1,
     }));
   };

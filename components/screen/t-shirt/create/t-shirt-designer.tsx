@@ -228,6 +228,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
           <Card className="p-4">
             <h2 className="text-xl font-semibold mb-4">Design Preview</h2>
             <div className="relative w-full h-[500px] bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+              {/* T-shirt mockup */}
               <div
                 className="relative w-[400px] h-[450px]"
                 onClick={handleDragImage}
@@ -605,7 +606,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
                                   </svg>
                                 </div>
                                 <span className="text-sm truncate max-w-[150px]">
-                                  {zipFileName}
+                                  {value.name}
                                 </span>
                               </div>
                               <Button

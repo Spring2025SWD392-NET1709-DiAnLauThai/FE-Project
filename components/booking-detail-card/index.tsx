@@ -17,7 +17,7 @@ import Image from "next/image";
 import { DataTablePagination } from "../table/Pagination";
 import { PlusIcon } from "lucide-react";
 import { Button } from "../ui/button";
-import { AssignDesignerForm } from "@/assign-task/task-assign-design";
+import { AssignDesignerForm } from "../assign-task/task-assign-design";
 
 interface BookingDetailModalProps {
   booking: BookingResponse;

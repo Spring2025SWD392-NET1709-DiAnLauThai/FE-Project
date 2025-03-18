@@ -13,7 +13,7 @@ const getStatusBadge = (status: TaskStatus) => {
       return "bg-blue-500 hover:bg-blue-600 text-white";
     case TaskStatus.COMPLETED:
       return "bg-green-500 hover:bg-green-600 text-white";
-    case TaskStatus.CANCEL:
+    case TaskStatus.DENIED:
       return "bg-red-500 hover:bg-red-600 text-white";
     default:
       return "bg-gray-500 hover:bg-gray-600 text-white";

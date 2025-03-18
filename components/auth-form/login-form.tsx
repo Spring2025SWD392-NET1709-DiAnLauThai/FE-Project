@@ -19,32 +19,22 @@ import {
 import { Separator } from "../ui/separator";
 import { Switch } from "../ui/switch";
 import { ForgotPasswordDialog } from "./forget-password";
-import { auth, provider } from "@/configs/firebase.config";
-import { signInWithPopup } from "firebase/auth";
-import { loginWithGoogle } from "@/domains/services/googlAuthService";
 
+const GOOGLE_AUTH_URL = "http://localhost:8080/api/auth/google"; // Đổi thành API backend của bạn
 
 export function LoginForm() {
-  const [user, setUser] = useState();
+
   const [showPassword, setShowPassword] = useState(false);
-  const[error, setError]=useState();
   const { openDialog } = useDialogStore();
   const { form, onSubmit, isLoading } = useAuthForm({ type: "login" });
 
   const handleLoginGoogle = async () => {
     try {
-      const response = await signInWithPopup(auth, provider)
-      console.log("response", response);
-      const idToken = "your_google_id_token"
-      const userData = await loginWithGoogle(idToken);
-      setUser(userData);
+      window.location.href = GOOGLE_AUTH_URL;
     } catch (err) {
-      setError(err.message)
+      console.error("Google Login Error:", err);
     }
-
-
-  }
-
+  };
 
   return (
     <>
@@ -147,9 +137,7 @@ export function LoginForm() {
           <p>Or</p>
           <Separator className="text-muted-foreground w-1/2" />
         </div>
-        <Button className="w-full"
-          onClick={handleLoginGoogle}
-        >
+        <Button className="w-full" onClick={handleLoginGoogle}>
           <Image
             className="dark:invert"
             src="/google.svg"
@@ -159,8 +147,6 @@ export function LoginForm() {
           />
           Or Sign in with Google
         </Button>
-        {user && <pre>{JSON.stringify(user, null, 2)}</pre>}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
         <div className="text-center text-sm">
           {"Don't have an account? "}
           <Link href="/register" className="text-primary hover:underline">

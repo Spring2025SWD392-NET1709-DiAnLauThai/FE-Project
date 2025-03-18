@@ -2,7 +2,8 @@
 
 import { TShirtResponse } from "@/domains/models/tshirt";
 import { ColumnDef } from "@tanstack/react-table";
-import { formatFromISOStringVN,  FormatType } from "@/lib/format";
+import { Badge } from "../../ui/badge";
+import { formatFromISOStringVN, formatPriceToVND, FormatType } from "@/lib/format";
 import TShirtMenuAction from "./menu-action";
 import Image from "next/image";
 import { ImageIcon } from "lucide-react";

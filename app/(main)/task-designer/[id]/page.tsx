@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { format } from "date-fns";
 import {
   AlertCircle,
+  Check,
   Clock,
+  DollarSign,
   InfoIcon,
   Package,
   Plus,
@@ -15,12 +18,16 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   TaskDetail,
   BookingDetail,
@@ -31,9 +38,12 @@ import { useTaskDetail } from "@/hooks/tasks/use-task";
 import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
 import AssignTShirtModal from "@/components/assign-tshirt/page";
 import { toast } from "sonner";
+import { TShirtResponse } from "@/domains/models/tshirt";
 import { formatFromISOStringVN, FormatType } from "@/lib/format";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useAuth } from "@/hooks/auth/use-auth"; // Import auth hook - adjust path as needed
 import { UserRole } from "@/domains/models/user";
+import { Role } from "@/domains/enums";
 import { useAuthStore } from "@/domains/stores/use-auth-store";
 
 export default function TaskDetailPage() {
@@ -45,7 +55,9 @@ export default function TaskDetailPage() {
   const [isAssigning, setIsAssigning] = useState(false);
   const [isDesigner, setIsDesigner] = useState(false);
 
+  // Get auth information - adjust according to your actual auth implementation
   const { user } = useAuthStore();
+  // Check if user is a designer
   useEffect(() => {
     if (user?.role === UserRole.DESIGNER) {
       setIsDesigner(true);

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Task } from "@/domains/models/tasks";
 import {
   DropdownMenu,
@@ -10,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, ClipboardList } from "lucide-react";
+import { MoreHorizontal, Eye, ClipboardList } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface TaskMenuActionProps {
@@ -18,6 +19,7 @@ interface TaskMenuActionProps {
 }
 
 export default function TaskMenuAction({ task }: TaskMenuActionProps) {
+  const { replace } = useRouter();
   const router = useRouter();
   const handleViewTaskDetail = () => {
     // Save the bookingId to localStorage before navigating

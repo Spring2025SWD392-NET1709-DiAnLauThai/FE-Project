@@ -1,12 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
+import * as z from "zod";
 import { useAssignDesignerMutation, useConfirmTaskMutation } from "./use-task";
 import { useToast } from "../use-toast";
 import { QueryKey } from "@/domains/stores/query-key";
+import { TaskConfirm } from "@/domains/models/tasks";
 import { AssignDesignerFormValues, AssignDesignerSchema } from "@/domains/schemas/t-shirt.schema";
 import { ConfirmTaskFormValues, ConfirmTaskSchema } from "@/domains/schemas/task/task.schema";
 import { useEffect } from "react";
+
+// Create form schema
+
 
 export function useAssignDesignerForm(task: string) {
   const { toast } = useToast();
@@ -80,14 +85,16 @@ export function useTaskConfirm(id: string) {
     
     // Call the mutation with the string ID, not an object
     confirmTask.mutate(
+      
         bookingId,
+      
       {
         onSuccess: () => {
           toast({
             title: "Success",
             description: "Task confirmed successfully",
           });
-          queryClient.invalidateQueries({ queryKey: [QueryKey.TASK.DETAIL] });
+          queryClient.invalidateQueries({ queryKey: [QueryKey.TASK.LIST] });
         },
         onError: (error) => {
           console.error("Error confirm task:", error);

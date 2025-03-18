@@ -9,7 +9,6 @@ export const QueryKey = {
 
   TSHIRT: {
     LIST: "list-tshirt",
-    AVAILABLE: "available-tshirt",
     CREATE: "create-tshirt",
     UPDATE: "update-tshirt",
     DELETE: "delete-tshirt",

@@ -3,6 +3,7 @@ import {
   AssignDesignerPayload,
   DesignersResponse,
   PaginatedTaskResponse,
+  TaskConfirm,
   TaskDetail,
   TaskParams,
 } from "../../models/tasks/index";

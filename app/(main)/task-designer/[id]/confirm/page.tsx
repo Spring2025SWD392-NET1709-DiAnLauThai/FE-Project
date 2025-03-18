@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTaskDetail } from "@/hooks/tasks/use-task";
 import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
+import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -26,6 +28,7 @@ export default function ConfirmTaskPage() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [bookingId, setBookingId] = useState<string>("");
 
+  // Safely extract bookingId from localStorage on component mount
   useEffect(() => {
     try {
       // Get the stored value
@@ -83,7 +86,33 @@ export default function ConfirmTaskPage() {
   // Get form logic from the hook - only pass bookingId when it's available
   const { form, onSubmit, isSubmitting } = useTaskConfirm(bookingId);
 
-  
+  const handleConfirmTask = async () => {
+    if (!bookingId) {
+      toast.error("No booking ID available. Please try again.");
+      return;
+    }
+
+    console.log("Confirming task with bookingId:", bookingId);
+
+    try {
+      // Use the form submission logic from the hook
+      await form.handleSubmit(onSubmit)();
+
+      // Close the dialog
+      setIsConfirmDialogOpen(false);
+
+      // Show success toast
+      toast.success("Task confirmed successfully!");
+
+      setTimeout(() => {
+        // Redirect back to the task details page
+        router.push(`/task-designer/${id}`);
+      }, 3000);
+    } catch (error) {
+      // Error handling is already managed by the hook, but we can add extra handling here if needed
+      console.error("Error confirming task:", error);
+    }
+  };
 
   // Handle loading state for task data or bookingId
   if (isLoading || !bookingId) {
@@ -139,7 +168,7 @@ export default function ConfirmTaskPage() {
       </div>
 
       <Form {...form}>
-        <form onSubmit={onSubmit} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {data.bookingDetails && data.bookingDetails.length > 0 ? (
             <div className="space-y-8">
               {data.bookingDetails.map((detail, index) => (
@@ -264,7 +293,7 @@ export default function ConfirmTaskPage() {
               Cancel
             </Button>
             <Button
-              type="submit"
+              onClick={handleConfirmTask}
               disabled={isSubmitting}
               className="flex items-center gap-2"
             >
