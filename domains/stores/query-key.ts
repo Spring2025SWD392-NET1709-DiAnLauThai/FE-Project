@@ -9,12 +9,15 @@ export const QueryKey = {
 
   TSHIRT: {
     LIST: "list-tshirt",
+    AVAILABLE: "available-tshirt",
+    PUBLIC_LIST: "public-tshirt",
     CREATE: "create-tshirt",
     UPDATE: "update-tshirt",
     DELETE: "delete-tshirt",
     DETAIL: "detail-tshirt",
     ASSIGN_TSHIRT: "assign-tshirt",
   },
+  
   BOOKING: {
     LIST: "list-booking",
     CREATE: "create-booking",
@@ -29,7 +32,7 @@ export const QueryKey = {
   },
   TASK: {
     LIST: "list-task",
-    DETAIL : "detail-task",
+    DETAIL: "detail-task",
     ASSIGN_DESIGNER: "assign-designer",
     CONFIRM_TASK: "confirm-task",
   },

@@ -8,14 +8,18 @@ import { useParamStore } from "@/domains/stores/params-store";
 import { DataTable } from "../plugins/table";
 import { TransactionResponse } from "@/domains/models/transaction";
 import { useTransactionCustomer } from "@/hooks/transaction/use-transaction";
+import { LoadingDots } from "../plugins/ui-loading/loading-dots";
 
 const TransactionCustomerTable = () => {
   const { value } = useParamStore();
 
-  const { listCustomerQuery } = useTransactionCustomer({
+  const { listCustomerQuery, isLoading } = useTransactionCustomer({
     page: value.page ?? 1,
     size: value.size ?? 10,
   });
+
+  const transactions = listCustomerQuery.data?.data?.content ?? [];
+  const hasData = transactions.length > 0;
 
   return (
     <div className="space-y-4">
@@ -38,10 +42,17 @@ const TransactionCustomerTable = () => {
         </div>
       </div>
 
-      <DataTable
-        columns={TransactionColumns}
-        data={listCustomerQuery.data?.data?.content ?? []}
-      />
+      {isLoading ? (
+        <div className="flex justify-center items-center py-8">
+          <LoadingDots />
+        </div>
+      ) : hasData ? (
+        <DataTable columns={TransactionColumns} data={transactions} />
+      ) : (
+        <div className="text-center py-8 text-gray-500">
+          <p>No transaction data available</p>
+        </div>
+      )}
     </div>
   );
 };

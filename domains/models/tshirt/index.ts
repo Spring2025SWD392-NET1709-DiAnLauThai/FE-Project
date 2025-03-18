@@ -1,9 +1,18 @@
+import { TShirt } from './../../schemas/t-shirt.schema';
 export interface TShirtResponse {
   tshirtId: string;
   name: string;
   description: string;
   imageUrl: string;
   createdAt: Date;
+}
+
+export interface TShirtPublicResponse {
+  id: string;
+  name: string;
+  accountName: string;
+  imageUrl: string;
+  rating: string;
 }
 
 export interface TShirtPayload{

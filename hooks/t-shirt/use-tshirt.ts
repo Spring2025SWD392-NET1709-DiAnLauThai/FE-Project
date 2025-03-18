@@ -19,6 +19,31 @@ export const useTShirtsQuery = ({ params }: TShirtQuery) => {
   return { queryTShirts, isLoading };
 };
 
+export const usePublicTShirtsQuery = ({ params }: TShirtQuery) => {
+  const queryPublicTShirts = useQuery({
+    queryKey: [QueryKey.TSHIRT.PUBLIC_LIST, params ? params : {}],
+    queryFn: () => TShirtService.get.publicTshirt(params),
+  });
+
+  const isLoading =
+    queryPublicTShirts.isLoading || queryPublicTShirts.isFetching;
+
+  return { queryPublicTShirts, isLoading };
+};
+
+export const useAvailableTShirtsQuery = () => {
+  const queryAvailableTShirts = useQuery({
+    queryKey: [QueryKey.TSHIRT.AVAILABLE],
+    queryFn: () => TShirtService.get.availableList(),
+  });
+
+  const isLoading =
+    queryAvailableTShirts.isLoading || queryAvailableTShirts.isFetching;
+
+  return { queryAvailableTShirts, isLoading };
+};
+
+
 export const useTShirtDetailQuery = ({ id }: { id: string }) => {
   const queryTShirtDetail = useQuery({
     queryKey: [QueryKey.TSHIRT.DETAIL, id],

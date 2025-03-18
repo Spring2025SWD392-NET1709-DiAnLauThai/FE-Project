@@ -32,5 +32,7 @@ export const useTransactionCustomer = (params: TransactionParams) => {
     retry: 2,
   });
 
-  return { listCustomerQuery };
+  const isLoading = listCustomerQuery.isLoading || listCustomerQuery.isFetching;
+
+  return { listCustomerQuery, isLoading };
 };
