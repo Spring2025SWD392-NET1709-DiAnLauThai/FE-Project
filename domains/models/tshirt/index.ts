@@ -6,6 +6,14 @@ export interface TShirtResponse {
   createdAt: Date;
 }
 
+export interface TShirtPublicResponse {
+  id: string;
+  name: string;
+  accountName: string;
+  imageUrl: string;
+  rating: string;
+}
+
 export interface TShirtPayload{
   description: string,
   imgurl: string,

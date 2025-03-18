@@ -3,6 +3,7 @@ import {
   AssignTshirt,
   TShirtParams,
   TShirtPayload,
+  TShirtPublicResponse,
   TShirtResponse,
 } from "@/domains/models/tshirt";
 
@@ -18,9 +19,19 @@ export const TShirtService = {
         throw error;
       }
     },
-    availableList: async (
-      
-    ): Promise<RootResponse<Pagination<TShirtResponse>>> => {
+    publicTshirt: async (
+      params: TShirtParams
+    ): Promise<RootResponse<Pagination<TShirtPublicResponse>>> => {
+      try {
+        const response = await axiosInstance.get("/tshirts/public", { params });
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    availableList: async (): Promise<
+      RootResponse<Pagination<TShirtResponse>>
+    > => {
       try {
         const response = await axiosInstance.get("/tshirts/available");
         return response.data;
