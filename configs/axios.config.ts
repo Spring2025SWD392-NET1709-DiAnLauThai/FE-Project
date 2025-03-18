@@ -4,53 +4,39 @@ import axios from "axios";
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 30000,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
 
-// Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("accessToken");
-
-    if (!accessToken) {
-      return config;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
-
-    config.headers.Authorization = `Bearer ${accessToken}`;
-
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor
 axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    // console.error("Response error:", error);
-    const refreshToken = localStorage.getItem("refreshToken");
-
-    if (error.response.status === 401 && refreshToken) {
-      AuthServices.refreshToken(refreshToken)
-        .then((response) => {
-          localStorage.setItem("accessToken", response.data.accessToken);
-          localStorage.setItem("refreshToken", response.data.refreshToken);
-        })
-        .catch(() => {
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (refreshToken) {
+        try {
+          const { data } = await AuthServices.refreshToken(refreshToken);
+          localStorage.setItem("accessToken", data.accessToken);
+          localStorage.setItem("refreshToken", data.refreshToken);
+          error.config.headers.Authorization = `Bearer ${data.accessToken}`;
+          return axiosInstance(error.config);
+        } catch {
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
-        });
-
-      // useAuthStore.getState().logout();
+        }
+      }
     }
-
     return Promise.reject(error);
   }
 );
