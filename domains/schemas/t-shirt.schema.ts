@@ -2,10 +2,10 @@ import { z } from "zod";
 
 export const TShirtSchema = z.object({
   description: z.string(),
-  imgurl: z.string().url(),
+  imgurl: z.string(),
   tshirtname: z.string(),
   colorlist: z.array(z.string()).min(1),
-  imagefile: z.string().url()
+  imagefile: z.string()
 });
 
 export const AssignTshirtSchema = z.object({

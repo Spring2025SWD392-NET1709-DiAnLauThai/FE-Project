@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useDropzone } from "react-dropzone";
-import { Save, Trash2, ImageIcon, Loader2 } from "lucide-react";
+import { Save, Trash2, ImageIcon, Loader2, Upload } from "lucide-react"; // Added Upload icon
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,15 +22,18 @@ import {
 import { useTshirtForm } from "@/hooks/t-shirt/use-tshirt-form";
 import { useGetColor } from "@/hooks/colors/use-colors";
 import { useToast } from "@/hooks/use-toast";
-import { FileService } from "@/domains/services/file";
 
 export function TshirtDesigner({ id }: { id?: string }) {
   const { toast } = useToast();
   const { data: colorsResponse, isLoading: colorsLoading } = useGetColor();
   const colors = colorsResponse?.data || [];
 
+  // Store actual File objects in refs
+  const imageFileRef = useRef<File | null>(null);
+  const zipFileRef = useRef<File | null>(null);
+
   // Use the custom form hook with the id parameter
-  const { form, onSubmit, isLoading } = useTshirtForm(id);
+  const { form, onSubmit, isLoading, isUploading } = useTshirtForm(id); // Added isUploading
 
   // Watch form values to use in the UI
   const watchedValues = form.watch();
@@ -43,43 +46,74 @@ export function TshirtDesigner({ id }: { id?: string }) {
   const [uploadingZip, setUploadingZip] = useState(false);
   const [zipUploaded, setZipUploaded] = useState(false);
   const [zipFileName, setZipFileName] = useState<string | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string>("");
 
-  // Custom form submission handler
+  // New state for tracking submission state
 
-  // Handle image upload with react-dropzone
+  // Add a function to reset all file-related state
+  const resetFiles = useCallback(() => {
+    // Reset image state
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+    }
+    setImagePreviewUrl("");
+    setImagePosition({ x: 200, y: 225 });
+    setImageSize({ width: 200, height: 200 });
+    imageFileRef.current = null;
+
+    // Reset zip state
+    setZipUploaded(false);
+    setZipFileName(null);
+    zipFileRef.current = null;
+
+    // Reset submission state
+  }, [imagePreviewUrl]);
+
+  // Modified onDrop function for image drop/select
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
       if (file) {
         try {
-          // Start upload right away
-          setUploadingImage(true);
-
-          // Upload file to server
-          const uploadResponse = await FileService.post.upload(file);
-
-          if (uploadResponse?.data) {
-            // Store uploaded file URL in the imgurl field
-            form.setValue("imgurl", uploadResponse.data, {
-              shouldValidate: true,
-            });
-
-            setUploadingImage(false);
-
+          // Check file size (max 5MB)
+          const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+          if (file.size > MAX_SIZE) {
             toast({
-              title: "Upload successful",
-              description: "Your image has been uploaded",
+              title: "File Too Large",
+              description: "Image must be less than 5MB",
+              variant: "destructive",
             });
-
-            console.log("Image uploaded successfully:", uploadResponse.data);
+            return;
           }
-        } catch (error) {
-          console.error("Upload error:", error);
-          setUploadingImage(false);
 
+          // Check file type
+          if (!file.type.startsWith("image/")) {
+            toast({
+              title: "Invalid File",
+              description: "Please upload an image file",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          // Create a preview URL for the image
+          const previewUrl = URL.createObjectURL(file);
+          setImagePreviewUrl(previewUrl);
+
+          // Store the file reference for later upload
+          imageFileRef.current = file;
+
+          // Set a placeholder in the form
+          form.setValue("imgurl", "pending-upload", {
+            shouldValidate: true,
+          });
+
+          console.log("Image selected for preview:", file.name);
+        } catch (error) {
+          console.error("Preview error:", error);
           toast({
-            title: "Upload failed",
-            description: "Could not upload your image",
+            title: "Preview failed",
+            description: "Could not preview your image",
             variant: "destructive",
           });
         }
@@ -88,7 +122,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
     [form, toast]
   );
 
-  // Cập nhật phần handleZipFileChange để lưu lại tên file
+  // Modified zip file selection handler
   const handleZipFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -97,39 +131,112 @@ export function TshirtDesigner({ id }: { id?: string }) {
       const file = files[0];
 
       try {
-        setUploadingZip(true);
+        const MAX_SIZE = 50 * 1024 * 1024; // 50MB
+        if (file.size > MAX_SIZE) {
+          toast({
+            title: "File Too Large",
+            description: "Zip file must be less than 50MB",
+            variant: "destructive",
+          });
+          return;
+        }
 
-        // Lưu tên file vào state để hiển thị
+        // Check file type
+        const validExtensions = [".zip", ".rar", ".7z", ".tar", ".gz", ".bz2"];
+        const fileExt = file.name
+          .substring(file.name.lastIndexOf("."))
+          .toLowerCase();
+        if (!validExtensions.includes(fileExt)) {
+          toast({
+            title: "Invalid File",
+            description: "Please upload a compressed file (ZIP, RAR, etc.)",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Store the file name for display
         setZipFileName(file.name);
-
-        // Upload ZIP file ngay lập tức
-        const response = await FileService.post.uploadZip(file);
-
-        // Lấy URL từ response
-        const fileUrl = response.data || "";
-        console.log("ZIP file uploaded:", fileUrl);
-
-        // Cập nhật form với fileUrl (để submission)
-        form.setValue("imagefile", fileUrl, { shouldValidate: true });
-
         setZipUploaded(true);
-        setUploadingZip(false);
 
-        toast({
-          title: "Upload successful",
-          description: "Your source files have been uploaded",
+        // Store the file reference for later upload
+        zipFileRef.current = file;
+
+        // Set a placeholder in the form
+        form.setValue("imagefile", "pending-upload", {
+          shouldValidate: true,
         });
+
+        console.log("ZIP file selected:", file.name);
       } catch (error) {
-        console.error("ZIP file upload error:", error);
-        setUploadingZip(false);
+        console.error("ZIP file selection error:", error);
         setZipFileName(null);
+        setZipUploaded(false);
+        zipFileRef.current = null;
 
         toast({
-          title: "Upload failed",
-          description: "Could not upload your source files",
+          title: "Selection failed",
+          description: "Could not select your source files",
           variant: "destructive",
         });
       }
+    }
+  };
+
+  // Custom onSubmit wrapper to handle file uploads with status indication
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Show validation errors if form is not valid
+    const formIsValid = await form.trigger();
+    if (!formIsValid) {
+      return;
+    }
+
+    // Check if we have image and zip files
+    if (!imageFileRef.current) {
+      toast({
+        title: "Missing Design Image",
+        description: "Please upload a design image",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!zipFileRef.current) {
+      toast({
+        title: "Missing Source Files",
+        description: "Please upload your source files (ZIP)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const customEvent = {
+      ...e,
+      imageFile: imageFileRef.current,
+      zipFile: zipFileRef.current,
+      resetFiles: () => {
+        // Reset all file-related state
+        if (imagePreviewUrl) {
+          URL.revokeObjectURL(imagePreviewUrl);
+        }
+        setImagePreviewUrl("");
+        setImagePosition({ x: 200, y: 225 });
+        setImageSize({ width: 200, height: 200 });
+        imageFileRef.current = null;
+
+        // Reset zip state
+        setZipUploaded(false);
+        setZipFileName(null);
+        zipFileRef.current = null;
+      },
+    };
+
+    try {
+      await onSubmit(customEvent);
+    } catch (error) {
+      console.error("Form submission error:", error);
     }
   };
 
@@ -147,33 +254,26 @@ export function TshirtDesigner({ id }: { id?: string }) {
     maxFiles: 1,
   });
 
-  // Update this function to allow multiple color selection
   const handleColorSelect = (color: string, colorId: string) => {
-    // Keep the visual indicator of which color is currently selected
     setSelectedColor(color);
 
     // Get current color list
     const currentColors = form.getValues("colorlist") || [];
 
-    // Check if the color is already selected
     const colorIndex = currentColors.indexOf(colorId);
 
-    // Toggle color selection
     let updatedColors = [...currentColors];
     if (colorIndex >= 0) {
-      // If color is already selected, remove it
       updatedColors.splice(colorIndex, 1);
     } else {
-      // If color is not selected, add it
       updatedColors.push(colorId);
     }
 
     // Update form value
     form.setValue("colorlist", updatedColors, { shouldValidate: true });
-    console.log("After setting colors:", form.getValues("colorlist"));
   };
 
-  // Update to remove a specific color by ID
+  // Remove color handler
   const handleRemoveColor = (colorId: string) => {
     const currentColors = form.getValues("colorlist") || [];
     const updatedColors = currentColors.filter((id) => id !== colorId);
@@ -181,6 +281,9 @@ export function TshirtDesigner({ id }: { id?: string }) {
 
     // Reset selected color visual indicator if removing the currently selected color
     const selectedColorObj = colors.find((c) => c.colorId === colorId);
+    if (selectedColorObj && selectedColorObj.colorCode === selectedColor) {
+      setSelectedColor("#FFFFFF");
+    }
   };
 
   const handleDragImage = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -203,27 +306,47 @@ export function TshirtDesigner({ id }: { id?: string }) {
     });
   };
 
+  // Modified handleRemoveImage to properly clean up
   const handleRemoveImage = () => {
+    // Reset form value
     form.setValue("imgurl", "", { shouldValidate: true });
+
+    // Clear preview and reset position
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+    }
+    setImagePreviewUrl("");
     setImagePosition({ x: 200, y: 225 });
+
+    // Clear file reference
+    imageFileRef.current = null;
   };
 
-  // For debugging
+  // Modified handleRemoveZip to properly clean up
+  const handleRemoveZip = () => {
+    // Reset form value
+    form.setValue("imagefile", "", { shouldValidate: true });
+
+    // Clear state
+    setZipUploaded(false);
+    setZipFileName(null);
+
+    // Clear file reference
+    zipFileRef.current = null;
+  };
+
+  // Clean up object URLs when component unmounts
   useEffect(() => {
-    console.log("Current form values:", form.getValues());
-    console.log(
-      "Button would be disabled:",
-      isLoading ||
-        uploadingImage ||
-        !form.getValues("imgurl") ||
-        !form.getValues("tshirtname") ||
-        (form.getValues("colorlist")?.length || 0) === 0
-    );
-  }, [watchedValues, isLoading, uploadingImage, form]);
+    return () => {
+      if (imagePreviewUrl) {
+        URL.revokeObjectURL(imagePreviewUrl);
+      }
+    };
+  }, []);
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid md:grid-cols-2 gap-8">
           <Card className="p-4">
             <h2 className="text-xl font-semibold mb-4">Design Preview</h2>
@@ -243,8 +366,8 @@ export function TshirtDesigner({ id }: { id?: string }) {
                   />
                 </div>
 
-                {/* Uploaded design - use watchedValues.imgurl */}
-                {watchedValues.imgurl && (
+                {/* Uploaded design - use imagePreviewUrl */}
+                {imagePreviewUrl && (
                   <div
                     className="absolute cursor-move"
                     style={{
@@ -255,7 +378,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
                     }}
                   >
                     <Image
-                      src={watchedValues.imgurl}
+                      src={imagePreviewUrl}
                       alt="Uploaded design"
                       fill
                       className="object-contain"
@@ -271,7 +394,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
                 variant="outline"
                 size="sm"
                 onClick={() => handleResize("decrease")}
-                disabled={!watchedValues.imgurl}
+                disabled={!imagePreviewUrl}
               >
                 Smaller
               </Button>
@@ -280,7 +403,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
                 variant="outline"
                 size="sm"
                 onClick={() => handleResize("increase")}
-                disabled={!watchedValues.imgurl}
+                disabled={!imagePreviewUrl}
               >
                 Larger
               </Button>
@@ -350,12 +473,12 @@ export function TshirtDesigner({ id }: { id?: string }) {
                               </div>
                             </div>
 
-                            {watchedValues.imgurl && (
+                            {imagePreviewUrl && (
                               <div className="flex items-center justify-between p-2 border rounded-md">
                                 <div className="flex items-center gap-2">
                                   <div className="w-12 h-12 relative rounded overflow-hidden">
                                     <Image
-                                      src={watchedValues.imgurl}
+                                      src={imagePreviewUrl}
                                       alt="Preview"
                                       fill
                                       className="object-cover"
@@ -364,7 +487,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
                                   <span className="text-sm truncate max-w-[150px]">
                                     {uploadingImage
                                       ? "Uploading..."
-                                      : "Image uploaded"}
+                                      : "Image selected"}
                                   </span>
                                 </div>
                                 <Button
@@ -606,7 +729,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
                                   </svg>
                                 </div>
                                 <span className="text-sm truncate max-w-[150px]">
-                                  {value.name}
+                                  {zipFileName}
                                 </span>
                               </div>
                               <Button
@@ -635,22 +758,22 @@ export function TshirtDesigner({ id }: { id?: string }) {
               type="submit"
               disabled={
                 isLoading ||
-                uploadingImage ||
-                uploadingZip ||
-                !watchedValues.imgurl ||
+                isUploading || // Add isUploading to disable button during uploads
+                !imagePreviewUrl ||
                 !watchedValues.tshirtname ||
                 watchedValues.colorlist.length === 0 ||
-                !form.getValues("imagefile")
+                !zipFileName
               }
             >
-              {isLoading || uploadingImage || uploadingZip ? (
+              {isUploading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {uploadingImage
-                    ? "Uploading image..."
-                    : uploadingZip
-                    ? "Uploading files..."
-                    : "Saving..."}
+                  Uploading Files...
+                </>
+              ) : isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving Design...
                 </>
               ) : (
                 <>
