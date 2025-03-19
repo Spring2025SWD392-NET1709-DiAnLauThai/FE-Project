@@ -38,12 +38,9 @@ import { useTaskDetail } from "@/hooks/tasks/use-task";
 import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
 import AssignTShirtModal from "@/components/assign-tshirt/page";
 import { toast } from "sonner";
-import { TShirtResponse } from "@/domains/models/tshirt";
 import { formatFromISOStringVN, FormatType } from "@/lib/format";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useAuth } from "@/hooks/auth/use-auth"; // Import auth hook - adjust path as needed
 import { UserRole } from "@/domains/models/user";
-import { Role } from "@/domains/enums";
 import { useAuthStore } from "@/domains/stores/use-auth-store";
 
 export default function TaskDetailPage() {
@@ -55,9 +52,7 @@ export default function TaskDetailPage() {
   const [isAssigning, setIsAssigning] = useState(false);
   const [isDesigner, setIsDesigner] = useState(false);
 
-  // Get auth information - adjust according to your actual auth implementation
   const { user } = useAuthStore();
-  // Check if user is a designer
   useEffect(() => {
     if (user?.role === UserRole.DESIGNER) {
       setIsDesigner(true);
@@ -66,23 +61,18 @@ export default function TaskDetailPage() {
     }
   }, [user]);
 
-  // Get task details from API
   const { data, isLoading, isError, refetch } = useTaskDetail(id as string);
 
-  // We need to access the actual task data from the response
   const taskData: TaskDetail = data;
 
-  // Check if task is editable (not COMPLETED or CANCELLED)
   const isTaskEditable =
     taskData &&
     taskData.bookingStatus !== BookingStatus.COMPLETED &&
     taskData.bookingStatus !== BookingStatus.CANCELLED;
 
-  // Check if current user can edit this task (must be designer AND task must be editable)
   const canEditTask = isDesigner && isTaskEditable;
 
   const handleAssignTShirt = async (tshirtId: string) => {
-    // Don't allow assignment if user can't edit
     if (!canEditTask) {
       toast.error("You don't have permission to modify this task");
       setIsModalOpen(false);
@@ -113,10 +103,7 @@ export default function TaskDetailPage() {
         `T-shirt ${tshirtId} assigned to booking detail ${selectedBookingDetail.bookingDetailId}`
       );
 
-      // Manually refresh the data
-      await refetch();
 
-      // Close the modal
       setIsModalOpen(false);
     } catch (error) {
       console.error("Assignment error:", error);
@@ -141,9 +128,7 @@ export default function TaskDetailPage() {
     }
   };
 
-  // Handle opening the T-shirt assignment modal
   const handleOpenAssignModal = (bookingDetail: BookingDetail) => {
-    // Don't open modal if user can't edit
     if (!canEditTask) {
       toast.error("You don't have permission to modify this task");
       return;
@@ -154,7 +139,6 @@ export default function TaskDetailPage() {
     setIsModalOpen(true);
   };
 
-  // Handle loading state
   if (isLoading) {
     return (
       <div className="container mx-auto flex items-center justify-center min-h-[60vh]">
@@ -166,7 +150,6 @@ export default function TaskDetailPage() {
     );
   }
 
-  // Handle error state
   if (isError || !taskData) {
     return (
       <div className="container mx-auto py-8 px-4 text-center">
@@ -191,7 +174,6 @@ export default function TaskDetailPage() {
   return (
     <div className="container mx-auto py-6 px-4">
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Task Details Section (2/3) */}
         <div className="w-full space-y-6">
           {/* Status alert for completed or cancelled tasks */}
           {!isTaskEditable && (
@@ -318,96 +300,85 @@ export default function TaskDetailPage() {
               {taskData.bookingDetails && taskData.bookingDetails.length > 0 ? (
                 taskData.bookingDetails.map((detail, index) => (
                   <div key={detail.bookingDetailId} className="space-y-4">
-                    {/* Add a visible header for each booking detail with a number */}
                     <div className="flex items-center justify-between bg-muted rounded-md px-4 py-2">
                       <h3 className="font-medium">
                         Booking Detail #{index + 1}
                       </h3>
                     </div>
 
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Description
-                      </p>
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: detail.description || "",
-                        }}
-                      />
-                    </div>
-
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Booking Design Preview
-                      </p>
-                      <div className="border rounded-md p-2 inline-block">
-                        <Image
-                          src={
-                            (detail.design && detail.design.designFile) ||
-                            "/placeholder.svg"
-                          }
-                          alt="Design Preview"
-                          width={300}
-                          height={300}
-                          className="object-contain"
-                        />
+                    <div className="flex flex-col md:flex-row gap-4">
+                      <div className="md:w-1/2">
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Booking Design Preview
+                        </p>
+                        <div className="border rounded-md p-2 inline-block">
+                          <Image
+                            src={
+                              (detail.design && detail.design.designFile) ||
+                              "/placeholder.svg"
+                            }
+                            alt="Design Preview"
+                            width={300}
+                            height={300}
+                            className="object-contain"
+                          />
+                        </div>
                       </div>
-                    </div>
 
-                    <div>
-                      <p className="text-sm font-medium mb-2 flex items-center justify-between">
-                        <span>Assigned T-Shirt</span>
-                        {/* Only show assign button for designers */}
-                        {!detail.tshirt && canEditTask && (
+                      <div className="md:w-1/2">
+                        <p className="text-sm font-medium mb-2 flex items-center justify-between">
+                          <span>Assigned T-Shirt</span>
+                          {!detail.tshirt && canEditTask && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleOpenAssignModal(detail)}
+                              className="text-xs"
+                            >
+                              <Plus className="h-3 w-3 mr-1" />
+                              Assign T-Shirt
+                            </Button>
+                          )}
+                        {canEditTask && (
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleOpenAssignModal(detail)}
-                            className="text-xs"
+                            className="text-xs mt-2 text-muted-foreground hover:text-foreground"
                           >
-                            <Plus className="h-3 w-3 mr-1" />
-                            Assign T-Shirt
+                            Change
                           </Button>
                         )}
-                      </p>
-                      {detail.tshirt ? (
-                        <div className="flex items-center gap-4 border rounded-md p-4">
-                          <Image
-                            src={
-                              detail.tshirt.imageUrl ||
-                              "/placeholder.svg?height=150&width=150"
-                            }
-                            alt="Assigned T-Shirt"
-                            width={100}
-                            height={100}
-                            className="object-contain rounded-md"
-                          />
-                          <div>
-                            <p className="font-medium">{detail.tshirt.name}</p>
-                            {/* Only show change button for designers */}
-                            {canEditTask && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleOpenAssignModal(detail)}
-                                className="text-xs mt-2 text-muted-foreground hover:text-foreground"
-                              >
-                                Change
-                              </Button>
-                            )}
+                        </p>
+                        {detail.tshirt ? (
+                          <div className="flex items-center gap-4 border rounded-md p-4">
+                            <Image
+                              src={
+                                detail.tshirt.imageUrl ||
+                                "/placeholder.svg?height=150&width=150"
+                              }
+                              alt="Assigned T-Shirt"
+                              width={400}
+                              height={400}
+                              className="object-contain rounded-md"
+                            />
+                            <div>
+                              <p className="font-medium">
+                                {detail.tshirt.name}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 border rounded-md p-4 bg-muted/50">
-                          <Package className="h-5 w-5 text-muted-foreground" />
-                          <p className="text-muted-foreground">
-                            No T-shirt assigned yet
-                          </p>
-                        </div>
-                      )}
+                        ) : (
+                          <div className="flex items-center gap-2 border rounded-md p-4 bg-muted/50">
+                            <Package className="h-5 w-5 text-muted-foreground" />
+                            <p className="text-muted-foreground">
+                              No T-shirt assigned yet
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Add a thicker separator between booking details */}
                     {index < taskData.bookingDetails.length - 1 && (
                       <Separator className="my-6 border-2" />
                     )}
@@ -423,7 +394,6 @@ export default function TaskDetailPage() {
         </div>
       </div>
 
-      {/* Only show the Confirm button if task is editable AND user is a designer */}
       {canEditTask && (
         <div className="mt-8 flex justify-center">
           <Button
@@ -437,7 +407,6 @@ export default function TaskDetailPage() {
         </div>
       )}
 
-      {/* T-Shirt Assignment Modal - only for designers */}
       {isDesigner && (
         <AssignTShirtModal
           isOpen={isModalOpen}
@@ -445,6 +414,7 @@ export default function TaskDetailPage() {
           onAssign={handleAssignTShirt}
           bookingDetail={selectedBookingDetail}
           isAssigning={isAssigning}
+          taskId={id as string}
         />
       )}
     </div>

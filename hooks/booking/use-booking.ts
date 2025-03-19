@@ -76,6 +76,42 @@ export const useBookingMutation = () => {
   return { createBooking };
 };
 
+export const usePublicBooking = (bookingId: string) => {
+  const { toast } = useToast();
+  const queryClient = new QueryClient();
+  const publicBooking = useMutation({
+    mutationKey: [QueryKey.BOOKING.PUBLIC, bookingId],
+    mutationFn: async () =>
+      await BookingService.put.publicBooking(bookingId),
+    onSuccess: (data) => {
+      const message = data.message || "Public T-Shirt success";
+
+      toast({
+        title: "Public T-Shirt",
+        description: message,
+      });
+    },
+    onError: (error: any) => {
+      console.error("T-shirt Public failed:", error);
+
+      const errorMessage =
+        error.response?.data?.message || "There was a problem Public T-Shirt";
+
+      toast({
+        title: "Public Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKey.BOOKING.LIST] });
+    },
+  });
+
+  return { publicBooking };
+};
+
 export const useDescriptionMutation = () => {
   const { toast } = useToast();
   const queryClient = new QueryClient();

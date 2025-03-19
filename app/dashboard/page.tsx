@@ -1,137 +1,120 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { CalendarIcon, Download, LineChart, Package, ShoppingCart, Wallet } from "lucide-react"
-import { format, subMonths } from "date-fns"
-import CountUp from "react-countup"
+import { useState } from "react";
+import { LineChart, Package, ShoppingCart, Wallet } from "lucide-react";
+import { subMonths } from "date-fns";
+import CountUp from "react-countup";
 
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { MonthlyLineChart } from "@/components/dashboard/monthly-line-chart"
-import { MonthlyBarChart } from "@/components/dashboard/monthly-bar-chart"
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useDashboard } from "@/hooks/dashboard/use-dashboard";
+import { Dashboard } from "@/domains/models/dashboard.model";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MonthlyLineChart } from "@/components/dashboard/monthly-line-chart";
+import { MonthlyBarChart } from "@/components/dashboard/monthly-bar-chart";
 
+// // Define interfaces
+// interface BookingCompletedAmount {
+//   month: string;
+//   amount: number;
+// }
 
-// Define interfaces
-interface BookingCompletedAmount {
-  month: string
-  amount: number
-}
-
-interface Dashboard {
-  year: number
-  startDate: Date
-  endDate: Date
-  monthlyIncome: BookingCompletedAmount[]
-  bookingCreatedAmount: BookingCompletedAmount[]
-  bookingCompletedAmount: BookingCompletedAmount[]
-  tshirtCreatedAmount: BookingCompletedAmount[]
-}
+// interface Dashboard {
+//   year: number;
+//   startDate: Date;
+//   endDate: Date;
+//   monthlyIncome: BookingCompletedAmount[];
+//   bookingCreatedAmount: BookingCompletedAmount[];
+//   bookingCompletedAmount: BookingCompletedAmount[];
+//   tshirtCreatedAmount: BookingCompletedAmount[];
+// }
 
 export default function DashboardPage() {
-  // Initialize with sample data
-  const [dashboard, setDashboard] = useState<Dashboard>({
-    year: new Date().getFullYear(),
-    startDate: subMonths(new Date(), 6),
-    endDate: new Date(),
-    monthlyIncome: [
-      { month: "Jan", amount: 4500 },
-      { month: "Feb", amount: 3800 },
-      { month: "Mar", amount: 5200 },
-      { month: "Apr", amount: 6100 },
-      { month: "May", amount: 5700 },
-      { month: "Jun", amount: 6800 },
-      { month: "Jul", amount: 7200 },
-      { month: "Aug", amount: 7800 },
-      { month: "Sep", amount: 8100 },
-      { month: "Oct", amount: 7500 },
-      { month: "Nov", amount: 8300 },
-      { month: "Dec", amount: 9200 },
-    ],
-    bookingCreatedAmount: [
-      { month: "Jan", amount: 120 },
-      { month: "Feb", amount: 98 },
-      { month: "Mar", amount: 140 },
-      { month: "Apr", amount: 165 },
-      { month: "May", amount: 148 },
-      { month: "Jun", amount: 182 },
-      { month: "Jul", amount: 195 },
-      { month: "Aug", amount: 210 },
-      { month: "Sep", amount: 222 },
-      { month: "Oct", amount: 195 },
-      { month: "Nov", amount: 230 },
-      { month: "Dec", amount: 252 },
-    ],
-    bookingCompletedAmount: [
-      { month: "Jan", amount: 95 },
-      { month: "Feb", amount: 85 },
-      { month: "Mar", amount: 110 },
-      { month: "Apr", amount: 132 },
-      { month: "May", amount: 118 },
-      { month: "Jun", amount: 145 },
-      { month: "Jul", amount: 160 },
-      { month: "Aug", amount: 175 },
-      { month: "Sep", amount: 190 },
-      { month: "Oct", amount: 165 },
-      { month: "Nov", amount: 195 },
-      { month: "Dec", amount: 215 },
-    ],
-    tshirtCreatedAmount: [
-      { month: "Jan", amount: 180 },
-      { month: "Feb", amount: 150 },
-      { month: "Mar", amount: 210 },
-      { month: "Apr", amount: 245 },
-      { month: "May", amount: 225 },
-      { month: "Jun", amount: 270 },
-      { month: "Jul", amount: 290 },
-      { month: "Aug", amount: 310 },
-      { month: "Sep", amount: 330 },
-      { month: "Oct", amount: 290 },
-      { month: "Nov", amount: 345 },
-      { month: "Dec", amount: 380 },
-    ],
-  })
-
-  // Date range selection
+  const [year, setYear] = useState(new Date().getFullYear());
   const [dateRange, setDateRange] = useState<{
-    from: Date
-    to: Date
+    from: Date;
+    to: Date;
   }>({
-    from: dashboard.startDate,
-    to: dashboard.endDate,
-  })
+    from: subMonths(new Date(), 6),
+    to: new Date(),
+  });
 
-  // Calculate totals
-  const totalIncome = dashboard.monthlyIncome.reduce((sum, item) => sum + item.amount, 0)
-  const totalBookingsCreated = dashboard.bookingCreatedAmount.reduce((sum, item) => sum + item.amount, 0)
-  const totalBookingsCompleted = dashboard.bookingCompletedAmount.reduce((sum, item) => sum + item.amount, 0)
-  const totalTshirtsCreated = dashboard.tshirtCreatedAmount.reduce((sum, item) => sum + item.amount, 0)
+  const { data: dashboardData, isLoading } = useDashboard({
+    year: year,
+    startDate: dateRange.from,
+    endDate: dateRange.to,
+  });
 
-  // Calculate completion rate
-  const completionRate = Math.round((totalBookingsCompleted / totalBookingsCreated) * 100)
+  // Use optional chaining since data might be loading
+  const dashboard: Dashboard = dashboardData?.data || {
+    year: new Date().getFullYear(),
+    startDate: dateRange.from,
+    endDate: dateRange.to,
+    monthlyIncome: [],
+    bookingCreatedAmount: [],
+    bookingCompletedAmount: [],
+    tshirtCreatedAmount: [],
+  };
 
   // Handle year change
   const handleYearChange = (year: number) => {
-    setDashboard({
-      ...dashboard,
-      year,
-    })
-    // In a real app, you would fetch new data for the selected year
-  }
+    setYear(year);
+    // setDashboard({
+    //   ...dashboard,
+    //   year,
+    // });
+  };
 
   // Handle date range change
   const handleDateRangeChange = (range: { from: Date; to: Date }) => {
-    setDateRange(range)
-    setDashboard({
-      ...dashboard,
-      startDate: range.from,
-      endDate: range.to,
-    })
-    // In a real app, you would fetch new data for the selected date range
+    setDateRange(range);
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
+
+  // Calculate totals
+  const totalIncome = dashboard.monthlyIncome.reduce(
+    (sum, item) => sum + item.amount,
+    0
+  );
+  const totalBookingsCreated = dashboard.bookingCreatedAmount.reduce(
+    (sum, item) => sum + item.amount,
+    0
+  );
+  const totalBookingsCompleted = dashboard.bookingCompletedAmount.reduce(
+    (sum, item) => sum + item.amount,
+    0
+  );
+  const totalTshirtsCreated = dashboard.tshirtCreatedAmount.reduce(
+    (sum, item) => sum + item.amount,
+    0
+  );
+
+  // Calculate completion rate
+  const completionRate = Math.round(
+    (totalBookingsCompleted / totalBookingsCreated) * 100
+  );
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -144,55 +127,81 @@ export default function DashboardPage() {
                 <Button variant="outline">{dashboard.year}</Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                {[2021, 2022, 2023, 2024].map((year) => (
-                  <DropdownMenuItem key={year} onClick={() => handleYearChange(year)}>
+                {[2021, 2022, 2023, 2024, 2025].map((year) => (
+                  <DropdownMenuItem
+                    key={year}
+                    onClick={() => handleYearChange(year)}
+                  >
                     {year}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="w-[280px] justify-start text-left font-normal">
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateRange.from ? (
-                    dateRange.to ? (
-                      <>
-                        {format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}
-                      </>
-                    ) : (
-                      format(dateRange.from, "LLL dd, y")
-                    )
-                  ) : (
-                    <span>Pick a date range</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="end">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={dateRange.from}
-                  selected={dateRange}
-                  onSelect={(range) => {
-                    if (range?.from && range?.to) {
-                      handleDateRangeChange(range as { from: Date; to: Date })
-                    }
-                  }}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-            <Button>
+            <div className="flex items-center gap-2">
+              <Select
+                value={
+                  dateRange.from
+                    ? (dateRange.from.getMonth() + 1).toString()
+                    : undefined
+                }
+                onValueChange={(value) => {
+                  const newFrom = new Date(dateRange.from || new Date());
+                  newFrom.setMonth(parseInt(value) - 1);
+                  handleDateRangeChange({ ...dateRange, from: newFrom });
+                }}
+              >
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="From month" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <SelectItem key={i + 1} value={(i + 1).toString()}>
+                      {new Date(2000, i).toLocaleString("default", {
+                        month: "long",
+                      })}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={
+                  dateRange.to
+                    ? (dateRange.to.getMonth() + 1).toString()
+                    : undefined
+                }
+                onValueChange={(value) => {
+                  const newTo = new Date(dateRange.to || new Date());
+                  newTo.setMonth(parseInt(value) - 1);
+                  handleDateRangeChange({ ...dateRange, to: newTo });
+                }}
+              >
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="To month" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <SelectItem key={i + 1} value={(i + 1).toString()}>
+                      {new Date(2000, i).toLocaleString("default", {
+                        month: "long",
+                      })}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {/* <Button>
               <Download className="mr-2 h-4 w-4" />
               Export
-            </Button>
+            </Button> */}
           </div>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Income</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total Income
+              </CardTitle>
               <Wallet className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -202,7 +211,12 @@ export default function DashboardPage() {
               <p className="text-xs text-muted-foreground">
                 +
                 <CountUp
-                  end={Math.round((dashboard.monthlyIncome[11].amount / dashboard.monthlyIncome[10].amount - 1) * 100)}
+                  end={Math.round(
+                    (dashboard.monthlyIncome[11].amount /
+                      dashboard.monthlyIncome[10].amount -
+                      1) *
+                      100
+                  )}
                   duration={1.5}
                 />
                 % from last month
@@ -211,7 +225,9 @@ export default function DashboardPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Bookings Created</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Bookings Created
+              </CardTitle>
               <ShoppingCart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -221,7 +237,10 @@ export default function DashboardPage() {
               <p className="text-xs text-muted-foreground">
                 +
                 {Math.round(
-                  (dashboard.bookingCreatedAmount[11].amount / dashboard.bookingCreatedAmount[10].amount - 1) * 100,
+                  (dashboard.bookingCreatedAmount[11].amount /
+                    dashboard.bookingCreatedAmount[10].amount -
+                    1) *
+                    100
                 )}
                 % from last month
               </p>
@@ -229,7 +248,9 @@ export default function DashboardPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Bookings Completed</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Bookings Completed
+              </CardTitle>
               <LineChart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -243,7 +264,9 @@ export default function DashboardPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">T-Shirts Created</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                T-Shirts Created
+              </CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -253,7 +276,10 @@ export default function DashboardPage() {
               <p className="text-xs text-muted-foreground">
                 +
                 {Math.round(
-                  (dashboard.tshirtCreatedAmount[11].amount / dashboard.tshirtCreatedAmount[10].amount - 1) * 100,
+                  (dashboard.tshirtCreatedAmount[11].amount /
+                    dashboard.tshirtCreatedAmount[10].amount -
+                    1) *
+                    100
                 )}
                 % from last month
               </p>
@@ -280,7 +306,9 @@ export default function DashboardPage() {
               <Card className="col-span-3">
                 <CardHeader>
                   <CardTitle>Bookings Overview</CardTitle>
-                  <CardDescription>Comparison of created vs completed bookings</CardDescription>
+                  <CardDescription>
+                    Comparison of created vs completed bookings
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <MonthlyBarChart
@@ -317,38 +345,62 @@ export default function DashboardPage() {
               <Card className="col-span-4">
                 <CardHeader>
                   <CardTitle>Performance Metrics</CardTitle>
-                  <CardDescription>Key performance indicators for the selected period</CardDescription>
+                  <CardDescription>
+                    Key performance indicators for the selected period
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">Average Income per Booking</p>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Average Income per Booking
+                        </p>
                         <p className="text-2xl font-bold">
-                          $<CountUp end={Math.round(totalIncome / totalBookingsCompleted)} separator="," duration={2} />
+                          $
+                          <CountUp
+                            end={Math.round(
+                              totalIncome / totalBookingsCompleted
+                            )}
+                            separator=","
+                            duration={2}
+                          />
                         </p>
                       </div>
                       <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">T-Shirts per Booking</p>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          T-Shirts per Booking
+                        </p>
                         <p className="text-2xl font-bold">
-                          <CountUp end={totalTshirtsCreated / totalBookingsCompleted} decimals={2} duration={2} />
+                          <CountUp
+                            end={totalTshirtsCreated / totalBookingsCompleted}
+                            decimals={2}
+                            duration={2}
+                          />
                         </p>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">Booking Completion Rate</p>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Booking Completion Rate
+                        </p>
                         <p className="text-2xl font-bold">
                           <CountUp end={completionRate} duration={2} />%
                         </p>
                       </div>
                       <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">Monthly Growth Rate</p>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Monthly Growth Rate
+                        </p>
                         <p className="text-2xl font-bold">
                           +
                           <CountUp
                             end={Math.round(
-                              (dashboard.monthlyIncome[11].amount / dashboard.monthlyIncome[10].amount - 1) * 100,
+                              (dashboard.monthlyIncome[11].amount /
+                                dashboard.monthlyIncome[10].amount -
+                                1) *
+                                100
                             )}
                             duration={2}
                           />
@@ -365,11 +417,15 @@ export default function DashboardPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Bookings Analysis</CardTitle>
-                <CardDescription>Detailed view of booking metrics</CardDescription>
+                <CardDescription>
+                  Detailed view of booking metrics
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-8">
                 <div>
-                  <h3 className="text-lg font-medium mb-4">Created vs Completed Bookings</h3>
+                  <h3 className="text-lg font-medium mb-4">
+                    Created vs Completed Bookings
+                  </h3>
                   <MonthlyBarChart
                     data={[
                       {
@@ -386,16 +442,25 @@ export default function DashboardPage() {
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-muted-foreground">Total Bookings Created</h4>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Total Bookings Created
+                    </h4>
                     <p className="text-3xl font-bold">{totalBookingsCreated}</p>
                     <p className="text-sm text-muted-foreground">
-                      Average of {Math.round(totalBookingsCreated / 12)} bookings per month
+                      Average of {Math.round(totalBookingsCreated / 12)}{" "}
+                      bookings per month
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-muted-foreground">Total Bookings Completed</h4>
-                    <p className="text-3xl font-bold">{totalBookingsCompleted}</p>
-                    <p className="text-sm text-muted-foreground">{completionRate}% completion rate</p>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Total Bookings Completed
+                    </h4>
+                    <p className="text-3xl font-bold">
+                      {totalBookingsCompleted}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {completionRate}% completion rate
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -405,32 +470,58 @@ export default function DashboardPage() {
             <Card>
               <CardHeader>
                 <CardTitle>T-Shirt Production</CardTitle>
-                <CardDescription>Monthly T-shirt creation statistics</CardDescription>
+                <CardDescription>
+                  Monthly T-shirt creation statistics
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-8">
                 <div>
-                  <h3 className="text-lg font-medium mb-4">Monthly T-Shirt Production</h3>
-                  <MonthlyLineChart data={dashboard.tshirtCreatedAmount} height={350} />
+                  <h3 className="text-lg font-medium mb-4">
+                    Monthly T-Shirt Production
+                  </h3>
+                  <MonthlyLineChart
+                    data={dashboard.tshirtCreatedAmount}
+                    height={350}
+                  />
                 </div>
                 <div className="grid gap-4 md:grid-cols-3">
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-muted-foreground">Total T-Shirts Created</h4>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Total T-Shirts Created
+                    </h4>
                     <p className="text-3xl font-bold">{totalTshirtsCreated}</p>
                     <p className="text-sm text-muted-foreground">
-                      Average of {Math.round(totalTshirtsCreated / 12)} t-shirts per month
+                      Average of {Math.round(totalTshirtsCreated / 12)} t-shirts
+                      per month
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-muted-foreground">T-Shirts per Booking</h4>
-                    <p className="text-3xl font-bold">{(totalTshirtsCreated / totalBookingsCompleted).toFixed(2)}</p>
-                    <p className="text-sm text-muted-foreground">Based on completed bookings</p>
-                  </div>
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-muted-foreground">Peak Production</h4>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      T-Shirts per Booking
+                    </h4>
                     <p className="text-3xl font-bold">
-                      {Math.max(...dashboard.tshirtCreatedAmount.map((item) => item.amount))}
+                      {(totalTshirtsCreated / totalBookingsCompleted).toFixed(
+                        2
+                      )}
                     </p>
-                    <p className="text-sm text-muted-foreground">Highest monthly production</p>
+                    <p className="text-sm text-muted-foreground">
+                      Based on completed bookings
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Peak Production
+                    </h4>
+                    <p className="text-3xl font-bold">
+                      {Math.max(
+                        ...dashboard.tshirtCreatedAmount.map(
+                          (item) => item.amount
+                        )
+                      )}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Highest monthly production
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -445,29 +536,51 @@ export default function DashboardPage() {
               <CardContent className="space-y-8">
                 <div>
                   <h3 className="text-lg font-medium mb-4">Monthly Income</h3>
-                  <MonthlyLineChart data={dashboard.monthlyIncome} height={350} />
+                  <MonthlyLineChart
+                    data={dashboard.monthlyIncome}
+                    height={350}
+                  />
                 </div>
                 <div className="grid gap-4 md:grid-cols-3">
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-muted-foreground">Total Income</h4>
-                    <p className="text-3xl font-bold">${totalIncome.toLocaleString()}</p>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Total Income
+                    </h4>
+                    <p className="text-3xl font-bold">
+                      ${totalIncome.toLocaleString()}
+                    </p>
                     <p className="text-sm text-muted-foreground">
-                      Average of ${Math.round(totalIncome / 12).toLocaleString()} per month
+                      Average of $
+                      {Math.round(totalIncome / 12).toLocaleString()} per month
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-muted-foreground">Income per Booking</h4>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Income per Booking
+                    </h4>
                     <p className="text-3xl font-bold">
-                      ${Math.round(totalIncome / totalBookingsCompleted).toLocaleString()}
+                      $
+                      {Math.round(
+                        totalIncome / totalBookingsCompleted
+                      ).toLocaleString()}
                     </p>
-                    <p className="text-sm text-muted-foreground">Based on completed bookings</p>
+                    <p className="text-sm text-muted-foreground">
+                      Based on completed bookings
+                    </p>
                   </div>
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-muted-foreground">Income per T-Shirt</h4>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Income per T-Shirt
+                    </h4>
                     <p className="text-3xl font-bold">
-                      ${Math.round(totalIncome / totalTshirtsCreated).toLocaleString()}
+                      $
+                      {Math.round(
+                        totalIncome / totalTshirtsCreated
+                      ).toLocaleString()}
                     </p>
-                    <p className="text-sm text-muted-foreground">Average revenue per t-shirt</p>
+                    <p className="text-sm text-muted-foreground">
+                      Average revenue per t-shirt
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -476,6 +589,5 @@ export default function DashboardPage() {
         </Tabs>
       </main>
     </div>
-  )
+  );
 }
-

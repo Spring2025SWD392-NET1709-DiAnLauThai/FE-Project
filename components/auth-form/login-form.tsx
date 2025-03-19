@@ -19,18 +19,18 @@ import {
 import { Separator } from "../ui/separator";
 import { Switch } from "../ui/switch";
 import { ForgotPasswordDialog } from "./forget-password";
-import { AuthServices } from "@/domains/services/auth.services";
+// import { AuthServices } from "@/domains/services/auth.services";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const { openDialog } = useDialogStore();
   const { form, onSubmit, isLoading } = useAuthForm({ type: "login" });
 
-  const handleLoginGoogle = async () => {
-    const response = await AuthServices.loginWithGoogle();
+  // const handleLoginGoogle = async () => {
+  //   const response = await AuthServices.loginWithGoogle();
 
-    window.location.href = response.data;
-  };
+  //   window.location.href = response.data;
+  // };
 
   return (
     <>
@@ -128,7 +128,7 @@ export function LoginForm() {
           </form>
         </Form>
 
-        <div className="flex items-center justify-center space-x-2 ">
+        {/* <div className="flex items-center justify-center space-x-2 ">
           <Separator className="text-muted-foreground w-1/2" />
           <p>Or</p>
           <Separator className="text-muted-foreground w-1/2" />
@@ -142,7 +142,7 @@ export function LoginForm() {
             height={20}
           />
           Or Sign in with Google
-        </Button>
+        </Button> */}
         <div className="text-center text-sm">
           {"Don't have an account? "}
           <Link href="/register" className="text-primary hover:underline">

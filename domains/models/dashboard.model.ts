@@ -12,3 +12,9 @@ export interface BookingCompletedAmount {
   month: string;
   amount: number;
 }
+
+export interface DashboardParams {
+  year: number;
+  startDate: Date;
+  endDate: Date;
+}

@@ -48,6 +48,8 @@ body {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+    --success: 120 60% 50%;
+    --warning: 36 100% 50%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -81,6 +83,8 @@ body {
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
+    --success: 120 60% 50%;
+    --warning: 36 100% 50%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;

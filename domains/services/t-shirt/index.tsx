@@ -1,10 +1,13 @@
 import axiosInstance from "@/configs/axios.config";
 import {
   AssignTshirt,
+  TShirtAvailableResponse,
+  TShirtDetailResponse,
   TShirtParams,
   TShirtPayload,
   TShirtPublicResponse,
   TShirtResponse,
+  TShirtUpdatePayload,
 } from "@/domains/models/tshirt";
 
 export const TShirtService = {
@@ -29,9 +32,7 @@ export const TShirtService = {
         throw error;
       }
     },
-    availableList: async (): Promise<
-      RootResponse<Pagination<TShirtResponse>>
-    > => {
+    availableList: async (): Promise<RootResponse<TShirtAvailableResponse>> => {
       try {
         const response = await axiosInstance.get("/tshirts/available");
         return response.data;
@@ -39,9 +40,9 @@ export const TShirtService = {
         throw error;
       }
     },
-    detail: async (id: string): Promise<RootResponse<TShirtResponse>> => {
+    detail: async (id: string): Promise<RootResponse<TShirtDetailResponse>> => {
       try {
-        const response = await axiosInstance.get(`/tshirts/${id}`);
+        const response = await axiosInstance.get(`/tshirts/tshirt/${id}`);
         return response.data;
       } catch (error) {
         throw error;
@@ -62,11 +63,10 @@ export const TShirtService = {
   },
   put: {
     update: async (
-      id: string,
-      data: TShirtPayload
+      data: TShirtUpdatePayload
     ): Promise<RootResponse<TShirtResponse>> => {
       try {
-        const response = await axiosInstance.put(`/tshirts/${id}`, data);
+        const response = await axiosInstance.put(`/tshirts/update`, data);
         return response.data;
       } catch (error) {
         throw error;
