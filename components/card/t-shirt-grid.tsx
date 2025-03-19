@@ -102,7 +102,7 @@ const TShirtGrid = () => {
             <div
               key={tshirt.id}
               className="group cursor-pointer rounded-lg border bg-card shadow-sm hover:shadow-md transition-all duration-300"
-              // onClick={() => router.push(`/t-shirt/${tshirt.id}`)}
+              onClick={() => router.push(`/t-shirt/${tshirt.id}`)}
             >
               <div className="relative aspect-square overflow-hidden rounded-t-lg">
                 <Image
@@ -122,9 +122,7 @@ const TShirtGrid = () => {
                   <h3 className="font-medium text-base line-clamp-1">
                     {tshirt.name}
                   </h3>
-                  <Badge variant="outline" className="text-xs">
-                    New
-                  </Badge>
+                 
                 </div>
 
                 <p className="text-sm text-muted-foreground line-clamp-1">
@@ -154,9 +152,9 @@ const TShirtGrid = () => {
                   </span>
                 </div>
 
-                {/* <Button variant="default" className="w-full mt-2">
+                <Button variant="default" className="w-full mt-2">
                   View Details
-                </Button> */}
+                </Button>
               </div>
             </div>
           ))}

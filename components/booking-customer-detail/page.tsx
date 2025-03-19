@@ -383,6 +383,9 @@ export default function CustomerBookingDetailPage() {
                         Download Material
                       </Button>
                     </div>
+                    <div className="text-center text-sm text-muted-foreground">
+                      <p>Material will expired after 2 days</p>
+                    </div>
 
                     <div>
                       <h2 className="text-sm font-medium mb-2">Note</h2>

@@ -51,4 +51,8 @@ export const QueryKey = {
     CREATE: "create-color",
     GET: "get-color",
   },
+  FEEDBACK: {
+    CREATE: "create-feedback",
+    LIST: "LIST-feedback",
+  },
 };

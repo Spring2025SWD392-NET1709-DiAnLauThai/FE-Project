@@ -328,27 +328,30 @@ export default function TaskDetailPage() {
                       <div className="md:w-1/2">
                         <p className="text-sm font-medium mb-2 flex items-center justify-between">
                           <span>Assigned T-Shirt</span>
-                          {!detail.tshirt && canEditTask && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleOpenAssignModal(detail)}
-                              className="text-xs"
-                            >
-                              <Plus className="h-3 w-3 mr-1" />
-                              Assign T-Shirt
-                            </Button>
+                          {canEditTask && (
+                            <>
+                              {!detail.tshirt ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleOpenAssignModal(detail)}
+                                  className="text-xs"
+                                >
+                                  <Plus className="h-3 w-3 mr-1" />
+                                  Assign T-Shirt
+                                </Button>
+                              ) : (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleOpenAssignModal(detail)}
+                                  className="text-xs text-muted-foreground hover:text-foreground"
+                                >
+                                  Change
+                                </Button>
+                              )}
+                            </>
                           )}
-                        {canEditTask && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleOpenAssignModal(detail)}
-                            className="text-xs mt-2 text-muted-foreground hover:text-foreground"
-                          >
-                            Change
-                          </Button>
-                        )}
                         </p>
                         {detail.tshirt ? (
                           <div className="flex items-center gap-4 border rounded-md p-4">
