@@ -5,6 +5,15 @@ import {
   RegisterPayload,
 } from "./../models/auth.model";
 export const AuthServices = {
+  loginWithGoogle: async (): Promise<RootResponse<string>> => {
+    try {
+      const response = await axiosInstance.get("/auth/google/login");
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   login: async (
     payload: LoginPayload
   ): Promise<RootResponse<LoginResponse>> => {
@@ -17,7 +26,9 @@ export const AuthServices = {
     }
   },
 
-  register: async (payload: RegisterPayload): Promise<RootResponse<null>> => {
+  register: async (
+    payload: RegisterPayload
+  ): Promise<RootResponse<{ valid: boolean }>> => {
     try {
       const response = await axiosInstance.post("/auth/register", payload);
       return response.data;
@@ -26,13 +37,13 @@ export const AuthServices = {
     }
   },
 
-  validate: async () => {
+  validate: async (): Promise<RootResponse<null>> => {
     try {
-      const response = await axiosInstance.get("/auth/validate");
+      const response = await axiosInstance.post("/auth/validate");
       return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      throw error.response;
+      throw error;
     }
   },
 

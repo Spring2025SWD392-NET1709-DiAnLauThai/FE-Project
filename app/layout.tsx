@@ -4,6 +4,7 @@ import "./globals.css";
 import ReactQueryProvider from "@/components/query-client-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/components/auth-provider";
+import React from "react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

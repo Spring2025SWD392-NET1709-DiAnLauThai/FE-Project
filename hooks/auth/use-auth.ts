@@ -71,5 +71,42 @@ export const useAuth = () => {
     },
   });
 
-  return { loginMutation, registerMutation };
+  const validateMutation = useMutation({
+    mutationKey: [QueryKey.VALIDATE],
+    mutationFn: async () => await AuthServices.validate(),
+    onSuccess: (data) => {
+      console.log("Validate success", data);
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      if (error === 401) {
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (refreshToken) {
+          refreshTokenMutation.mutate(refreshToken);
+        }
+      }
+    },
+  });
+
+  const refreshTokenMutation = useMutation({
+    mutationKey: [QueryKey.REFRESH_TOKEN],
+    mutationFn: async (refreshToken: string) =>
+      await AuthServices.refreshToken(refreshToken),
+    onSuccess: async (data) => {
+      localStorage.setItem("accessToken", data.data.accessToken);
+      localStorage.setItem("refreshToken", data.data.refreshToken);
+
+      login(data.data.accessToken, data.data.refreshToken);
+    },
+    onError: (error) => {
+      console.log("Refresh token error", error);
+    },
+  });
+
+  return {
+    loginMutation,
+    registerMutation,
+    validateMutation,
+    refreshTokenMutation,
+  };
 };
