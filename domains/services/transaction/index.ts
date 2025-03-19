@@ -5,7 +5,7 @@ export const TransactionService = {
   get: {
     list: async (params: TransactionParams): Promise<RootResponse<TransactionResponse>> => {
       try {
-        const response = await axiosInstance.get("/transcations/customer", { params });
+        const response = await axiosInstance.get("/transactions/customer", { params });
         return response.data;
       } catch (error) {
         throw error;
@@ -14,7 +14,7 @@ export const TransactionService = {
 
     listSystem: async (params: TransactionParams): Promise<RootResponse<TransactionResponse>> => {
       try {
-        const response = await axiosInstance.get("/transcations/system", {
+        const response = await axiosInstance.get("/transactions/system", {
           params,
         });
         return response.data;
@@ -27,7 +27,7 @@ export const TransactionService = {
     detail: async (id: string): Promise<RootResponse<TransactionDetailResponse>> => {
       
       try {
-        const response = await axiosInstance.get(`/transcations/detail/${id}`);
+        const response = await axiosInstance.get(`/transactions/detail/${id}`);
         return response.data;
         
       } catch (error) {

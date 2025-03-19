@@ -43,7 +43,7 @@ export const useAuth = () => {
     onError: (error) => {
       toast({
         title: "Login failed",
-        description: error.message,
+        description: "Invalid email, password or your account is not active",
       });
     },
   });

@@ -19,7 +19,7 @@ interface TShirtMenuActionProps {
 }
 
 const TShirtMenuAction: React.FC<TShirtMenuActionProps> = ({ tshirt }) => {
-  const { replace } = useRouter();
+  const { push } = useRouter();
 
   return (
     <DropdownMenu>
@@ -31,19 +31,14 @@ const TShirtMenuAction: React.FC<TShirtMenuActionProps> = ({ tshirt }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => replace(`/t-shirt/${tshirt.id}`)}>
+        <DropdownMenuItem
+          onClick={() => push(`/dashboard/t-shirt/${tshirt.tshirtId}`)}
+        >
           <Eye className="mr-2 h-4 w-4" />
           <span>View Detail</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Edit className="mr-2 h-4 w-4" />
-          <span>Edit</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem className="text-red-600">
-          <Trash2 className="mr-2 h-4 w-4" />
-          <span>Delete</span>
-        </DropdownMenuItem>
+        
       </DropdownMenuContent>
     </DropdownMenu>
   );

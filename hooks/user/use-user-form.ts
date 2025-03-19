@@ -8,6 +8,7 @@ import { useCreateUser, useUpdateUser } from "./use-user";
 import { UserPutPayload, UserRole, UserStatus } from "@/domains/models/user";
 import { useToast } from "../use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { QueryKey } from "@/domains/stores/query-key";
 
 const defaultValues: Partial<UserPayload> = {
   id: "",
@@ -43,7 +44,9 @@ export function useUserForm(options: UseUserFormOptions = { type: "create" }) {
         title: "Success",
         description: "User created successfully",
       });
-      queryClient.invalidateQueries({ queryKey: ["create-user"] });
+      queryClient.invalidateQueries({
+                    queryKey: [QueryKey.LIST_USER],
+                  });
       form.reset();
       return true;
     } catch (error) {

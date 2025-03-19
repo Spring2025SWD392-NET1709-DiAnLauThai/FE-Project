@@ -1,4 +1,4 @@
-import { AssignTshirt, TShirtParams, TShirtPayload } from "@/domains/models/tshirt";
+import { AssignTshirt, TShirtParams, TShirtPayload, TShirtUpdatePayload } from "@/domains/models/tshirt";
 import { TShirtService } from "@/domains/services/t-shirt";
 import { QueryKey } from "@/domains/stores/query-key";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -7,6 +7,19 @@ import { toast } from "../use-toast";
 interface TShirtQuery {
   params: TShirtParams;
 }
+
+export const useGetTshirtDetail = (id: string) => {
+  const queryDetailTShirts = useQuery({
+    queryKey: [QueryKey.TSHIRT.DETAIL, id],
+    queryFn: () => TShirtService.get.detail(id),
+  });
+
+  const isLoadingDetail =
+    queryDetailTShirts.isLoading || queryDetailTShirts.isFetching;
+
+  return { queryDetailTShirts, isLoadingDetail };
+};
+
 
 export const useTShirtsQuery = ({ params }: TShirtQuery) => {
   const queryTShirts = useQuery({
@@ -81,6 +94,8 @@ export const useAssignTshirtMutation = () => {
   });
   return { assignTshirt };
 };
+
+
 export const useTshirtMutation = () => {
   const createTshirt = useMutation({
     mutationKey: [QueryKey.TSHIRT.CREATE],
@@ -111,14 +126,28 @@ export const useTshirtMutation = () => {
 
   const updateTshirt = useMutation({
     mutationKey: [QueryKey.TSHIRT.UPDATE],
-    mutationFn: ({ id, data }: { id: string; data: TShirtPayload }) =>
-      TShirtService.put.update(id, data),
+    mutationFn: (data: TShirtUpdatePayload) => TShirtService.put.update(data),
+    onSuccess: (data) => {
+      const message = data.message || "Update T-Shirt success";
+
+      toast({
+        title: "Update T-Shirt",
+        description: message,
+      });
+    },
+    onError: (error: any) => {
+      console.error("T-shirt Update failed:", error);
+
+      const errorMessage =
+        error.response?.data?.message || "There was a problem Update T-Shirt";
+
+      toast({
+        title: "Update Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    },
   });
 
-  const deleteTshirt = useMutation({
-    mutationKey: [QueryKey.TSHIRT.DELETE],
-    mutationFn: (id: string) => TShirtService.delete.delete(id),
-  });
-
-  return { createTshirt, updateTshirt, deleteTshirt };
+  return { createTshirt, updateTshirt };
 };

@@ -29,6 +29,7 @@ export const QueryKey = {
     CANCEL: "cancel-booking",
     PAY: "pay-booking",
     UPLOAD_ZIP: "upload-zip",
+    PUBLIC: "public-booking",
   },
   TASK: {
     LIST: "list-task",

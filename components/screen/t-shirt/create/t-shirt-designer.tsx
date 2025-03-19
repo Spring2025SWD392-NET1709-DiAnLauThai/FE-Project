@@ -19,7 +19,7 @@ import {
   FormMessage,
   Form,
 } from "@/components/ui/form";
-import { useTshirtForm } from "@/hooks/t-shirt/use-tshirt-form";
+import { useCreateTshirtForm } from "@/hooks/t-shirt/use-tshirt-form";
 import { useGetColor } from "@/hooks/colors/use-colors";
 import { useToast } from "@/hooks/use-toast";
 
@@ -32,8 +32,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
   const imageFileRef = useRef<File | null>(null);
   const zipFileRef = useRef<File | null>(null);
 
-  // Use the custom form hook with the id parameter
-  const { form, onSubmit, isLoading, isUploading } = useTshirtForm(id); // Added isUploading
+  const { form, onSubmit, isLoading, isUploading } = useCreateTshirtForm();
 
   // Watch form values to use in the UI
   const watchedValues = form.watch();
@@ -48,26 +47,7 @@ export function TshirtDesigner({ id }: { id?: string }) {
   const [zipFileName, setZipFileName] = useState<string | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string>("");
 
-  // New state for tracking submission state
-
-  // Add a function to reset all file-related state
-  const resetFiles = useCallback(() => {
-    // Reset image state
-    if (imagePreviewUrl) {
-      URL.revokeObjectURL(imagePreviewUrl);
-    }
-    setImagePreviewUrl("");
-    setImagePosition({ x: 200, y: 225 });
-    setImageSize({ width: 200, height: 200 });
-    imageFileRef.current = null;
-
-    // Reset zip state
-    setZipUploaded(false);
-    setZipFileName(null);
-    zipFileRef.current = null;
-
-    // Reset submission state
-  }, [imagePreviewUrl]);
+  
 
   // Modified onDrop function for image drop/select
   const onDrop = useCallback(
@@ -155,11 +135,9 @@ export function TshirtDesigner({ id }: { id?: string }) {
           return;
         }
 
-        // Store the file name for display
         setZipFileName(file.name);
         setZipUploaded(true);
 
-        // Store the file reference for later upload
         zipFileRef.current = file;
 
         // Set a placeholder in the form
@@ -183,17 +161,14 @@ export function TshirtDesigner({ id }: { id?: string }) {
     }
   };
 
-  // Custom onSubmit wrapper to handle file uploads with status indication
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Show validation errors if form is not valid
     const formIsValid = await form.trigger();
     if (!formIsValid) {
       return;
     }
 
-    // Check if we have image and zip files
     if (!imageFileRef.current) {
       toast({
         title: "Missing Design Image",
@@ -222,8 +197,8 @@ export function TshirtDesigner({ id }: { id?: string }) {
           URL.revokeObjectURL(imagePreviewUrl);
         }
         setImagePreviewUrl("");
-        setImagePosition({ x: 200, y: 225 });
-        setImageSize({ width: 200, height: 200 });
+        setImagePosition({ x: 400, y: 400 });
+        setImageSize({ width: 400, height: 400 });
         imageFileRef.current = null;
 
         // Reset zip state
@@ -767,12 +742,12 @@ export function TshirtDesigner({ id }: { id?: string }) {
             >
               {isUploading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Upload className="mr-2 h-4 w-4 animate-spin" />
                   Uploading Files...
                 </>
               ) : isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Save className="mr-2 h-4 w-4 animate-spin" />
                   Saving Design...
                 </>
               ) : (

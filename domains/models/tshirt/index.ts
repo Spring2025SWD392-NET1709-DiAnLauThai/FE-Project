@@ -1,10 +1,20 @@
-import { TShirt } from './../../schemas/t-shirt.schema';
+import { ColorResponse } from "../color";
+
 export interface TShirtResponse {
   tshirtId: string;
   name: string;
   description: string;
   imageUrl: string;
   createdAt: Date;
+}                                                                                                                                                                        
+
+export interface TShirtUpdatePayload{
+  tshirtId: string;
+  name: string;
+  description: string;
+  imageFile: string;
+  imageUrl: string;
+  createdAt: string | Date; // Can handle both string and Date objects
 }
 
 export interface TShirtAvailableResponse {
@@ -30,6 +40,15 @@ export interface TShirtPayload{
     string
   ],
   imagefile: string
+}
+
+export interface TShirtDetailResponse {
+  description: string;
+  image_url: string;
+  tshirtName: string;
+  colors: [ColorResponse];
+  imageFile: string;
+  createdAt: Date;
 }
 
 export interface AssignTshirt{

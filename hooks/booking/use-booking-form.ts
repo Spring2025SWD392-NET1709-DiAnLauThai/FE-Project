@@ -15,6 +15,7 @@ import {
   useCancelBookingMutation,
   useDescriptionMutation,
   usePayBookingMutation,
+  usePublicBooking,
 } from "./use-booking";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@/domains/stores/query-key";
@@ -248,6 +249,58 @@ export const useCancelBooking = (bookingId: string) => {
     form,
     onSubmit,
     isLoading: cancelBooking.isPending,
+  };
+};
+
+// Add this hook to your use-booking-form.ts file
+
+export const usePublicBookingMutation = (bookingId: string) => {
+  const queryClient = useQueryClient();
+  const { publicBooking } = usePublicBooking(bookingId);
+  const { toast } = useToast();
+
+  const handlePublish = async () => {
+    if (!bookingId) {
+      toast({
+        title: "Error",
+        description: "Booking ID is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await publicBooking.mutate(undefined, {
+        onSuccess: (response) => {
+          toast({
+            title: "Success",
+            description: response.message || "Booking published successfully",
+          });
+
+          // Invalidate relevant queries to refresh data
+          queryClient.invalidateQueries({ queryKey: [QueryKey.BOOKING.LIST] });
+          queryClient.invalidateQueries({
+            queryKey: [QueryKey.BOOKING.DETAIL, bookingId],
+          });
+        },
+        onError: (error) => {
+          console.error("Error publishing booking:", error);
+          toast({
+            title: "Error",
+            description: "Failed to publish booking. Please try again.",
+            variant: "destructive",
+          });
+          throw error;
+        },
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  return {
+    handlePublish,
+    isLoading: publicBooking.isPending,
   };
 };
 
