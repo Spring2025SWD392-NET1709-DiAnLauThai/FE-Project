@@ -4,10 +4,12 @@ import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDialogStore } from "@/domains/stores";
 import { useAuthForm } from "@/hooks/auth/use-auth-form";
+import { authServices } from "@/domains/services/GoogleAuth.services";
 import Image from "next/image";
 import {
   Form,
@@ -19,20 +21,32 @@ import {
 import { Separator } from "../ui/separator";
 import { Switch } from "../ui/switch";
 import { ForgotPasswordDialog } from "./forget-password";
+import { toast } from "react-toastify";
 
-const GOOGLE_AUTH_URL = "http://localhost:8080/api/auth/google"; // Đổi thành API backend của bạn
 
 export function LoginForm() {
-
   const [showPassword, setShowPassword] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { openDialog } = useDialogStore();
   const { form, onSubmit, isLoading } = useAuthForm({ type: "login" });
 
+
   const handleLoginGoogle = async () => {
     try {
-      window.location.href = GOOGLE_AUTH_URL;
+      setIsGoogleLoading(true);
+      const response = await authServices.loginWithGoogle();
+
+      if (!response || !response.url) {
+        throw new Error("Invalid response from Google login API");
+      }
+
+      window.location.href = response.url;
     } catch (err) {
       console.error("Google Login Error:", err);
+
+      toast.error("Failed to login with Google. Please try again.");
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
 
@@ -132,20 +146,24 @@ export function LoginForm() {
           </form>
         </Form>
 
-        <div className="flex items-center justify-center space-x-2 ">
+        <div className="flex items-center justify-center space-x-2">
           <Separator className="text-muted-foreground w-1/2" />
           <p>Or</p>
           <Separator className="text-muted-foreground w-1/2" />
         </div>
-        <Button className="w-full" onClick={handleLoginGoogle}>
+        <Button
+          className="w-full"
+          onClick={handleLoginGoogle}
+          disabled={isGoogleLoading}
+        >
           <Image
-            className="dark:invert"
+            className="dark:invert mr-2"
             src="/google.svg"
             alt="Google logo"
             width={20}
             height={20}
           />
-          Or Sign in with Google
+          {isGoogleLoading ? "Connecting..." : "Sign in with Google"}
         </Button>
         <div className="text-center text-sm">
           {"Don't have an account? "}
