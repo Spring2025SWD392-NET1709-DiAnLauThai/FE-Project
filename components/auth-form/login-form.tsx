@@ -19,21 +19,17 @@ import {
 import { Separator } from "../ui/separator";
 import { Switch } from "../ui/switch";
 import { ForgotPasswordDialog } from "./forget-password";
-
-const GOOGLE_AUTH_URL = "http://localhost:8080/api/auth/google"; // Đổi thành API backend của bạn
+import { AuthServices } from "@/domains/services/auth.services";
 
 export function LoginForm() {
-
   const [showPassword, setShowPassword] = useState(false);
   const { openDialog } = useDialogStore();
   const { form, onSubmit, isLoading } = useAuthForm({ type: "login" });
 
   const handleLoginGoogle = async () => {
-    try {
-      window.location.href = GOOGLE_AUTH_URL;
-    } catch (err) {
-      console.error("Google Login Error:", err);
-    }
+    const response = await AuthServices.loginWithGoogle();
+
+    window.location.href = response.data;
   };
 
   return (

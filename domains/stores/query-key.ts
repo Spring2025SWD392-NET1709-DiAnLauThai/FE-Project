@@ -6,6 +6,9 @@ export const QueryKey = {
   UPDATE_USER: "update-user",
   USER_PROFILE: "user-profile",
   UPDATE_USER_PROFILE: "update-user-profile",
+  VALIDATE: "validate",
+  GOOGLE_LOGIN: "google-login",
+  REFRESH_TOKEN: "refresh-token",
 
   TSHIRT: {
     LIST: "list-tshirt",
@@ -17,7 +20,7 @@ export const QueryKey = {
     DETAIL: "detail-tshirt",
     ASSIGN_TSHIRT: "assign-tshirt",
   },
-  
+
   BOOKING: {
     LIST: "list-booking",
     CREATE: "create-booking",

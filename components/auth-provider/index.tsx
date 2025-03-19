@@ -2,7 +2,7 @@
 
 import { useAuthStore } from "@/domains/stores/use-auth-store";
 import { useEffect, ReactNode } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Role } from "@/domains/enums";
 
 interface AuthProviderProps {
@@ -10,10 +10,15 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const { user, role } = useAuthStore();
-  const path = usePathname();
+  const { user, role, validate } = useAuthStore();
 
   const router = useRouter();
+
+  useEffect(() => {
+    setTimeout(() => {
+      validate();
+    }, 3000);
+  }, [validate]);
 
   useEffect(() => {
     if (!user) {

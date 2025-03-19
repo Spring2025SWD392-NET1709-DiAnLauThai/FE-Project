@@ -1,18 +1,22 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 export default function SuccessBookingPage() {
   const searchParams = useSearchParams();
   const status = searchParams?.get("status");
   const message = searchParams?.get("message") || "";
-  const router = useRouter();
-  
+
   // Determine payment status
   const paymentSuccessful = status === "SUCCESS";
   const paymentFailed = status === "FAILED";
@@ -20,7 +24,7 @@ export default function SuccessBookingPage() {
   // Log for debugging
   console.log("Payment status:", status);
   console.log("Message:", message);
-  
+
   // Status icon based on payment status
   const getStatusIcon = () => {
     if (paymentFailed) {
@@ -58,19 +62,21 @@ export default function SuccessBookingPage() {
             {paymentFailed
               ? "Payment Failed"
               : paymentSuccessful
-                ? "Payment Successful"
-                : "Payment Status"}
+              ? "Payment Successful"
+              : "Payment Status"}
           </CardTitle>
         </CardHeader>
 
         <CardContent className="text-center">
           {/* Display the message from the params */}
           <p className="mb-4">
-            {message ? message : paymentFailed
+            {message
+              ? message
+              : paymentFailed
               ? "Your payment was not successful. Please try again."
               : paymentSuccessful
-                ? "Your payment has been processed successfully."
-                : "We're checking the status of your payment."}
+              ? "Your payment has been processed successfully."
+              : "We're checking the status of your payment."}
           </p>
 
           {paymentFailed && (
