@@ -7,6 +7,13 @@ export interface TShirtResponse {
   createdAt: Date;
 }
 
+export interface TShirtAvailableResponse {
+  tshirtId: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+}
+
 export interface TShirtPublicResponse {
   id: string;
   name: string;

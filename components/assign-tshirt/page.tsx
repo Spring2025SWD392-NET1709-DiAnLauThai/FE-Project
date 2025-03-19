@@ -16,10 +16,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useTShirtsQuery } from "@/hooks/t-shirt/use-tshirt";
+import { useAvailableTShirtsQuery, useTShirtsQuery } from "@/hooks/t-shirt/use-tshirt";
 import { useParamStore } from "@/domains/stores/params-store";
 import { BookingDetail } from "@/domains/models/tasks";
-import { TShirtResponse } from "@/domains/models/tshirt";
+import { TShirtAvailableResponse, TShirtResponse } from "@/domains/models/tshirt";
 import { Form } from "@/components/ui/form";
 import { useAssignTshirtForm } from "@/hooks/t-shirt/use-tshirt-form";
 
@@ -29,34 +29,28 @@ export default function AssignTShirtModal({
   onAssign,
   bookingDetail,
   isAssigning,
+  taskId,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onAssign: (tshirtId: string) => void;
   bookingDetail: BookingDetail | null;
   isAssigning: boolean;
+  taskId: string;
 }) {
   const [selectedShirt, setSelectedShirt] = useState<string | null>(null);
   const { value } = useParamStore();
 
-  // Get the form from the hook
   const { form, onSubmit, isLoading } = useAssignTshirtForm({
     bookingDetail,
     selectedShirt,
+    taskId,
   });
 
-  // Query T-shirts from API
-  const { queryTShirts } = useTShirtsQuery({
-    params: {
-      page: value.page ?? 1,
-      size: value.size ?? 10,
-    },
-  });
+  const { queryAvailableTShirts } = useAvailableTShirtsQuery();
 
-  // Extract T-shirts from the response
-  const availableTShirts = queryTShirts?.data?.data?.content || [];
+  const availableTShirts = queryAvailableTShirts?.data?.data || [];
 
-  // Reset selected shirt when modal opens
   useEffect(() => {
     setSelectedShirt(null);
   }, [isOpen]);
@@ -66,18 +60,15 @@ export default function AssignTShirtModal({
     setSelectedShirt(value);
   };
 
-  // Handle assignment
   const handleAssign = async () => {
     if (!selectedShirt || !bookingDetail) {
       return;
     }
 
     try {
-      // Submit the form using the hook's onSubmit
       await onSubmit();
 
-      // Call the parent's onAssign callback
-      onAssign(selectedShirt);
+      onClose();
     } catch (error) {
       console.error("Error in assignment:", error);
     }
@@ -85,7 +76,12 @@ export default function AssignTShirtModal({
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleAssign();
+        }}
+      >
         <Dialog open={isOpen} onOpenChange={onClose}>
           <DialogContent className="max-w-3xl">
             <DialogHeader>
@@ -161,7 +157,7 @@ export default function AssignTShirtModal({
                       onValueChange={handleValueChange}
                       className="space-y-4"
                     >
-                      {availableTShirts.map((shirt: TShirtResponse) => (
+                      {availableTShirts.map((shirt: TShirtAvailableResponse) => (
                         <div
                           key={shirt.tshirtId}
                           className="flex items-start space-x-3"

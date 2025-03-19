@@ -1,6 +1,7 @@
 import axiosInstance from "@/configs/axios.config";
 import {
   AssignTshirt,
+  TShirtAvailableResponse,
   TShirtParams,
   TShirtPayload,
   TShirtPublicResponse,
@@ -30,7 +31,7 @@ export const TShirtService = {
       }
     },
     availableList: async (): Promise<
-      RootResponse<Pagination<TShirtResponse>>
+      RootResponse<TShirtAvailableResponse>
     > => {
       try {
         const response = await axiosInstance.get("/tshirts/available");
