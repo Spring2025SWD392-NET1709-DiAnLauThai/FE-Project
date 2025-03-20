@@ -65,14 +65,28 @@ export default function TaskDetailPage() {
 
   const taskData: TaskDetail = data;
 
+  // Check if the task has started based on current date and task start date
+  const currentDate = new Date();
+  const taskStartDate = taskData?.startdate
+    ? new Date(taskData.startdate)
+    : null;
+  const isTaskStarted = taskStartDate ? currentDate >= taskStartDate : false;
+
   const isTaskEditable =
     taskData &&
     taskData.bookingStatus !== BookingStatus.COMPLETED &&
     taskData.bookingStatus !== BookingStatus.CANCELLED;
 
-  const canEditTask = isDesigner && isTaskEditable;
+  // Add check for task being started
+  const canEditTask = isDesigner && isTaskEditable && isTaskStarted;
 
   const handleAssignTShirt = async (tshirtId: string) => {
+    if (!isTaskStarted) {
+      toast.error("Cannot assign T-shirts before the task has started");
+      setIsModalOpen(false);
+      return;
+    }
+
     if (!canEditTask) {
       toast.error("You don't have permission to modify this task");
       setIsModalOpen(false);
@@ -103,7 +117,6 @@ export default function TaskDetailPage() {
         `T-shirt ${tshirtId} assigned to booking detail ${selectedBookingDetail.bookingDetailId}`
       );
 
-
       setIsModalOpen(false);
     } catch (error) {
       console.error("Assignment error:", error);
@@ -129,6 +142,11 @@ export default function TaskDetailPage() {
   };
 
   const handleOpenAssignModal = (bookingDetail: BookingDetail) => {
+    if (!isTaskStarted) {
+      toast.error("Cannot assign T-shirts before the task has started");
+      return;
+    }
+
     if (!canEditTask) {
       toast.error("You don't have permission to modify this task");
       return;
@@ -175,6 +193,23 @@ export default function TaskDetailPage() {
     <div className="container mx-auto py-6 px-4">
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="w-full space-y-6">
+          {/* Status alert for not started tasks */}
+          {isDesigner && !isTaskStarted && (
+            <Alert variant="warning">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Task Not Started Yet</AlertTitle>
+              <AlertDescription>
+                This task is scheduled to start on{" "}
+                {formatFromISOStringVN(
+                  taskData.startdate,
+                  FormatType.DATETIME_VN
+                )}
+                . You cannot assign T-shirts or confirm the task until it has
+                started.
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Status alert for completed or cancelled tasks */}
           {!isTaskEditable && (
             <Alert
@@ -407,6 +442,19 @@ export default function TaskDetailPage() {
           >
             Confirm Task
           </Button>
+        </div>
+      )}
+
+      {/* Show disabled button with explanation if task hasn't started */}
+      {isDesigner && !isTaskStarted && (
+        <div className="mt-8 flex flex-col items-center gap-2">
+          <Button className="w-full max-w-md" disabled>
+            Confirm Task
+          </Button>
+          <p className="text-sm text-muted-foreground">
+            You can confirm this task after it starts on{" "}
+            {formatFromISOStringVN(taskData.startdate, FormatType.DATETIME_VN)}
+          </p>
         </div>
       )}
 

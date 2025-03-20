@@ -45,11 +45,43 @@ const BookingForm = () => {
     [key: number]: string[];
   }>({});
   const { form, onSubmit, isLoading, isUploading } = useBookingForm();
+  
+  // Add character counters for title and descriptions
+  const [titleCharCount, setTitleCharCount] = React.useState<number>(0);
+  const [descriptionCharCounts, setDescriptionCharCounts] = React.useState<{[key: number]: number}>({});
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "bookingdetails",
   });
+  
+  // Function to handle title input change with character counting
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTitleCharCount(value.length);
+    
+    if (value.length <= 200) {
+      form.setValue("title", value);
+    }
+  };
+  
+  // Function to handle description change from TipTap editor
+  const handleDescriptionChange = (value: string, index: number) => {
+    // Strip HTML tags to count only text characters
+    const textOnly = value.replace(/<[^>]*>/g, '');
+    const charCount = textOnly.length;
+    
+    // Update character count
+    setDescriptionCharCounts(prev => ({
+      ...prev,
+      [index]: charCount
+    }));
+    
+    // Only update if within character limit or if the new value is shorter
+    if (charCount <= 200 || value.length < (form.watch(`bookingdetails.${index}.description`) || '').length) {
+      form.setValue(`bookingdetails.${index}.description`, value);
+    }
+  };
 
   const handleImageChange = (
     index: number,
@@ -124,15 +156,27 @@ const BookingForm = () => {
             <CardContent className="space-y-8 p-6">
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="title" className="text-lg font-medium">
-                    Booking Title
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="title" className="text-lg font-medium">
+                      Booking Title
+                    </Label>
+                    <span className={`text-xs ${titleCharCount > 200 ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
+                      {titleCharCount}/200
+                    </span>
+                  </div>
                   <Input
                     id="title"
                     placeholder="Enter a descriptive title for your booking"
-                    className="text-lg"
-                    {...form.register("title")}
+                    className={`text-lg ${titleCharCount > 200 ? 'border-red-500' : ''}`}
+                    value={form.watch("title") || ""}
+                    onChange={handleTitleChange}
+                    maxLength={200}
                   />
+                  {titleCharCount > 200 && (
+                    <p className="text-sm text-red-500 mt-1">
+                      Title must be under 200 characters
+                    </p>
+                  )}
                   {form.formState.errors.title && (
                     <p className="text-sm text-red-500 mt-1">
                       {form.formState.errors.title.message}
@@ -240,27 +284,38 @@ const BookingForm = () => {
                       </CardHeader>
                       <CardContent className="p-4 space-y-6">
                         <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-5 w-5 text-primary" />
-                            <Label
-                              htmlFor={`bookingdetails.${index}.description`}
-                              className="font-medium"
-                            >
-                              Description
-                            </Label>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-5 w-5 text-primary" />
+                              <Label
+                                htmlFor={`bookingdetails.${index}.description`}
+                                className="font-medium"
+                              >
+                                Description
+                              </Label>
+                            </div>
+                            <span className={`text-xs ${(descriptionCharCounts[index] || 0) > 200 ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
+                              {descriptionCharCounts[index] || 0}/200
+                            </span>
                           </div>
                           <Controller
                             control={form.control}
                             name={`bookingdetails.${index}.description`}
                             render={({ field }) => (
-                              <TiptapEditor
-                                value={field.value}
-                                onChange={field.onChange}
-                                placeholder="Enter detailed description..."
-                                // {...field}
-                              />
+                              <div className={`${(descriptionCharCounts[index] || 0) > 200 ? 'border border-red-500 rounded-md' : ''}`}>
+                                <TiptapEditor
+                                  value={field.value}
+                                  onChange={(value) => handleDescriptionChange(value, index)}
+                                  placeholder="Enter detailed description..."
+                                />
+                              </div>
                             )}
                           />
+                          {(descriptionCharCounts[index] || 0) > 200 && (
+                            <p className="text-sm text-red-500 mt-1">
+                              Description must be under 200 characters
+                            </p>
+                          )}
                           {form.formState.errors.bookingdetails?.[index]
                             ?.description && (
                             <p className="text-sm text-red-500 mt-1">
@@ -445,6 +500,8 @@ const BookingForm = () => {
                 onClick={() => {
                   form.reset();
                   setImagePreviewUrls({});
+                  setTitleCharCount(0);
+                  setDescriptionCharCounts({});
                 }}
                 disabled={isLoading || isUploading}
               >
@@ -452,22 +509,10 @@ const BookingForm = () => {
               </Button>
               <Button
                 type="submit"
-                disabled={isLoading || isUploading}
+                disabled={isLoading || isUploading || titleCharCount > 200 || Object.values(descriptionCharCounts).some(count => count > 200)}
                 className="bg-primary hover:bg-primary/90"
               >
-                {isUploading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Uploading Images...
-                  </>
-                ) : isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  "Submit Booking"
-                )}
+                {getSubmitButtonText()}
               </Button>
             </CardFooter>
           </form>

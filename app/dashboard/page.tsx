@@ -206,7 +206,8 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                $<CountUp end={totalIncome} separator="," duration={2} />
+                <CountUp end={totalIncome} separator="," duration={2} />
+                VND
               </div>
               <p className="text-xs text-muted-foreground">
                 +
@@ -357,7 +358,6 @@ export default function DashboardPage() {
                           Average Income per Booking
                         </p>
                         <p className="text-2xl font-bold">
-                          $
                           <CountUp
                             end={Math.round(
                               totalIncome / totalBookingsCompleted
@@ -365,6 +365,7 @@ export default function DashboardPage() {
                             separator=","
                             duration={2}
                           />
+                          VND
                         </p>
                       </div>
                       <div className="space-y-2">
@@ -547,10 +548,10 @@ export default function DashboardPage() {
                       Total Income
                     </h4>
                     <p className="text-3xl font-bold">
-                      ${totalIncome.toLocaleString()}
+                      {totalIncome.toLocaleString()}VND
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Average of $
+                      Average of VND
                       {Math.round(totalIncome / 12).toLocaleString()} per month
                     </p>
                   </div>
@@ -559,10 +560,10 @@ export default function DashboardPage() {
                       Income per Booking
                     </h4>
                     <p className="text-3xl font-bold">
-                      $
                       {Math.round(
                         totalIncome / totalBookingsCompleted
-                      ).toLocaleString()}
+                      ).toLocaleString()}{" "}
+                      VND
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Based on completed bookings
@@ -573,10 +574,10 @@ export default function DashboardPage() {
                       Income per T-Shirt
                     </h4>
                     <p className="text-3xl font-bold">
-                      $
                       {Math.round(
                         totalIncome / totalTshirtsCreated
-                      ).toLocaleString()}
+                      ).toLocaleString()}{" "}
+                      VND
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Average revenue per t-shirt

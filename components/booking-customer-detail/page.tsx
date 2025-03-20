@@ -84,7 +84,7 @@ export default function CustomerBookingDetailPage() {
     }
   };
 
-  const isNoteEditable = (detail: any) => {
+  const isActionAllowed = () => {
     if (booking?.data.bookingStatus !== "DEPOSITED") {
       return false;
     }
@@ -391,7 +391,7 @@ export default function CustomerBookingDetailPage() {
                       <h2 className="text-sm font-medium mb-2">Note</h2>
                       <DetailNoteForm
                         detailId={detail.bookingDetailId}
-                        isEditable={isNoteEditable(detail)}
+                        isEditable={isActionAllowed()}
                         initialDescription={detail.description}
                       />
                     </div>
@@ -407,7 +407,7 @@ export default function CustomerBookingDetailPage() {
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row gap-3 pt-6 justify-end">
           {/* Only show Cancel button if the booking is not already cancelled */}
-          {booking?.data.bookingStatus === "DEPOSITED" && (
+          {booking?.data.bookingStatus === "DEPOSITED" && isActionAllowed() && (
             <CancelBookingButton bookingId={id as string} />
           )}
 

@@ -128,7 +128,7 @@ export const useDescriptionMutation = () => {
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKey.BOOKING.LIST] });
+      queryClient.invalidateQueries({ queryKey: [QueryKey.BOOKING.DETAIL] });
     },
   });
 
