@@ -338,7 +338,7 @@ export default function BookingDetailPage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {users?.data.content.map((designer) => (
+                            {users?.data?.content.map((designer) => (
                               <SelectItem key={designer.id} value={designer.id}>
                                 {designer.name}
                               </SelectItem>

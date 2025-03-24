@@ -160,14 +160,22 @@ const BookingForm = () => {
                     <Label htmlFor="title" className="text-lg font-medium">
                       Booking Title
                     </Label>
-                    <span className={`text-xs ${titleCharCount > 200 ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
+                    <span
+                      className={`text-xs ${
+                        titleCharCount > 200
+                          ? "text-red-500 font-medium"
+                          : "text-muted-foreground"
+                      }`}
+                    >
                       {titleCharCount}/200
                     </span>
                   </div>
                   <Input
                     id="title"
                     placeholder="Enter a descriptive title for your booking"
-                    className={`text-lg ${titleCharCount > 200 ? 'border-red-500' : ''}`}
+                    className={`text-lg ${
+                      titleCharCount > 200 ? "border-red-500" : ""
+                    }`}
                     value={form.watch("title") || ""}
                     onChange={handleTitleChange}
                     maxLength={200}
@@ -221,7 +229,8 @@ const BookingForm = () => {
                         </PopoverContent>
                       </Popover>
                       <FormDescription>
-                        The deadline for this booking request
+                        The start time will be the time the order is created and
+                        must be 2 days after the order is successfully created.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -294,7 +303,13 @@ const BookingForm = () => {
                                 Description
                               </Label>
                             </div>
-                            <span className={`text-xs ${(descriptionCharCounts[index] || 0) > 200 ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
+                            <span
+                              className={`text-xs ${
+                                (descriptionCharCounts[index] || 0) > 200
+                                  ? "text-red-500 font-medium"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
                               {descriptionCharCounts[index] || 0}/200
                             </span>
                           </div>
@@ -302,10 +317,18 @@ const BookingForm = () => {
                             control={form.control}
                             name={`bookingdetails.${index}.description`}
                             render={({ field }) => (
-                              <div className={`${(descriptionCharCounts[index] || 0) > 200 ? 'border border-red-500 rounded-md' : ''}`}>
+                              <div
+                                className={`${
+                                  (descriptionCharCounts[index] || 0) > 200
+                                    ? "border border-red-500 rounded-md"
+                                    : ""
+                                }`}
+                              >
                                 <TiptapEditor
                                   value={field.value}
-                                  onChange={(value) => handleDescriptionChange(value, index)}
+                                  onChange={(value) =>
+                                    handleDescriptionChange(value, index)
+                                  }
                                   placeholder="Enter detailed description..."
                                 />
                               </div>
@@ -509,7 +532,14 @@ const BookingForm = () => {
               </Button>
               <Button
                 type="submit"
-                disabled={isLoading || isUploading || titleCharCount > 200 || Object.values(descriptionCharCounts).some(count => count > 200)}
+                disabled={
+                  isLoading ||
+                  isUploading ||
+                  titleCharCount > 200 ||
+                  Object.values(descriptionCharCounts).some(
+                    (count) => count > 200
+                  )
+                }
                 className="bg-primary hover:bg-primary/90"
               >
                 {getSubmitButtonText()}

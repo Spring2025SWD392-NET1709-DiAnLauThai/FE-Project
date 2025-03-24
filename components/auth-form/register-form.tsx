@@ -155,16 +155,7 @@ export function RegisterForm() {
           <p>Or</p>
           <Separator className="text-muted-foreground w-1/2" />
         </div>
-        <Button className="w-full">
-          <Image
-            className="dark:invert"
-            src="/google.svg"
-            alt="Google logo"
-            width={20}
-            height={20}
-          />
-          Or Sign up with Google
-        </Button>
+        
         <div className="text-center text-sm">
           {"If you already have an account, "}
           <Link href="/login" className="text-primary hover:underline">

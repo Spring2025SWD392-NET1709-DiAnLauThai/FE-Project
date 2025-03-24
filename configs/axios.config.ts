@@ -24,28 +24,28 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    // const originalRequest = error.config;
 
-    if (error.response?.status === 401) {
-      originalRequest._retry = true;
-      try {
-        const refreshToken = localStorage.getItem("refreshToken");
-        if (refreshToken) {
-          const response = await AuthServices.refreshToken(refreshToken);
-          localStorage.setItem("accessToken", response.data.accessToken);
-          localStorage.setItem("refreshToken", response.data.refreshToken);
-          originalRequest.headers[
-            "Authorization"
-          ] = `Bearer ${response.data.accessToken}`;
-          return axiosInstance(originalRequest);
-        }
-      } catch (error) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        window.location.href = "/login";
-        return Promise.reject(error);
-      }
-    }
+    // if (error.response?.status === 401) {
+    //   originalRequest._retry = true;
+    //   try {
+    //     const refreshToken = localStorage.getItem("refreshToken");
+    //     if (refreshToken) {
+    //       const response = await AuthServices.refreshToken(refreshToken);
+    //       localStorage.setItem("accessToken", response.data.accessToken);
+    //       localStorage.setItem("refreshToken", response.data.refreshToken);
+    //       originalRequest.headers[
+    //         "Authorization"
+    //       ] = `Bearer ${response.data.accessToken}`;
+    //       return axiosInstance(originalRequest);
+    //     }
+    //   } catch (error) {
+    //     localStorage.removeItem("accessToken");
+    //     localStorage.removeItem("refreshToken");
+    //     window.location.href = "/login";
+    //     return Promise.reject(error);
+    //   }
+    // }
     return Promise.reject(error);
   }
 );
