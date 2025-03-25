@@ -11,8 +11,15 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { ClipboardList, ClipboardX, MoreHorizontal } from "lucide-react";
+import {
+  ClipboardList,
+  ClipboardX,
+  CreditCardIcon,
+  MoreHorizontal,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useRepayBooking } from "@/hooks/booking/use-booking-form";
+import { Form } from "react-hook-form";
 
 interface BookingMenuActionProps {
   booking: BookingResponse;
@@ -20,6 +27,8 @@ interface BookingMenuActionProps {
 
 const BookingMenuAction: React.FC<BookingMenuActionProps> = ({ booking }) => {
   const { replace } = useRouter();
+  const { onSubmit, isLoading } = useRepayBooking(booking.id);
+
 
   return (
     <DropdownMenu>
@@ -35,8 +44,19 @@ const BookingMenuAction: React.FC<BookingMenuActionProps> = ({ booking }) => {
           <ClipboardList />
           <span>View Detail</span>
         </DropdownMenuItem>
+        {booking.status === "UNPAID" && (
+          
+          <DropdownMenuItem
+            onClick={onSubmit}
+            disabled={isLoading}
+          >
+                <CreditCardIcon />
+                <span>Repay</span>
+              </DropdownMenuItem>
+            
+        )}
+
         <DropdownMenuSeparator />
-        
       </DropdownMenuContent>
     </DropdownMenu>
   );

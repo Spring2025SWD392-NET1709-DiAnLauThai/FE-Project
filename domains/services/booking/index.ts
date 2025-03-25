@@ -80,6 +80,16 @@ export const BookingService = {
         throw error;
       }
     },
+    repayBooking: async (bookingId: string): Promise<RootResponse<string>> => {
+      try {
+        const response = await axiosInstance.put(
+          `/bookings/${bookingId}/repay`
+        );
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
     publicBooking: async (bookingId: string): Promise<RootResponse<string>> => {
       try {
         const response = await axiosInstance.put(

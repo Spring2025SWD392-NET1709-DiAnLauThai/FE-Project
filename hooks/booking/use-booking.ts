@@ -76,6 +76,29 @@ export const useBookingMutation = () => {
   return { createBooking };
 };
 
+export const useRepayBookingMutation = (bookingId: string) => {
+  const { toast } = useToast();
+  // const router = useRouter();
+  const queryClient = new QueryClient();
+  const repayBookingMutation = useMutation({
+    mutationKey: [QueryKey.BOOKING.REPAY],
+    mutationFn: async () => await BookingService.put.repayBooking(bookingId),
+    onError: (error) => {
+      console.error("error", error);
+      toast({
+        title: "Error",
+        description: "Failed to create booking. Please try again.",
+        variant: "destructive",
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKey.BOOKING.LIST] });
+    },
+  });
+
+  return { repayBookingMutation };
+};
+
 export const usePublicBooking = (bookingId: string) => {
   const { toast } = useToast();
   const queryClient = new QueryClient();

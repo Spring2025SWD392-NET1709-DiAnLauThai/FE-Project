@@ -35,6 +35,19 @@ export const BookingColumn: ColumnDef<BookingResponse>[] = [
     },
   },
   {
+    accessorKey: "createdDate",
+    header: "Created at",
+    cell: ({ row }) => {
+      const booking = row.original;
+
+      return (
+        <Badge variant="default">
+          {formatFromISOStringVN(booking.createdDate, FormatType.DATETIME)}
+        </Badge>
+      );
+    },
+  },
+  {
     accessorKey: "startDate",
     header: "Start Date",
     cell: ({ row }) => {

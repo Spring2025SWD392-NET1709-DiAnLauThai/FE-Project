@@ -34,6 +34,7 @@ export const QueryKey = {
     PAY: "pay-booking",
     UPLOAD_ZIP: "upload-zip",
     PUBLIC: "public-booking",
+    REPAY: "repay-booking",
   },
   TASK: {
     LIST: "list-task",

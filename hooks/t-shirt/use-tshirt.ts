@@ -48,6 +48,7 @@ export const useAvailableTShirtsQuery = () => {
   const queryAvailableTShirts = useQuery({
     queryKey: [QueryKey.TSHIRT.AVAILABLE],
     queryFn: () => TShirtService.get.availableList(),
+    
   });
 
   const isLoading =

@@ -16,6 +16,7 @@ import {
   useDescriptionMutation,
   usePayBookingMutation,
   usePublicBooking,
+  useRepayBookingMutation,
 } from "./use-booking";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@/domains/stores/query-key";
@@ -51,7 +52,7 @@ export const useBookingForm = () => {
     const adjustedStartDate = new Date(data.startdate);
     adjustedStartDate.setHours(adjustedStartDate.getHours() + 7);
     adjustedStartDate.setDate(adjustedStartDate.getDate() + 1);
-    
+
     if (deadlineDate <= adjustedStartDate) {
       toast({
         title: "Invalid Deadline",
@@ -61,16 +62,17 @@ export const useBookingForm = () => {
       });
       return;
     }
-    
+
     setIsLoading(true);
     setIsUploading(true);
-    
 
     try {
       const newBookingDetails: Bookingdetail[] = await Promise.all(
         data.bookingdetails.map(async (detail) => {
           try {
-            const response = await FileService.post.upload(detail.designFile[0]);
+            const response = await FileService.post.upload(
+              detail.designFile[0]
+            );
             return {
               description: detail.description.toString(),
               designFile: response.data,
@@ -87,7 +89,7 @@ export const useBookingForm = () => {
           }
         })
       );
-      
+
       setIsUploading(false);
 
       const value: BookingPayload = {
@@ -116,7 +118,7 @@ export const useBookingForm = () => {
         },
         onSettled: () => {
           setIsLoading(false);
-        }
+        },
       });
     } catch (error) {
       setIsLoading(false);
@@ -126,8 +128,6 @@ export const useBookingForm = () => {
 
   return { form, onSubmit, isLoading: createBooking.isPending, isUploading };
 };
-
-
 
 export const useUpdateDescription = (bookingDetailId: string) => {
   const { toast } = useToast();
@@ -361,3 +361,62 @@ export const usePayBooking = (bookingId: string) => {
     isLoading: payBooking.isPending,
   };
 };
+
+export const useRepayBooking = (bookingId: string) => {
+  const queryClient = useQueryClient();
+  const { repayBookingMutation } = useRepayBookingMutation(bookingId);
+  const { toast } = useToast();
+
+ 
+  const form = useForm({
+    defaultValues: {
+      bookingId: bookingId,
+    },
+  });
+
+  // Set booking ID when it changes
+  const onSubmit = form.handleSubmit(async () => {
+    await repayBookingMutation.mutate(void 0, {
+      onSuccess: (response) => {
+        toast({
+          title: "Success",
+          description: response.message,
+        });
+
+        // Check if there's a payment URL in the response and redirect
+        if (
+          response.data &&
+          typeof response.data === "string" &&
+          response.data.includes("vnpayment.vn")
+        ) {
+          // Redirect to payment gateway
+          window.location.href = response.data;
+        } else {
+          // Invalidate relevant queries to refresh data
+          queryClient.invalidateQueries({ queryKey: [QueryKey.BOOKING.LIST] });
+          queryClient.invalidateQueries({
+            queryKey: [QueryKey.BOOKING.DETAIL, bookingId],
+          });
+        }
+
+        // Reset the form
+        form.reset();
+      },
+      onError: (error) => {
+        console.error("Error processing payment:", error);
+        toast({
+          title: "Error",
+          description: "Failed to process payment. Please try again.",
+          variant: "destructive",
+        });
+      },
+    });
+  });
+
+  return {
+    form,
+    onSubmit,
+    isLoading: repayBookingMutation.isPending,
+  };
+};
+

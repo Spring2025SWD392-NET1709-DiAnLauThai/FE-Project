@@ -61,6 +61,9 @@ export const columns: ColumnDef<UserPayload>[] = [
     id: "actions",
     cell: ({ row }) => {
       const user = row.original;
+if (user.role === "ADMIN") {
+  return null; // Or return a placeholder/disabled indicator
+}
 
       // Convert user to UserPayload for the form
       const userAsPayload = {
