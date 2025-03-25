@@ -55,6 +55,7 @@ export function PublishBookingButton({ bookingId }: { bookingId: string }) {
             >
               Cancel
             </Button>
+            
             <Button onClick={onPublish} disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? "Publishing..." : "Publish"}

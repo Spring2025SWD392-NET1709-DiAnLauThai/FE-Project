@@ -48,13 +48,15 @@ export const useAvailableTShirtsQuery = () => {
   const queryAvailableTShirts = useQuery({
     queryKey: [QueryKey.TSHIRT.AVAILABLE],
     queryFn: () => TShirtService.get.availableList(),
-    
+
   });
 
-  const isLoading =
+  const isLoadingAvaible =
     queryAvailableTShirts.isLoading || queryAvailableTShirts.isFetching;
-
-  return { queryAvailableTShirts, isLoading };
+  const refetchAvailableTShirts = () => {
+    return queryAvailableTShirts.refetch();
+  };
+  return { queryAvailableTShirts, isLoadingAvaible, refetchAvailableTShirts };
 };
 
 

@@ -433,10 +433,16 @@ export default function CustomerBookingDetailPage() {
           </Form>
           {booking?.data.bookingStatus === "COMPLETED" && (
             <p className="mt-2 font-medium">
-              {booking?.data.fullyPaid ? (
+              {booking?.data.fullyPaid && booking?.data.public ? (
                 <PublishBookingButton bookingId={id as string} />
               ) : (
-                <button>Public Booking</button>
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto flex items-center gap-2"
+                  disabled
+                >
+                  Public Booking
+                </Button>
               )}
             </p>
           )}

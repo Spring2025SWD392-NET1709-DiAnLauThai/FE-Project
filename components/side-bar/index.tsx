@@ -124,7 +124,7 @@ export default function Sidebar() {
           href: "/dashboard/t-shirt/create",
           icon: Shirt,
           label: "Create T-shirt",
-          roles: [Role.ADMIN, Role.MANAGER, Role.DESIGNER],
+          roles: [Role.DESIGNER],
         },
       ],
     },

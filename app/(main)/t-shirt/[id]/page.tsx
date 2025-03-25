@@ -30,7 +30,7 @@ export default function TshirtDetailPage() {
         {/* Back to T-shirts Button */}
         <div className="mb-6 flex justify-start">
           <Link
-            href="/tshirts"
+            href="/t-shirt"
             className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />

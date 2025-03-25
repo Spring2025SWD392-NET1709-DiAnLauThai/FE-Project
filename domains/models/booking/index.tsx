@@ -64,6 +64,7 @@ export interface BookingCustomerDetailResponse {
   title: string;
   bookingDetails: BookingDetail[];
   fullyPaid: boolean;
+  public: boolean;
 }
 
 export interface BookingDetail {

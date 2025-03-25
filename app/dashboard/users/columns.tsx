@@ -61,7 +61,7 @@ export const columns: ColumnDef<UserPayload>[] = [
     id: "actions",
     cell: ({ row }) => {
       const user = row.original;
-if (user.role === "ADMIN") {
+if (user.role === "ADMIN" || user.role === "MANAGER") {
   return null; // Or return a placeholder/disabled indicator
 }
 
