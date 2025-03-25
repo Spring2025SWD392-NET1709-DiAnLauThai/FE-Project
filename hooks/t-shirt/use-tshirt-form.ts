@@ -46,8 +46,7 @@ export const useCreateTshirtForm = () => {
       try {
         setIsUploading(true);
         console.log("CREATE form data:", data);
-        const colorTuple =
-          data.colorlist?.length > 0 ? [data.colorlist[0]] : [""];
+        const colorTuple = data.colorlist || [];
 
         let imageUrl = data.imgurl || "";
 
