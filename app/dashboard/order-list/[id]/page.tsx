@@ -406,12 +406,17 @@ export default function BookingDetailPage() {
                     Already Assigned
                   </Button>
                 ) : (
-                  <Button className="w-full" disabled={isSubmitting}>
+                  <Button
+                    className="w-full"
+                    disabled={isSubmitting || !selectedDesigner}
+                  >
                     {isSubmitting
                       ? "Submitting..."
                       : updateSuccessful
-                      ? "Successfully Assigned!"
-                      : "Assign & Submit"}
+                      ? "Assigned Successfully"
+                      : selectedDesigner
+                      ? "Assign & Submit"
+                      : "Select a Designer"}
                   </Button>
                 )}
               </CardFooter>
