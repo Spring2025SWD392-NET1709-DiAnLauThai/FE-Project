@@ -28,6 +28,7 @@ import { LoadingDots } from "@/components/plugins/ui-loading/loading-dots";
 
 import {
   usePayBooking,
+  useRepayBooking,
 } from "@/hooks/booking/use-booking-form";
 import { Form } from "@/components/ui/form";
 import { CancelBookingButton } from "@/components/cancel-booking-modal/page";
@@ -39,7 +40,8 @@ export default function CustomerBookingDetailPage() {
   const { id } = useParams();
   const { data: booking, isLoading: bookingLoading } =
     useCustomerBookingDetailsQuery(id as string);
-
+    const { repaysubmit, isRepayLoading } = useRepayBooking(id);
+  
   const { form, onSubmit, isLoading } = usePayBooking(id as string);
 
   const formatCurrency = (amount: number) => {
@@ -410,7 +412,16 @@ export default function CustomerBookingDetailPage() {
           {booking?.data.bookingStatus === "DEPOSITED" && isActionAllowed() && (
             <CancelBookingButton bookingId={id as string} />
           )}
-
+          {booking?.data.bookingStatus === "UNPAID" && (
+            <Button
+              onClick={repaysubmit}
+              disabled={isRepayLoading}
+              variant="outline"
+              className="w-full sm:w-auto"
+            >
+              Re-pay Booking
+            </Button>
+          )}
           <Form {...form}>
             <form onSubmit={onSubmit} className="flex gap-3">
               <Button

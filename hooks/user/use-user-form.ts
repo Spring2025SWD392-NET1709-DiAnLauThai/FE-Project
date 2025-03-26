@@ -39,7 +39,7 @@ export function useUserForm(options: UseUserFormOptions = { type: "create" }) {
 
   const onCreateUser = async (data: UserPayload) => {
     try {
-      await createUserMutation.createUserMutation.mutateAsync(data);
+      const res = await createUserMutation.createUserMutation.mutateAsync(data);
       toast({
         title: "Success",
         description: "User created successfully",
@@ -49,10 +49,12 @@ export function useUserForm(options: UseUserFormOptions = { type: "create" }) {
                   });
       form.reset();
       return true;
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.details;
+        
       toast({
         title: "Error",
-        description: "Failed to create user",
+        description: errorMessage,
         variant: "destructive",
       });
       return false;
@@ -94,7 +96,7 @@ export function useUserForm(options: UseUserFormOptions = { type: "create" }) {
         description: "User updated successfully",
       });
 
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: [QueryKey.LIST_USER] });
       return true;
     } catch (error) {
       console.error("Update error:", error);

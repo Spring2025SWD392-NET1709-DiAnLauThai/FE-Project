@@ -375,7 +375,7 @@ export const useRepayBooking = (bookingId: string) => {
   });
 
   // Set booking ID when it changes
-  const onSubmit = form.handleSubmit(async () => {
+  const repaysubmit = form.handleSubmit(async () => {
     await repayBookingMutation.mutate(void 0, {
       onSuccess: (response) => {
         toast({
@@ -415,8 +415,8 @@ export const useRepayBooking = (bookingId: string) => {
 
   return {
     form,
-    onSubmit,
-    isLoading: repayBookingMutation.isPending,
+    repaysubmit,
+    isRepayLoading: repayBookingMutation.isPending,
   };
 };
 

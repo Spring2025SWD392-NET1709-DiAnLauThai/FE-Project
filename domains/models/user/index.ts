@@ -6,6 +6,11 @@ export enum UserRole {
   MANAGER = "MANAGER",
 }
 
+export enum UserUpdateRole {
+  CUSTOMER = "CUSTOMER",
+  DESIGNER = "DESIGNER",
+}
+
 export enum UserStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
