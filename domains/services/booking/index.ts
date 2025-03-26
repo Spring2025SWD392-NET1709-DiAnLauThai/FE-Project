@@ -16,12 +16,15 @@ export const BookingService = {
       params: BookingParams
     ): Promise<RootResponse<Pagination<BookingResponse>>> => {
       try {
-        const response = await axiosInstance.get("/bookings", {
-          params: {
-            page: params.page,
-            size: params.size,
-          },
-        });
+        const response = await axiosInstance.get(
+          "/bookings?sortBy=dateCreated&direction=DESC",
+          {
+            params: {
+              page: params.page,
+              size: params.size,
+            },
+          }
+        );
         return response.data;
       } catch (error) {
         throw error;

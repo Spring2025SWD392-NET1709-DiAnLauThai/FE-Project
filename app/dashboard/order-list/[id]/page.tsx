@@ -338,11 +338,20 @@ export default function BookingDetailPage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {users?.data?.content.map((designer) => (
-                              <SelectItem key={designer.id} value={designer.id}>
-                                {designer.name}
-                              </SelectItem>
-                            ))}
+                            {users?.data?.content.length > 0 ? (
+                              users?.data?.content.map((designer) => (
+                                <SelectItem
+                                  key={designer.id}
+                                  value={designer.id}
+                                >
+                                  {designer.name}
+                                </SelectItem>
+                              ))
+                            ) : (
+                              <div className="flex items-center justify-center py-2 px-2 text-sm text-muted-foreground">
+                                No designers available
+                              </div>
+                            )}
                           </SelectContent>
                         </Select>
                         <FormDescription>
