@@ -1,6 +1,6 @@
 export interface FeedbackPayload {
   tshirtId: string,
-  rating: 0,
+  rating: number,
   detail: string
 }
 

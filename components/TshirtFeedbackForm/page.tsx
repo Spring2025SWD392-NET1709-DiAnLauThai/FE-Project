@@ -69,13 +69,13 @@ export default function TshirtFeedbackForm({
 
         <FormField
           control={form.control}
-          name="comment"
+          name="detail"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel htmlFor="comment">Your feedback</FormLabel>
+              <FormLabel htmlFor="detail">Your feedback</FormLabel>
               <FormControl>
                 <Textarea
-                  id="comment"
+                  id="detail"
                   placeholder="Share your thoughts about this t-shirt..."
                   rows={4}
                   {...field}

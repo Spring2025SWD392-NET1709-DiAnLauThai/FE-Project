@@ -62,15 +62,7 @@ export const TransactionColumns: ColumnDef<TransactionResponse>[] = [
     accessorKey: "transactionMethod",
     header: "Method",
   },
-  {
-    accessorKey: "transactionType",
-    header: "Type",
-    cell: ({ row }) => {
-      const transaction = row.original;
-
-      return transaction.transactionType || "N/A";
-    },
-  },
+  
   {
     accessorKey: "transactionStatus",
     header: "Status",
