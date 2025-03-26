@@ -339,14 +339,27 @@ export default function BookingDetailPage() {
                           </FormControl>
                           <SelectContent>
                             {users?.data?.content.length > 0 ? (
-                              users?.data?.content.map((designer) => (
-                                <SelectItem
-                                  key={designer.id}
-                                  value={designer.id}
-                                >
-                                  {designer.name}
-                                </SelectItem>
-                              ))
+                              (() => {
+                                const activeDesigners =
+                                  users.data.content.filter(
+                                    (designer) => designer.status === "ACTIVE"
+                                  );
+
+                                return activeDesigners.length > 0 ? (
+                                  activeDesigners.map((designer) => (
+                                    <SelectItem
+                                      key={designer.id}
+                                      value={designer.id}
+                                    >
+                                      {designer.name}
+                                    </SelectItem>
+                                  ))
+                                ) : (
+                                  <div className="flex items-center justify-center py-2 px-2 text-sm text-muted-foreground">
+                                    No active designers available
+                                  </div>
+                                );
+                              })()
                             ) : (
                               <div className="flex items-center justify-center py-2 px-2 text-sm text-muted-foreground">
                                 No designers available
